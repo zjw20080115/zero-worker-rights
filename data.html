@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>工作数据分析</title>
+    <style>
+        /* === 全局：清空默认边距，设置舒适的字体 === */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", -apple-system, sans-serif;
+            background-color: #f7f9fc; 
+            margin: 0;
+            padding: 60px 20px; /* 增加上下留白 */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center; 
+            align-items: flex-start;
+            color: #2c3e50;
+        }
+
+        /* === 主容器：整体放大，宽度达到 900px === */
+        .container {
+            width: 100%;
+            max-width: 900px; /* 从 720px 放大到 900px */
+            background-color: #ffffff;
+            padding: 70px 80px; /* 内边距也加大，显得更宽敞 */
+            border-radius: 24px; 
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.02); 
+        }
+
+        /* === 标题区：大气醒目 === */
+        .header-area {
+            text-align: center;
+            margin-bottom: 60px; /* 标题下放留出更多空间 */
+            position: relative;
+        }
+
+        .header-area h2 {
+            font-size: 42px; /* 标题字号大幅提升 */
+            color: #1a202c;
+            margin: 0 0 15px 0;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        .header-area .sub-line {
+            width: 80px; /* 装饰线加长 */
+            height: 5px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6); 
+            margin: 0 auto 20px auto;
+            border-radius: 3px;
+        }
+
+        .header-area p {
+            color: #718096;
+            font-size: 16px; /* 副标题字号提升 */
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        /* === 输入区域：加宽、放大 === */
+        .input-area {
+            max-width: 700px; /* 输入区宽度放大到 700px */
+            margin: 0 auto 50px auto;
+        }
+
+        .input-group {
+            margin-bottom: 30px; /* 输入框间距加大 */
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 12px;
+            color: #4a5568;
+            font-size: 19px; /* 标签字体加大 */
+            font-weight: 600;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 18px 22px; /* 输入框变得宽厚 */
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px;
+            font-size: 19px; /* 输入框内数字加大 */
+            color: #2d3748;
+            background-color: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.1); 
+        }
+
+        /* === 按钮：更大更醒目 === */
+        .btn-container {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .btn-container button {
+            padding: 20px 80px; /* 按钮尺寸大增 */
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 22px; /* 按钮文字加大 */
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35); 
+            transition: all 0.3s ease;
+        }
+
+        .btn-container button:hover {
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.45);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .btn-container button:active {
+            transform: translateY(0);
+        }
+
+        /* === 结果区域：加宽、放大、更美观 === */
+        .result-area {
+            background-color: #f8fafc; 
+            border-radius: 16px;
+            padding: 40px 50px; /* 内边距加大 */
+            max-width: 700px; /* 与输入区域等宽 */
+            margin: 0 auto;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 18px 0; /* 行间距加大 */
+        }
+
+        /* 文字标签 */
+        .result-row span:first-child {
+            color: #64748b;
+            font-size: 19px; /* 标签字体加大 */
+        }
+
+        /* 结果数字 */
+        .result-row span:last-child {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 23px; /* 数字字体大幅加大 */
+            font-family: "Courier New", monospace; 
+        }
+
+        /* 计算成功后的数字颜色 */
+        .has-value {
+            color: #3b82f6 !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header-area">
+            <h2>工作数据分析</h2>
+            <div class="sub-line"></div>
+            <p>WORK DATA ANALYSIS DASHBOARD</p>
+        </div>
+
+        <div class="input-area">
+            <div class="input-group">
+                <label>工作天数：</label>
+                <input type="number" id="days" value="7">
+            </div>
+            <div class="input-group">
+                <label>工作时长（小时）：</label>
+                <input type="number" id="hours" value="56">
+            </div>
+            <div class="input-group">
+                <label>订单数量：</label>
+                <input type="number" id="orders" value="120">
+            </div>
+            <div class="input-group">
+                <label>总收入：</label>
+                <input type="number" id="income" value="1500">
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button id="analyzeBtn">开始分析</button>
+        </div>
+
+        <div class="result-area">
+            <div class="result-row">
+                <span>总收入：</span>
+                <span id="result-income" class="result-value">--</span>
+            </div>
+            <div class="result-row">
+                <span>平均每天收入：</span>
+                <span id="result-avg-daily-income" class="result-value">--</span>
+            </div>
+            <div class="result-row">
+                <span>平均每天工作时间：</span>
+                <span id="result-avg-daily-hours" class="result-value">--</span>
+            </div>
+            <div class="result-row">
+                <span>平均每天订单：</span>
+                <span id="result-avg-daily-orders" class="result-value">--</span>
+            </div>
+            <div class="result-row">
+                <span>平均每小时收入：</span>
+                <span id="result-avg-hourly-income" class="result-value">--</span>
+            </div>
+            <div class="result-row">
+                <span>平均每单收入：</span>
+                <span id="result-avg-order-income" class="result-value">--</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            let days = parseFloat(document.getElementById('days').value);
+            let hours = parseFloat(document.getElementById('hours').value);
+            let orders = parseFloat(document.getElementById('orders').value);
+            let income = parseFloat(document.getElementById('income').value);
+
+            if (!days || !hours || !orders || !income || days <= 0 || hours <= 0 || orders <= 0 || income <= 0) {
+                alert("请在输入框里填入正确的数字！");
+                return;
+            }
+
+            let resultSpans = document.querySelectorAll('.result-value');
+            resultSpans.forEach(span => span.classList.add('has-value'));
+
+            document.getElementById('result-income').innerText = income.toFixed(2);
+            document.getElementById('result-avg-daily-income').innerText = (income / days).toFixed(2);
+            document.getElementById('result-avg-daily-hours').innerText = (hours / days).toFixed(2);
+            document.getElementById('result-avg-daily-orders').innerText = (orders / days).toFixed(2);
+            document.getElementById('result-avg-hourly-income').innerText = (income / hours).toFixed(2);
+            document.getElementById('result-avg-order-income').innerText = (income / orders).toFixed(2);
+        });
+    </script>
+
+</body>
+</html>
