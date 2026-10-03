@@ -30,7 +30,7 @@
                 本自测包含 8 道题目，帮助你快速了解自己作为零工劳动者
                 可能面临的权益风险。测试结果仅供个人参考，不构成法律意见。
             </p>
-            <button id="start-btn" type="button">开始自测</button>
+            <button id="start-btn" class="btn" type="button">开始自测</button>
         </section>
 
         <!-- ==================== 区域二：答题区（quiz，初始隐藏） ==================== -->
@@ -41,8 +41,7 @@
             <!-- 答题表单：题目由 js/test.js 动态渲染，暂留空 -->
             <form id="quiz-form">
             </form>
-            <!-- 提交按钮：绑定上方表单，点击后由 js/test.js 处理结果 -->
-            <button id="submit-btn" type="submit" form="quiz-form">提交</button>
+            <button id="submit-btn" class="btn" type="submit" form="quiz-form">提交</button>
         </section>
 
         <!-- ==================== 区域三：结果区（result，初始隐藏） ==================== -->
@@ -53,7 +52,7 @@
             <!-- 结果列表区：由 js/test.js 填充 -->
             <ul id="result-list"></ul>
             <!-- 重新测试按钮 -->
-            <button id="restart-btn" type="button">重新测试</button>
+            <button id="restart-btn" class="btn" type="button">重新测试</button>
         </section>
     </main>
 

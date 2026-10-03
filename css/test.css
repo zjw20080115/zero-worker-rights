@@ -1,0 +1,39 @@
+/* ===== 权益自测模块专属样式 ===== */
+
+/* 最核心的隐藏类！必须加 !important 防止被覆盖 */
+.hidden {
+    display: none !important;
+}
+
+/* 复用 A 的 .section 样式稍作调整 */
+.intro, .quiz, .result {
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    margin-bottom: 28px;
+}
+
+/* 进度文本 */
+#progress {
+    color: #1769aa;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* 选项样式（配合 A 的 style.css 里的 .option 使用） */
+.question-block {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+.question-block h3 {
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+
+/* 重新测试按钮加个灰色调 */
+#restart-btn {
+    background: #6c757d;
+    margin-top: 15px;
+}
