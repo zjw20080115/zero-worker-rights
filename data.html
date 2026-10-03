@@ -1,1 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>工作数据分析</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
+    <!-- 第一部分：数据输入区 -->
+    <div class="input-section">
+        <h2>工作数据分析</h2>
+        <label>工作天数：<input type="number" id="days" value="7"></label><br>
+        <label>工作时长：<input type="number" id="hours" value="56"></label><br>
+        <label>订单数量：<input type="number" id="orders" value="120"></label><br>
+        <label>总收入：<input type="number" id="income" value="1500"></label><br>
+        <button id="analyze-btn">开始分析</button>
+    </div>
+
+    <hr>
+
+    <!-- 第二部分：预留的数据结果区 -->
+    <div class="result-section" id="result-area">
+        <h3>数据结果</h3>
+        <p>总收入：<span id="res-income"></span></p>
+        <p>平均每天收入：<span id="res-avg-daily-income"></span></p>
+        <p>平均每天工作时间：<span id="res-avg-daily-hours"></span></p>
+        <p>平均每天订单：<span id="res-avg-daily-orders"></span></p>
+        <p>平均每小时收入：<span id="res-avg-hourly-income"></span></p>
+        <p>平均每单收入：<span id="res-avg-order-income"></span></p>
+    </div>
+
+    <script src="js/data.js"></script>
+</body>
+</html>
