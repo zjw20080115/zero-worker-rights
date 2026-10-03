@@ -1,0 +1,1 @@
+package com.rights.helper.repository; import com.rights.helper.model.PostLike; import org.springframework.data.jpa.repository.JpaRepository; import java.util.Optional; public interface PostLikeRepository extends JpaRepository<PostLike,Long>{Optional<PostLike> findByPostIdAndUserId(Long p,Long u); long countByPostId(Long p);}
