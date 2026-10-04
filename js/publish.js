@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("准备发送给后端的数据：", postData);
 
         // --- 下面这部分是 Day 4 与 C 同学联调的内容，今天先写个占位 ---
-        alert("数据收集成功！(下一步将是发送给后端API)\n\n" + JSON.stringify(postData, null, 2));
+       alert("数据收集成功！点击确定跳回主页。\n\n(数据已打印在控制台)");
+       window.location.href = "community.html";
         
         // 未来在这里调用 API：
         // sendPostToBackend(postData);
