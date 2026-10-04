@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权益互助墙 | 专业门户</title>
+    <link rel="stylesheet" href="../style.css">
+    <!-- 引入现代字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === 全局重置 === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* === 顶部导航栏（统一为截图中的深蓝色） === */
+        .top-nav {
+            background-color: #1e5a8a;
+            color: white;
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+            position: relative;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -22px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ffffff;
+        }
+
+        /* === 英雄横幅区（使用同色系渐变） === */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e5a8a 0%, #2c7ab5 100%);
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-banner h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .hero-banner p {
+            font-size: 16px;
+            color: #bfdbfe;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .hero-search {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-search input {
+            width: 100%;
+            padding: 18px 25px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .hero-search input:focus {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* === 主体内容区 === */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* === 左侧边栏 === */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-box {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            background-color: #1e5a8a;
+            color: white;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-menu li {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background-color: #f8fafc;
+            color: #1e5a8a;
+            padding-left: 25px;
+        }
+
+        .sidebar-menu li.active {
+            border-left: 4px solid #1e5a8a;
+            font-weight: 600;
+        }
+
+        .sidebar-menu li::after {
+            content: '›';
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        /* === 发布按钮 === */
+        .sidebar-btn {
+            display: block;
+            text-align: center;
+            background-color: #1e5a8a;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(30, 90, 138, 0.3);
+            transition: all 0.3s;
+        }
+
+        .sidebar-btn:hover {
+            background-color: #164a73;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(30, 90, 138, 0.4);
+        }
+
+        /* === 右侧主内容区 === */
+        .content-area {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .content-header h2 {
+            font-size: 20px;
+            color: #0f172a;
+            font-weight: 700;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .content-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: #1e5a8a;
+        }
+
+        .content-header span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* === 帖子卡片 === */
+        .post-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border-color: #bfdbfe;
+            transform: translateY(-2px);
+        }
+
+        .post-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: transparent;
+            transition: background-color 0.3s;
+        }
+
+        .post-card:hover::before {
+            background-color: #1e5a8a;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .post-category {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e5a8a;
+            background: #eef4f9;
+            padding: 4px 12px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .post-time {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            transition: color 0.2s;
+        }
+
+        .post-card:hover .post-title {
+            color: #1e5a8a;
+        }
+
+        .post-excerpt {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .avatar {
+            font-size: 14px;
+            background: #e2e8f0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #64748b;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .stat-item:hover {
+            color: #1e5a8a;
+        }
+
+        /* === 空状态 === */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #94a3b8;
+            font-size: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* === 底部版权 === */
+        .footer {
+            background-color: #1e5a8a;
+            color: #bfdbfe;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 13px;
+            margin-top: 60px;
+        }
+
+        /* === 响应式适配 === */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .nav-links {
+                display: none;
+            }
+            .hero-banner h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="logo">权益互助墙</div>
+        <div class="nav-links">
+            <a href="#" class="active">首页</a>
+            <a href="#">热门问题</a>
+            <a href="#">政策解读</a>
+            <a href="#">维权指南</a>
+            <a href="#">联系我们</a>
+        </div>
+    </nav>
+
+    <!-- 2. 英雄横幅（搜索区） -->
+    <section class="hero-banner">
+        <h1>新就业形态权益互助墙</h1>
+        <p>了解权益，分享经验，互帮互助，依法维权</p>
+        <div class="hero-search">
+            <input type="text" id="searchInput" placeholder="🔍 搜索你遇到的问题，如：工资拖欠、工伤认定、劳动关系...">
+        </div>
+    </section>
+
+    <!-- 3. 主体内容区（左右两栏） -->
+    <div class="main-container">
+
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-box">
+                <div class="sidebar-title">问题分类</div>
+                <ul class="sidebar-menu" id="categoryTabs">
+                    <li class="active" data-category="全部">全部问题</li>
+                    <li data-category="工资报酬">工资报酬</li>
+                    <li data-category="工作受伤">工作受伤</li>
+                    <li data-category="劳动关系">劳动关系</li>
+                    <li data-category="社会保险">社会保险</li>
+                    <li data-category="解除/辞退">解除/辞退</li>
+                    <li data-category="其他">其他问题</li>
+                </ul>
+            </div>
+            <a href="post.html" class="sidebar-btn">+ 发布我的问题</a>
+        </aside>
+
+        <!-- 右侧内容区 -->
+        <main class="content-area">
+            <div class="content-header">
+                <h2>最新互助帖子</h2>
+                <span>共 <b id="postCount">0</b> 条讨论</span>
+            </div>
+            
+            <!-- 帖子列表容器：JS 会把数据渲染到这里 -->
+            <div id="postList">
+                <!-- 内容由 JS 动态生成 -->
+            </div>
+        </main>
+
+    </div>
+
+    <!-- 4. 底部版权 -->
+    <footer class="footer">
+        <p>© 2026 权益互助墙 · 正式内容请根据当地最新官方信息核验</p>
+        <p>技术支持：数字媒体创新大赛团队</p>
+    </footer>
+
+    <!-- 引入 JS -->
+    <script src="../js/community.js"></script>
+    <script src="../js/community_render.js"></script>
+</body>
+</html>
