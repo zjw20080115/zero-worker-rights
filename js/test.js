@@ -3,7 +3,7 @@
  *
  * 数据驱动设计：题目、选项、分值全部来自 questions 数组，
  * 渲染、计分、结果展示的逻辑都不依赖题目数量。
- * 以后整理好 8 道正式题目，只需替换 questions 数组即可。
+ * 增删或调整题目，只需修改 questions 数组即可。
  *
  * 题目字段说明：
  *   id        —— 题目编号（用于关联 DOM，需唯一）
@@ -12,24 +12,218 @@
  *   options   —— 选项数组，每项 { text: 选项文字, score: 该选项得分 }
  * ============================================================ */
 
-/* ---------- 1. 题目数据（先用 2 道假题测试） ---------- */
+/* ---------- 1. 题目数据（真实问卷：S0 定位题不计分，A/B/C/D/E/F 维度计分） ---------- */
 const questions = [
     {
-        id: 1,
-        text: '你是否与用工方签订了书面劳动合同？',
-        dimension: '劳动合同',
+        id: 'S0-1',
+        text: '您目前主要从事下列哪一类工作？',
+        dimension: '定位',
         options: [
-            { text: '签了', score: 2 },
-            { text: '没签', score: 0 },
+            { text: '出行类平台接单', score: 0 },
+            { text: '即时配送类平台接单', score: 0 },
+            { text: '同城货运类平台接单', score: 0 },
+            { text: '家政服务', score: 0 },
+            { text: '网络内容创作', score: 0 },
+            { text: '线上零工与众包', score: 0 },
+            { text: '技能服务接单', score: 0 },
+            { text: '平台仓配与分拣等其他接单岗位', score: 0 },
+            { text: '其他', score: 0 },
         ],
     },
     {
-        id: 2,
-        text: '用工方是否为你缴纳了社会保险？',
-        dimension: '社会保险',
+        id: 'S0-2',
+        text: '您的工作任务主要通过何种方式获得？',
+        dimension: '定位',
         options: [
-            { text: '缴了', score: 2 },
-            { text: '没缴', score: 0 },
+            { text: '由某一互联网平台统一派单', score: 0 },
+            { text: '在平台接单但可自主决定是否承接', score: 0 },
+            { text: '自行揽活或直接与客户约定', score: 0 },
+            { text: '多种方式混合', score: 0 },
+        ],
+    },
+    {
+        id: 'A1',
+        text: '您与哪一方约定工作内容、报酬标准与日常管理？',
+        dimension: 'A',
+        options: [
+            { text: '平台企业', score: 1 },
+            { text: '劳务外包单位或加盟服务商', score: 1 },
+            { text: '直接服务的客户', score: 0 },
+            { text: '不清楚/多方交错', score: 1 },
+        ],
+    },
+    {
+        id: 'A2',
+        text: '是否签订过书面用工协议或劳动合同？',
+        dimension: 'A',
+        options: [
+            { text: '与平台企业签订', score: 1 },
+            { text: '与外包或加盟商签订', score: 1 },
+            { text: '与客户方签订', score: 0 },
+            { text: '未签订任何书面协议', score: 2 },
+        ],
+    },
+    {
+        id: 'A3',
+        text: '平台是否要求或引导您登记为个体工商户？',
+        dimension: 'A',
+        options: [
+            { text: '是', score: 2 },
+            { text: '否', score: 0 },
+            { text: '不清楚', score: 1 },
+        ],
+    },
+    {
+        id: 'A4',
+        text: '您能否自主决定是否接单、何时开始与结束工作？',
+        dimension: 'A',
+        options: [
+            { text: '完全自主', score: 0 },
+            { text: '基本自主但存在激励约束', score: 1 },
+            { text: '须按排班或任务量要求接单', score: 2 },
+            { text: '不清楚', score: 1 },
+        ],
+    },
+    {
+        id: 'B1',
+        text: '每单报酬标准、派单顺序等是否由平台系统自动确定？',
+        dimension: 'B',
+        options: [
+            { text: '是，由平台统一确定', score: 2 },
+            { text: '部分由平台确定部分可协商', score: 1 },
+            { text: '否，由我与客户自行约定', score: 0 },
+        ],
+    },
+    {
+        id: 'B2',
+        text: '是否存在服务分、接单率、好评率等考核指标直接影响接单机会？',
+        dimension: 'B',
+        options: [
+            { text: '是', score: 1 },
+            { text: '否', score: 0 },
+        ],
+    },
+    {
+        id: 'B3',
+        text: '对平台作出的扣分、罚款、限制接单等处理，是否设有可实际使用的申诉渠道？',
+        dimension: 'B',
+        options: [
+            { text: '有且能实际处理', score: 0 },
+            { text: '有渠道但形同虚设', score: 1 },
+            { text: '没有申诉渠道', score: 2 },
+        ],
+    },
+    {
+        id: 'C1',
+        text: '劳务报酬由谁实际支付？',
+        dimension: 'C',
+        options: [
+            { text: '平台统一结算', score: 0 },
+            { text: '外包或加盟商支付', score: 1 },
+            { text: '客户直接支付', score: 0 },
+            { text: '混合支付', score: 1 },
+        ],
+    },
+    {
+        id: 'C2',
+        text: '报酬结算方式属于下列哪类？',
+        dimension: 'C',
+        options: [
+            { text: '按单即时结算', score: 0 },
+            { text: '按周期批量结算', score: 1 },
+            { text: '含底薪或保底加提成', score: 0 },
+            { text: '纯按件计酬无保底', score: 2 },
+        ],
+    },
+    {
+        id: 'C3',
+        text: '平台是否从每笔报酬中收取信息服务费或抽成？',
+        dimension: 'C',
+        options: [
+            { text: '是', score: 1 },
+            { text: '否', score: 0 },
+            { text: '不清楚', score: 2 },
+        ],
+    },
+    {
+        id: 'D1',
+        text: '平均每天处于接单或待命状态的时间约为？',
+        dimension: 'D',
+        options: [
+            { text: '4小时以内', score: 0 },
+            { text: '4-8小时', score: 1 },
+            { text: '8-12小时', score: 2 },
+            { text: '12小时以上', score: 2 },
+        ],
+    },
+    {
+        id: 'D2',
+        text: '是否存在最低在线时长、出勤打卡或连续工作等要求？',
+        dimension: 'D',
+        options: [
+            { text: '有明确要求', score: 2 },
+            { text: '无硬性要求', score: 0 },
+            { text: '无硬性要求但存在隐性考核', score: 1 },
+        ],
+    },
+    {
+        id: 'E1',
+        text: '工作中是否需要使用交通工具（电动自行车、汽车、摩托车等）？',
+        dimension: 'E',
+        options: [
+            { text: '经常使用', score: 2 },
+            { text: '偶尔使用', score: 1 },
+            { text: '不需要', score: 0 },
+        ],
+    },
+    {
+        id: 'E2',
+        text: '过去一年内，工作中是否发生过受伤或意外？',
+        dimension: 'E',
+        options: [
+            { text: '发生过', score: 2 },
+            { text: '险些发生', score: 1 },
+            { text: '没有', score: 0 },
+        ],
+    },
+    {
+        id: 'E3',
+        text: '如曾发生受伤，相关医疗等费用主要由谁承担？',
+        dimension: 'E',
+        options: [
+            { text: '自行承担', score: 2 },
+            { text: '平台或保险协助承担', score: 0 },
+            { text: '不清楚', score: 1 },
+        ],
+    },
+    {
+        id: 'F1',
+        text: '您是否以灵活就业人员身份自行参加了职工基本养老保险或医疗保险？',
+        dimension: 'F',
+        options: [
+            { text: '是已参保', score: 0 },
+            { text: '曾参保但已中断', score: 1 },
+            { text: '从未参保', score: 2 },
+        ],
+    },
+    {
+        id: 'F2',
+        text: '您所在平台是否曾为您缴纳过任何社会保险？',
+        dimension: 'F',
+        options: [
+            { text: '是', score: 0 },
+            { text: '否', score: 2 },
+            { text: '不清楚', score: 1 },
+        ],
+    },
+    {
+        id: 'F3',
+        text: '是否加入过工会组织或平台从业者代表机构？',
+        dimension: 'F',
+        options: [
+            { text: '是', score: 0 },
+            { text: '否', score: 1 },
+            { text: '不清楚', score: 1 },
         ],
     },
 ];
@@ -40,8 +234,6 @@ const quizSection = document.getElementById('quiz');
 const resultSection = document.getElementById('result');
 const quizForm = document.getElementById('quiz-form');
 const progressText = document.getElementById('progress');
-const resultSummary = document.getElementById('result-summary');
-const resultList = document.getElementById('result-list');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 
@@ -108,62 +300,345 @@ function updateProgress() {
     progressText.textContent = `${countAnswered()}/${questions.length}`;
 }
 
-/* ---------- 6. 计算各维度得分 ---------- */
-function calculateScores() {
-    const dimensionScores = {}; // { 维度名: { earned: 已得分, total: 满分 } }
+/* ============================================================
+ * 6. 算分引擎
+ * ============================================================ */
+
+/* 结果区所有容器（若 HTML 中缺少某个容器，渲染时会跳过并警告，不会中断） */
+const RESULT_CONTAINERS = [
+    'result-summary',
+    'result-conclusion',
+    'result-red-flags',
+    'result-risk-lights',
+    'result-list',
+    'recommendation-content',
+];
+
+/* 各维度满分与中文显示名 */
+const DIMENSION_FULL = { A: 7, B: 5, C: 5, D: 4, E: 6, F: 5 };
+const DIMENSION_NAMES = {
+    A: '用工关系',
+    B: '算法规则',
+    C: '报酬支付',
+    D: '工作时长',
+    E: '职业安全',
+    F: '社会保障',
+};
+
+/* 风险灯阈值：得分 >= red 亮红灯，>= yellow 亮黄灯，否则绿灯 */
+const LIGHT_RULES = {
+    A: { yellow: 3, red: 5 }, // 0-2绿 3-4黄 5-7红
+    B: { yellow: 2, red: 4 }, // 0-1绿 2-3黄 4-5红
+    C: { yellow: 2, red: 4 },
+    D: { yellow: 2, red: 3 }, // 0-1绿 2黄 3-4红
+    E: { yellow: 3, red: 5 }, // 0-2绿 3-4黄 5-6红
+    F: { yellow: 2, red: 4 },
+};
+
+/* 结论等级对应的文案与配色（强红 / 中黄 / 弱绿） */
+const LEVEL_META = {
+    强: {
+        text: '您的权益风险较高，建议尽快对照下方路径采取行动，并保留好相关证据。',
+        bg: '#fdecea',
+        border: '#e5484d',
+    },
+    中: {
+        text: '您的权益存在一定风险，建议关注下方提示，并留意平台规则与政策变化。',
+        bg: '#fff8e1',
+        border: '#d99b00',
+    },
+    弱: {
+        text: '您的权益保障情况总体良好，建议继续保持并关注相关政策变化。',
+        bg: '#e8f5e9',
+        border: '#2e7d32',
+    },
+};
+
+/* 路径推荐映射：根据触发条件渲染对应的模板与法规 */
+const RECOMMENDATIONS = [
+    {
+        id: 'injury',
+        title: '职业伤害申报',
+        level: '强',
+        // 触发条件：曾受伤或担心受伤（E2 选「发生过」或「险些发生」）
+        trigger: (answers) => ['发生过', '险些发生'].includes(answers['E2']),
+        description: (answers) => {
+            const job = answers['S0-1'] || '未知';
+            return (
+                '如曾受伤或担心受伤：系统将依据您的职业类型提示职业伤害保障覆盖可能性（您填写的职业类型：' +
+                job +
+                '）。属出行/即时配送/同城货运等行业可核对平台是否按单缴费，再走职业伤害确认与待遇申请。'
+            );
+        },
+        templates: [
+            '职业伤害确认结论书',
+            '不予确认职业伤害结论书',
+            '新就业形态人员职业伤害保障费缴费申报表',
+            '职业伤害保障伤残待遇申请表',
+            '职业伤害保障死亡待遇申请表',
+            '劳动能力鉴定申请表',
+            '职业伤害保障待遇垫付情况说明',
+            '职业伤害保障待遇申请超期说明',
+            '职业伤害保障跨省异地就医（康复）备案表',
+            '职业伤害保障跨省异地配置辅助器具备案表',
+            '职业伤害人员劳动能力初次（复查）鉴定结论书',
+            '职业伤害人员劳动能力再次鉴定结论书',
+            '知情同意确认书',
+            '待遇申请表申报说明',
+            '新就业形态人员职业伤害保障办法（试行）',
+            '新就业形态人员职业伤害保障业务经办和征收管理规程（试行）',
+            '工伤认定申请表',
+            '认定工伤决定书',
+            '工伤认定申请受理决定书',
+            '工伤认定申请不予受理决定书',
+            '不予认定工伤决定书',
+            '工伤认定办法',
+        ],
+        laws: [
+            '人社部发〔2021〕110号',
+            '新就业形态人员职业伤害保障办法（试行）',
+            '新就业形态人员职业伤害保障业务经办和征收管理规程（试行）',
+            '工伤认定办法',
+        ],
+    },
+    {
+        id: 'labor-relation',
+        title: '劳动关系认定',
+        level: '强',
+        // 触发条件：A 维度红灯（用工从属性强，需确认是否构成劳动关系）
+        trigger: (_answers, lights) => lights['A'] === 'red',
+        description:
+            '想确认「是不是员工」：收集接单记录、考核、报酬、规则等证据，申请劳动仲裁确认劳动关系；存在事实劳动关系是走传统工伤认定（工伤保险）的前置条件。',
+        templates: [
+            '中华人民共和国劳动合同法',
+            '关于审理劳动争议案件适用法律问题的解释（二）',
+            '工伤认定办法',
+        ],
+        laws: ['劳动合同法', '最高法指导案例 237–240 号', '劳动争议司法解释（二）', '工伤认定办法'],
+    },
+    {
+        id: 'pay',
+        title: '报酬追索',
+        level: '中',
+        // 触发条件：C 维度红灯（报酬支付风险高）
+        trigger: (_answers, lights) => lights['C'] === 'red',
+        description: '报酬被拖、被乱扣：向劳动保障监察投诉或申请仲裁，要求按时足额支付。',
+        templates: ['中华人民共和国劳动合同法', '中华人民共和国劳动法'],
+        laws: ['56 号文', '劳动保障监察条例', '劳动法'],
+    },
+    {
+        id: 'algorithm',
+        title: '算法与规则申诉',
+        level: '中',
+        // 触发条件：B 维度红灯（平台算法与规则约束强）
+        trigger: (_answers, lights) => lights['B'] === 'red',
+        description:
+            '派单、扣分、罚款不合理：要求平台公开算法、协商规则，通过申诉渠道或工会反映。',
+        templates: [
+            '《平台劳动规则和算法协商指引（试行）》',
+            '关于维护新就业形态劳动者劳动保障权益的指导意见',
+        ],
+        laws: ['56 号文', '平台劳动规则和算法协商指引（试行）', '七部门外卖意见'],
+    },
+    {
+        id: 'social-insurance',
+        title: '社保参保',
+        level: '中',
+        // 触发条件：F 维度红灯（社保保障缺失）
+        trigger: (_answers, lights) => lights['F'] === 'red',
+        description:
+            '养老 / 医疗没着落：以灵活就业身份个人参保，或关注地方「单项参加工伤保险」等办法。',
+        templates: [
+            '中华人民共和国社会保险法',
+            '广东省税务局关于单位从业的灵活就业劳动者等特定人员参加工伤保险的办法',
+        ],
+        laws: ['社会保险法', '广东特定人员工伤办法', '超龄劳动者暂行规定'],
+    },
+];
+
+/* 免责声明 */
+const DISCLAIMER =
+    '免责声明：本自测仅作科普参考，不构成法律意见。用工关系的最终认定以劳动仲裁机构或人民法院依据用工事实（而非合同名称）判定为准；职业伤害保障覆盖以您所在行业与地方当年政策为准，本系统提示仅供参考';
+
+/* 核心计算：返回答案、维度小计、风险灯、等级、红旗与命中推荐 */
+function calcResult() {
+    // 1) 收集答案：{ 题目id: 选中选项文字 }
+    const answers = {};
     questions.forEach((q) => {
-        // 找到该题被选中的选项，未作答按 0 分处理
         const selected = quizForm.querySelector(
             `.option[data-question-id="${q.id}"].selected`
         );
-        const earned = selected ? Number(selected.dataset.score) : 0;
-        // 该题满分 = 所有选项中分值最高的一项
-        const max = Math.max(...q.options.map((opt) => opt.score));
-
-        if (!dimensionScores[q.dimension]) {
-            dimensionScores[q.dimension] = { earned: 0, total: 0 };
-        }
-        dimensionScores[q.dimension].earned += earned;
-        dimensionScores[q.dimension].total += max;
+        answers[q.id] = selected ? selected.textContent.trim() : null;
     });
-    return dimensionScores;
+
+    // 2) 各维度小计（仅 A-F 计分维度，定位题不计入）
+    const dimensionScores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
+    questions.forEach((q) => {
+        if (!DIMENSION_FULL[q.dimension]) return; // 跳过不计分维度
+        const selected = quizForm.querySelector(
+            `.option[data-question-id="${q.id}"].selected`
+        );
+        if (selected) {
+            dimensionScores[q.dimension] += Number(selected.dataset.score);
+        }
+    });
+
+    // 3) 各维度风险灯
+    const lights = {};
+    Object.keys(DIMENSION_FULL).forEach((dim) => {
+        const score = dimensionScores[dim];
+        const rule = LIGHT_RULES[dim];
+        if (score >= rule.red) lights[dim] = 'red';
+        else if (score >= rule.yellow) lights[dim] = 'yellow';
+        else lights[dim] = 'green';
+    });
+
+    // 4) A+B 总分与基础等级：>=8 强；>=4 中；其余弱
+    const abTotal = dimensionScores.A + dimensionScores.B;
+    let baseLevel;
+    if (abTotal >= 8) baseLevel = '强';
+    else if (abTotal >= 4) baseLevel = '中';
+    else baseLevel = '弱';
+
+    // 5) 红旗拦截：任一触发即强制总体风险为【强】
+    const redFlags = [];
+    if (answers['A3'] === '是') {
+        redFlags.push('平台要求或引导您登记为个体工商户（A3），是规避劳动关系的典型做法');
+    }
+    if (answers['E3'] === '自行承担') {
+        redFlags.push('受伤后相关医疗费用需自行承担（E3），职业伤害保障可能缺失');
+    }
+    if (answers['A2'] === '未签订任何书面协议' && answers['D2'] === '有明确要求') {
+        redFlags.push('未签订任何书面协议且平台有明确的出勤/在线要求（A2+D2），用工管理强度高');
+    }
+    if (answers['F2'] === '否' && answers['F1'] === '从未参保') {
+        redFlags.push('平台未缴纳社保且您本人从未参保（F2+F1），社会保障处于真空状态');
+    }
+    const overallLevel = redFlags.length > 0 ? '强' : baseLevel;
+
+    // 6) 命中路径推荐
+    const recommendations = RECOMMENDATIONS.filter((rec) =>
+        rec.trigger(answers, lights)
+    );
+
+    return {
+        answers,
+        dimensionScores,
+        lights,
+        abTotal,
+        baseLevel,
+        overallLevel,
+        redFlags,
+        recommendations,
+    };
 }
 
-/* ---------- 7. 结果展示：填充摘要区和列表区 ---------- */
-function showResult() {
-    const dimensionScores = calculateScores();
-    const earnedAll = Object.values(dimensionScores).reduce(
-        (sum, d) => sum + d.earned,
-        0
-    );
-    const totalAll = Object.values(dimensionScores).reduce(
-        (sum, d) => sum + d.total,
-        0
-    );
-    // 得分比例，用于判断风险等级（防止满分合计为 0 导致除零）
-    const ratio = totalAll === 0 ? 0 : earnedAll / totalAll;
+/* ============================================================
+ * 7. 结果渲染
+ * ============================================================ */
 
-    let conclusion;
-    if (ratio >= 0.75) {
-        conclusion = '你的权益保障情况良好。';
-    } else if (ratio >= 0.4) {
-        conclusion = '你的权益存在一定风险，建议查看「权益知识」页了解相关政策。';
-    } else {
-        conclusion = '你的权益风险较高，建议尽快咨询专业机构或寻求法律帮助。';
+/* 按 id 取容器：缺失时警告并返回 null，防止 HTML 未同步时脚本中断 */
+function getResultEl(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.warn(`[test.js] 未找到结果容器 #${id}，已跳过该区域渲染`);
+    }
+    return el;
+}
+
+const LIGHT_ICONS = { green: '🟢', yellow: '🟡', red: '🔴' };
+const LIGHT_TEXT = { green: '绿灯', yellow: '黄灯', red: '红灯' };
+
+function renderResult(result) {
+    const {
+        answers,
+        dimensionScores,
+        lights,
+        abTotal,
+        overallLevel,
+        redFlags,
+        recommendations,
+    } = result;
+    const meta = LEVEL_META[overallLevel];
+
+    // ① 摘要区：A+B 得分与总体等级
+    const summary = getResultEl('result-summary');
+    if (summary) {
+        summary.innerHTML = `
+            <p>核心风险得分（A+B 维度）：<strong>${abTotal}</strong> / 12 分</p>
+            <p>总体风险等级：<strong>【${overallLevel}】</strong>（${
+            redFlags.length > 0
+                ? `触发 ${redFlags.length} 条红旗拦截，强制按【强】处理`
+                : '未触发红旗拦截'
+        }）</p>`;
     }
 
-    // 结果摘要区：总分 + 结论（.notice 是 A 的提示框样式）
-    resultSummary.innerHTML = `
-        <p>自测总分：<strong>${earnedAll}</strong> / ${totalAll} 分</p>
-        <p class="notice">${conclusion}</p>`;
+    // ② 结论区：按等级换背景色（强红 / 中黄 / 弱绿）
+    const conclusion = getResultEl('result-conclusion');
+    if (conclusion) {
+        conclusion.innerHTML = `<strong>【${overallLevel}】</strong> ${meta.text}`;
+        conclusion.style.background = meta.bg;
+        conclusion.style.borderLeft = `4px solid ${meta.border}`;
+        conclusion.style.padding = '12px 15px';
+        conclusion.style.borderRadius = '8px';
+    }
 
-    // 结果列表区：按维度逐条展示得分
-    resultList.innerHTML = Object.entries(dimensionScores)
-        .map(
-            ([dimension, s]) =>
-                `<li>${dimension}：<strong>${s.earned}</strong> / ${s.total} 分</li>`
-        )
-        .join('');
+    // ③ 红旗区：列出触发的拦截条件
+    const redFlagsEl = getResultEl('result-red-flags');
+    if (redFlagsEl) {
+        redFlagsEl.innerHTML =
+            redFlags.length > 0
+                ? `<ul>${redFlags.map((f) => `<li>${f}</li>`).join('')}</ul>`
+                : '<p>未触发红旗拦截条件。</p>';
+    }
+
+    // ④ 风险灯区：6 个维度对应的绿灯/黄灯/红灯图标
+    const lightsEl = getResultEl('result-risk-lights');
+    if (lightsEl) {
+        const lightBg = { green: '#e8f5e9', yellow: '#fff8e1', red: '#fdecea' };
+        lightsEl.innerHTML = Object.keys(DIMENSION_FULL)
+            .map((dim) => {
+                const light = lights[dim];
+                return `<span class="risk-light risk-light-${light}" style="display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border-radius:20px;background:${lightBg[light]};">${LIGHT_ICONS[light]} ${DIMENSION_NAMES[dim]} ${dimensionScores[dim]}/${DIMENSION_FULL[dim]}分</span>`;
+            })
+            .join('');
+    }
+
+    // ⑤ 维度小计列表
+    const listEl = getResultEl('result-list');
+    if (listEl) {
+        listEl.innerHTML = Object.keys(DIMENSION_FULL)
+            .map(
+                (dim) =>
+                    `<li>${DIMENSION_NAMES[dim]}：<strong>${dimensionScores[dim]}</strong> / ${DIMENSION_FULL[dim]} 分（${LIGHT_TEXT[lights[dim]]}）</li>`
+            )
+            .join('');
+    }
+
+    // ⑥ 路径推荐 + 免责声明
+    const recEl = getResultEl('recommendation-content');
+    if (recEl) {
+        const cardsHtml =
+            recommendations.length > 0
+                ? recommendations
+                      .map((rec) => {
+                          const badgeBg = rec.level === '强' ? '#e5484d' : '#d99b00';
+                          const description =
+                              typeof rec.description === 'function'
+                                  ? rec.description(answers)
+                                  : rec.description;
+                          return `
+                <div class="recommendation-card" style="margin-bottom:16px;padding:16px;border:1px solid #edf0f4;border-radius:9px;background:#f7f9fc;">
+                    <h4 style="margin:0 0 8px;">${rec.title}<span style="font-size:12px;background:${badgeBg};color:white;padding:2px 8px;border-radius:10px;margin-left:8px;">${rec.level}</span></h4>
+                    <p>${description}</p>
+                    <p style="margin:0 0 4px;"><strong>相关模板：</strong>${rec.templates.join('、')}</p>
+                    <p style="margin:0;"><strong>相关法规：</strong>${rec.laws.join('、')}</p>
+                </div>`;
+                      })
+                      .join('')
+                : '<p>根据您的作答，暂无命中特定维权路径。如仍有疑问，可在下方描述具体情况，让 AI 助手进一步分析。</p>';
+        recEl.innerHTML = `${cardsHtml}<p class="notice" style="margin-top:16px;">${DISCLAIMER}</p>`;
+    }
 }
 
 /* ---------- 8. 事件绑定 ---------- */
@@ -211,7 +686,7 @@ quizForm.addEventListener('submit', (e) => {
 
     quizSection.classList.add('hidden');
     resultSection.classList.remove('hidden');
-    showResult();
+    renderResult(calcResult());
 });
 
 // 8.4 重新测试：彻底清空状态，重置进度，回到说明区
@@ -225,8 +700,19 @@ restartBtn.addEventListener('click', () => {
     });
     hideAllStars();
     quizForm.innerHTML = '';
-    resultSummary.innerHTML = '';
-    resultList.innerHTML = '';
+    // 清空结果区所有容器（含后增的结论/红旗/风险灯/推荐容器，均做空值保护）
+    RESULT_CONTAINERS.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+    // 复位结论框的行内样式（renderResult 每次会按等级重写）
+    const conclusionEl = document.getElementById('result-conclusion');
+    if (conclusionEl) {
+        conclusionEl.style.background = '';
+        conclusionEl.style.borderLeft = '';
+        conclusionEl.style.padding = '';
+        conclusionEl.style.borderRadius = '';
+    }
     progressText.textContent = `0/${questions.length}`;
     resultSection.classList.add('hidden');
     introSection.classList.remove('hidden');
