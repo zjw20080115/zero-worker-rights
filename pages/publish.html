@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布问题 - 权益互助墙</title>
+    
+    <style>
+        /* 基础全局样式，消除浏览器默认边距 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background-color: #f5f7fa; /* 浅灰背景色，匹配主页内容区 */
+            color: #333;
+        }
+
+        /* --- 1. 顶部导航栏样式 (匹配你主页的蓝色) --- */
+        .navbar {
+            background-color: #2962a3; /* 提取自你主页的蓝色 */
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar .logo { font-size: 20px; font-weight: bold; }
+        .navbar .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 15px;
+            transition: opacity 0.3s;
+        }
+        .navbar .nav-links a:hover { opacity: 0.8; }
+
+        /* --- 2. 页面主体容器 (加宽版) --- */
+        .page-container {
+            max-width: 1100px; /* 加宽到1100px */
+            width: 95%;        /* 适配小屏幕 */
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* --- 3. 白色卡片表单样式 (加大内边距) --- */
+        .publish-card {
+            background: white;
+            padding: 50px 60px; /* 内部空间更大 */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* 轻微阴影 */
+        }
+        .publish-card h2 {
+            font-size: 26px; /* 标题稍微放大 */
+            color: #2962a3;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* --- 4. 表单控件样式 --- */
+        .form-group { margin-bottom: 25px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+            font-size: 16px;
+        }
+        
+        /* 输入框和下拉框统一样式 */
+        .form-control {
+            width: 100%;
+            padding: 15px 20px; /* 输入框更大，手感更好 */
+            border: 1px solid #dcdfe6;
+            border-radius: 6px; /* 圆角 */
+            font-size: 16px;
+            transition: border-color 0.3s;
+            outline: none;
+            background-color: #fcfcfc;
+            font-family: inherit; /* 保证 textarea 字体一致 */
+        }
+        .form-control:focus {
+            border-color: #2962a3; /* 聚焦时变蓝 */
+            background-color: white;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px; /* 文本域更高 */
+        }
+
+        /* 匿名发布复选框样式 */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #2962a3;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* 提交按钮样式 */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: #2962a3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #1e4a7d; /* 鼠标悬停时颜色加深 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="logo">权益互助墙</div>
+        <div class="nav-links">
+            <a href="community.html">首页</a>
+            <a href="#">热门问题</a>
+            <a href="#">政策解读</a>
+            <a href="#">维权指南</a>
+            <a href="#">联系我们</a>
+        </div>
+    </nav>
+
+    <!-- 主体内容区 -->
+    <div class="page-container">
+        <div class="publish-card">
+            <h2>发布问题</h2>
+
+            <form id="publishForm">
+                <!-- 1. 问题标题 -->
+                <div class="form-group">
+                    <label for="title">问题标题：</label>
+                    <input type="text" id="title" class="form-control" placeholder="请简要概括你的问题" required>
+                </div>
+
+                <!-- 2. 问题类型 -->
+                <div class="form-group">
+                    <label for="category">问题类型：</label>
+                    <select id="category" class="form-control" required>
+                        <option value="">请选择类型</option>
+                        <option value="工资报酬">工资报酬</option>
+                        <option value="工作受伤">工作受伤</option>
+                        <option value="劳动关系">劳动关系</option>
+                        <option value="社会保险">社会保险</option>
+                        <option value="解除/辞退">解除/辞退</option>
+                        <option value="其他问题">其他问题</option>
+                    </select>
+                </div>
+
+                <!-- 3. 问题描述 -->
+                <div class="form-group">
+                    <label for="content">问题描述：</label>
+                    <textarea id="content" class="form-control" placeholder="请详细描述你遇到的问题，以便大家更好地帮助你..." required></textarea>
+                </div>
+
+                <!-- 4. 匿名发布 -->
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="isAnonymous">
+                    <label for="isAnonymous">匿名发布（发布后将隐藏您的头像和昵称）</label>
+                </div>
+
+                <!-- 5. 提交按钮 -->
+                <button type="submit" class="submit-btn">发布问题</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 引用你写的 JS 逻辑 -->
+    <script src="../js/publish.js"></script>
+</body>
+</html>
