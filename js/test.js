@@ -58,7 +58,7 @@ function renderQuiz() {
                 .join('');
             return `
                 <div class="question-block">
-                    <h3>${q.id}. ${q.text}</h3>
+                    <h3 class="q-title">${q.id}. ${q.text}<span class="error-star" style="display: none; color: #e5484d; margin-left: 5px;">*</span></h3>
                     <div class="option-list">${optionsHtml}</div>
                 </div>`;
         })
@@ -71,6 +71,36 @@ function countAnswered() {
     return Array.from(blocks).filter(
         (block) => block.querySelector('.option.selected') !== null
     ).length;
+}
+
+/* 找到第一道未作答的题目，用于提交时的防漏题校验和定位滚动 */
+function findFirstUnanswered() {
+    const blocks = quizForm.querySelectorAll('.question-block');
+    return (
+        Array.from(blocks).find(
+            (block) => block.querySelector('.option.selected') === null
+        ) || null
+    );
+}
+
+/* 显示所有未作答题目的红色星号并添加高亮背景（提交时的防漏题高亮） */
+function showUnansweredStars() {
+    quizForm.querySelectorAll('.question-block').forEach((block) => {
+        if (block.querySelector('.option.selected') === null) {
+            const star = block.querySelector('.error-star');
+            if (star) star.style.display = 'inline';
+            block.classList.add('highlight-error');
+        }
+    });
+}
+
+/* 隐藏全部红色星号并清除高亮背景（重新测试时恢复初始状态） */
+function hideAllStars() {
+    quizForm.querySelectorAll('.question-block').forEach((block) => {
+        const star = block.querySelector('.error-star');
+        if (star) star.style.display = 'none';
+        block.classList.remove('highlight-error');
+    });
 }
 
 /* ---------- 5. 更新进度文本（已答数 / 总题数） ---------- */
@@ -155,6 +185,12 @@ quizForm.addEventListener('click', (e) => {
         .querySelectorAll('.option')
         .forEach((opt) => opt.classList.remove('selected'));
     option.classList.add('selected');
+    // 交互优化：该题已有答案，自动隐藏红色星号并移除高亮背景
+    // （选项当前是 div 点击实现，等效于单选按钮的 change 事件）
+    const block = option.closest('.question-block');
+    const star = block.querySelector('.error-star');
+    if (star) star.style.display = 'none';
+    block.classList.remove('highlight-error');
     updateProgress();
 });
 
@@ -162,22 +198,92 @@ quizForm.addEventListener('click', (e) => {
 //     点击按钮或按回车都会触发 submit 事件，必须先阻止默认跳转
 quizForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    // 校验是否全部作答（不需要的话删掉这段 if 即可）
-    if (countAnswered() < questions.length) {
-        alert(`还有 ${questions.length - countAnswered()} 题未作答，请完成后提交。`);
+
+    // 防漏题：存在未作答的题目时，提示、高亮所有未作答题目的
+    // 红色星号，并滚动到第一道未作答题目，中断提交
+    const firstUnanswered = findFirstUnanswered();
+    if (firstUnanswered) {
+        alert('还有题目没有作答哦，请完成所有题目后提交');
+        showUnansweredStars();
+        firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
+
     quizSection.classList.add('hidden');
     resultSection.classList.remove('hidden');
     showResult();
 });
 
-// 8.4 重新测试：清空表单与结果，重置进度，回到说明区
+// 8.4 重新测试：彻底清空状态，重置进度，回到说明区
 restartBtn.addEventListener('click', () => {
+    // 彻底清空：先移除所有选项的 .selected 高亮，再隐藏所有红色星号、
+    // 清除高亮背景（highlight-error），最后清空表单内容。
+    // 虽然 renderQuiz 每次都会重建 DOM，但显式清除可以保证
+    // 任何情况下都不会残留状态
+    quizForm.querySelectorAll('.option.selected').forEach((opt) => {
+        opt.classList.remove('selected');
+    });
+    hideAllStars();
     quizForm.innerHTML = '';
     resultSummary.innerHTML = '';
     resultList.innerHTML = '';
     progressText.textContent = `0/${questions.length}`;
     resultSection.classList.add('hidden');
     introSection.classList.remove('hidden');
+});
+
+/* ============================================================
+ * 9. AI 分析区逻辑（附加功能，不影响上方自测流程）
+ * ============================================================ */
+const aiInput = document.getElementById('ai-input');
+const aiAnalyzeBtn = document.getElementById('ai-analyze-btn');
+const aiResult = document.getElementById('ai-result');
+
+// 9.1 监听"开始AI分析"按钮点击
+aiAnalyzeBtn.addEventListener('click', () => {
+    const description = aiInput.value.trim();
+
+    // 9.2 空输入校验
+    if (description === '') {
+        alert('请先描述你遇到的情况');
+        return;
+    }
+
+    // 9.3 显示"思考中"提示，并禁用按钮防止重复点击
+    aiResult.style.display = 'block';
+    aiResult.innerHTML = '<p>AI正在思考中...</p>';
+    aiAnalyzeBtn.disabled = true;
+
+    /* ----------------------------------------------------------
+     * 后端接口就绪后：删掉下方 setTimeout 模拟代码块（9.4），
+     * 启用这段真实 fetch 请求即可（description 已在上方取好）：
+     *
+     * fetch('https://你的后端地址/api/analyze', {
+     *     method: 'POST',
+     *     headers: { 'Content-Type': 'application/json' },
+     *     body: JSON.stringify({ description: description }),
+     * })
+     *     .then((res) => {
+     *         if (!res.ok) throw new Error('接口请求失败');
+     *         return res.json();
+     *     })
+     *     .then((data) => {
+     *         aiResult.innerHTML = `<p>${data.result}</p>`;
+     *     })
+     *     .catch(() => {
+     *         aiResult.innerHTML = '<p>AI 分析失败，请稍后重试。</p>';
+     *     })
+     *     .finally(() => {
+     *         aiAnalyzeBtn.disabled = false;
+     *     });
+     * ---------------------------------------------------------- */
+
+    // 9.4 模拟后端接口：延迟 1.5 秒后返回假的分析结果
+    setTimeout(() => {
+        aiResult.innerHTML = `
+            <p><strong>初步分析：</strong>涉及工资拖欠。</p>
+            <p><strong>建议准备：</strong>工资流水、聊天记录。</p>
+            <p><strong>下一步建议：</strong>向劳动监察大队投诉。</p>`;
+        aiAnalyzeBtn.disabled = false;
+    }, 1500);
 });

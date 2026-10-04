@@ -53,6 +53,14 @@
             <ul id="result-list"></ul>
             <!-- 重新测试按钮 -->
             <button id="restart-btn" class="btn" type="button">重新测试</button>
+            <!-- AI分析区：位于结果页底部 -->
+            <div id="ai-section" class="box" style="margin-top: 25px; border-top: 2px dashed #ccd6e0; padding-top: 20px;">
+            <h3>🤖 需要更深入的分析吗？</h3>
+            <p style="font-size: 14px; color: #666;">描述你遇到的具体情况，AI 助手将为你提供初步诊断、材料清单和维权建议。</p >
+            <textarea id="ai-input" placeholder="例如：我在外卖平台工作，最近一个月工资没发，也没有签合同..." rows="4" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccd6e0; border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+            <button id="ai-analyze-btn" class="btn" type="button">开始AI分析</button>
+            <div id="ai-result" style="margin-top: 15px; background: #fdfdfd; border: 1px solid #edf0f4; padding: 15px; border-radius: 8px; display: none;"></div>
+            </div>
         </section>
     </main>
 

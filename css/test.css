@@ -31,9 +31,23 @@
     font-size: 17px;
     margin-bottom: 12px;
 }
-
-/* 重新测试按钮加个灰色调 */
-#restart-btn {
-    background: #6c757d;
-    margin-top: 15px;
+/* 未作答题目：红色星号（不闪烁，保持醒目） */
+.error-star {
+    color: #e5484d !important;
+    font-weight: bold;
+    font-size: 20px;
+    margin-left: 8px;
 }
+
+/* 未作答题目：整道题背景闪烁两次后停止 */
+.highlight-error {
+    /* 闪烁两次：每次 0.4秒，总共 2 秒，forwards 让动画停在初始状态（白色） */
+    animation: bg-pulse 0.6s ease-in-out 2 forwards;
+    border-radius: 8px;
+}
+
+@keyframes bg-pulse {
+    0%   { background-color: #ffe0e0; } /* 深一点的红色，直接出现 */
+    100% { background-color: #ffffff; } /* 回到白色 */
+}
+
