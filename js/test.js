@@ -687,6 +687,9 @@ quizForm.addEventListener('submit', (e) => {
     quizSection.classList.add('hidden');
     resultSection.classList.remove('hidden');
     renderResult(calcResult());
+    // 渲染完成后平滑滚动到结果区顶部：答题区较高，隐藏后页面会缩短，
+    // 若不主动滚动，视口会停留在原位置（约等于结果页底部的 AI 分析区）
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 // 8.4 重新测试：彻底清空状态，重置进度，回到说明区
