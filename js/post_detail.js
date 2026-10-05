@@ -1,28 +1,24 @@
 // js/post_detail.js
 
-// ⚠️ 注意：等 C 同学重启后端后，如果 IP 变了，改这里
 const API_BASE_URL = 'http://10.72.39.141:8080/api'; 
 
-// 1. 从 URL 中获取帖子 ID (例如 post_detail.html?id=1)
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
 if (!postId) {
-    alert("缺少帖子ID，即将返回首页");
-    window.location.href = "community.html";
+    showCenterToast("缺少帖子ID，即将返回首页", "error");
+    setTimeout(() => window.location.href = "community.html", 1000);
 }
 
-// 2. 页面加载时，获取帖子详情
+const currentUserId = parseInt(localStorage.getItem('userId')) || 1;
+let isDetailLiked = false;
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchPostDetail(postId);
-    
-    // ⚠️ 评论接口 C 同学还没给，先用假数据演示排版
-    // 等他给了接口，把下面这行注释掉，打开 fetchComments(postId);
-    loadMockComments(); 
-    // fetchComments(postId);
+    fetchComments(postId);
 });
 
-// 3. 获取帖子详情 (对接 C 同学的 GET /api/posts/{id})
+// 获取帖子详情
 async function fetchPostDetail(id) {
     try {
         const response = await fetch(`${API_BASE_URL}/posts/${id}`);
@@ -31,28 +27,55 @@ async function fetchPostDetail(id) {
 
         document.getElementById('postTitle').textContent = post.title || "无标题";
         
-        // 兼容处理：如果后端返回了 author 就用，没返回就根据 anonymous 判断
-        let displayAuthor = post.author;
-        if (!displayAuthor) {
-            displayAuthor = post.anonymous ? "匿名用户" : "用户" + (post.userId || "");
+        let displayAuthor = "匿名用户";
+        if (post.anonymous === false) {
+            displayAuthor = "用户" + (post.userId || "");
         }
         
         document.getElementById('postMeta').textContent = `${displayAuthor} 发布于 ${post.time || "刚刚"}`;
         document.getElementById('postContent').textContent = post.content || "无内容";
         
+        const likeCountEl = document.getElementById('likeCount');
+        if (likeCountEl) likeCountEl.textContent = post.likes || 0;
+
+        if (post.liked === true) {
+            isDetailLiked = true;
+            document.getElementById('likeBtn').classList.add('active-like');
+        }
+
+        const deleteBtn = document.getElementById('deletePostBtn');
+        if (deleteBtn) {
+            if (currentUserId == post.userId) {
+                deleteBtn.style.display = 'flex';
+            } else {
+                deleteBtn.style.display = 'none';
+            }
+        }
+        
     } catch (error) {
         console.error("获取详情失败:", error);
-        document.getElementById('postTitle').textContent = "加载帖子失败 (请检查C同学后端是否已启动/是否已配置跨域)";
+        document.getElementById('postTitle').textContent = "加载帖子失败";
     }
 }
 
-// 4. 渲染评论列表 (这个函数先保留，等有数据了直接调用)
+// 获取评论
+async function fetchComments(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments/post/${id}`);
+        if (!response.ok) throw new Error('获取评论失败');
+        const comments = await response.json();
+        renderComments(comments);
+    } catch (error) {
+        console.error("获取评论失败:", error);
+        document.getElementById('commentList').innerHTML = '<p style="color:#94a3b8; text-align:center;">评论加载失败。</p>';
+    }
+}
+
+// 渲染评论
 function renderComments(comments) {
     const commentList = document.getElementById('commentList');
     const commentCount = document.getElementById('commentCount');
     
-    if (!commentList) return;
-
     commentCount.textContent = comments.length;
     commentList.innerHTML = ''; 
 
@@ -64,33 +87,231 @@ function renderComments(comments) {
     comments.forEach(comment => {
         const div = document.createElement('div');
         div.className = 'comment-item';
+        const showDelete = comment.userId == currentUserId;
+        
         div.innerHTML = `
-            <div class="comment-user">${comment.author || '匿名用户'}</div>
-            <div class="comment-text">${comment.content}</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <div class="comment-user">${comment.author || '用户' + (comment.userId || '')}</div>
+                    <div class="comment-text">${comment.content}</div>
+                </div>
+                ${showDelete ? `
+                    <span onclick="deleteComment(${comment.id})" style="cursor: pointer; color: #dc3545; font-size: 13px; padding: 4px 8px; border-radius: 4px; flex-shrink: 0;">删除</span>
+                ` : ''}
+            </div>
         `;
         commentList.appendChild(div);
     });
 }
 
-// ================== 以下为临时测试评论功能 ==================
-// C 同学补上评论接口后，把这块删掉，打开上面的 fetchComments 和 submitComment
-function loadMockComments() {
-    const mockComments = [
-        { author: "用户A", content: "我也遇到过类似问题，建议保存好工资流水。" },
-        { author: "用户B", content: "建议直接去劳动监察大队投诉。" }
-    ];
-    renderComments(mockComments);
+// 删除评论（居中确认弹窗）
+function deleteComment(commentId) {
+    showCenterConfirm("确定要删除这条评论吗？", async function() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                fetchComments(postId);
+            } else {
+                showCenterToast("删除失败：" + await response.text(), "error");
+            }
+        } catch (error) {
+            console.error("删除评论出错:", error);
+            showCenterToast("网络错误，无法连接到后端", "error");
+        }
+    });
 }
 
-// 提交评论（等 C 同学给接口后启用）
+// 评论框显示/隐藏
+function toggleCommentInput() {
+    const area = document.getElementById('commentInputArea');
+    if (area.style.display === 'block') {
+        area.style.display = 'none';
+    } else {
+        area.style.display = 'block';
+        document.getElementById('commentInput').focus();
+    }
+}
+
+// 发表评论
 async function submitComment() {
     const input = document.getElementById('commentInput');
     const content = input.value.trim();
 
     if (!content) {
-        alert("请输入评论内容！");
+        showCenterToast("请输入评论内容！", "error");
         return;
     }
 
-    alert("评论接口 C 同学还没开通，目前只是演示！");
+    const commentData = {
+        postId: parseInt(postId),
+        userId: currentUserId,
+        content: content
+    };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(commentData)
+        });
+
+        if (response.ok) {
+            input.value = ''; 
+            document.getElementById('commentInputArea').style.display = 'none';
+            fetchComments(postId); 
+        } else {
+            showCenterToast("评论失败", "error");
+        }
+    } catch (error) {
+        console.error("评论出错:", error);
+        showCenterToast("网络错误，无法连接到后端", "error");
+    }
+}
+
+// 详情页点赞/取消点赞
+async function likePost() {
+    const likeData = {
+        postId: parseInt(postId),
+        userId: currentUserId
+    };
+
+    try {
+        if (isDetailLiked) {
+            const response = await fetch(`${API_BASE_URL}/likes`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(likeData)
+            });
+
+            if (response.ok) {
+                isDetailLiked = false;
+                const likeCountEl = document.getElementById('likeCount');
+                if (likeCountEl) {
+                    likeCountEl.textContent = Math.max(0, parseInt(likeCountEl.textContent) - 1);
+                }
+                document.getElementById('likeBtn').classList.remove('active-like');
+            } else {
+                showCenterToast(await response.text(), "error");
+            }
+        } else {
+            const response = await fetch(`${API_BASE_URL}/likes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(likeData)
+            });
+
+            const text = await response.text(); 
+            
+            if (response.ok) {
+                isDetailLiked = true;
+                document.getElementById('likeBtn').classList.add('active-like');
+                const likeCountEl = document.getElementById('likeCount');
+                if (likeCountEl) {
+                    likeCountEl.textContent = parseInt(likeCountEl.textContent) + 1;
+                }
+            } else {
+                showCenterToast("点赞失败：" + text, "error"); 
+            }
+        }
+    } catch (error) {
+        console.error("点赞出错:", error);
+        showCenterToast("网络错误，无法连接到后端", "error");
+    }
+}
+
+// 打开举报弹窗
+function reportPost() {
+    document.getElementById('reportModal').style.display = 'flex';
+    document.querySelectorAll('input[name="reportReason"]').forEach(r => {
+        r.checked = false;
+        r.wasChecked = false;
+    });
+    document.getElementById('customReportReason').value = '';
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+
+async function submitReport() {
+    const selectedRadio = document.querySelector('input[name="reportReason"]:checked');
+    const customReason = document.getElementById('customReportReason').value.trim();
+
+    let finalReason = '';
+    
+    if (selectedRadio) {
+        finalReason = selectedRadio.value;
+        if (finalReason === '其他' && customReason) {
+            finalReason = customReason;
+        } else if (finalReason !== '其他' && customReason) {
+            finalReason += '：' + customReason;
+        }
+    } else if (customReason) {
+        finalReason = customReason;
+    } else {
+        showCenterToast("请选择或填写举报原因！", "error");
+        return;
+    }
+
+    const reportData = {
+        postId: parseInt(postId),
+        userId: currentUserId,
+        reason: finalReason
+    };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/reports`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reportData)
+        });
+
+        const text = await response.text();
+
+        if (response.ok) {
+            closeReportModal();
+            showCenterToast("举报成功！我们会尽快处理。", "success");
+        } else {
+            showCenterToast("举报失败：" + text, "error");
+        }
+    } catch (error) {
+        console.error("举报出错:", error);
+        showCenterToast("网络错误，无法连接到后端", "error");
+    }
+}
+
+// 允许点击已选中的单选按钮取消选择
+function toggleRadio(radio) {
+    if (radio.wasChecked) {
+        radio.checked = false;
+        radio.wasChecked = false;
+    } else {
+        document.querySelectorAll('input[name="reportReason"]').forEach(r => {
+            r.wasChecked = false;
+        });
+        radio.wasChecked = true;
+    }
+}
+
+// 删除帖子（居中确认弹窗）
+function deletePost() {
+    showCenterConfirm("确定要删除这篇帖子吗？删除后无法恢复！", async function() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                showCenterToast("删除成功！即将返回主页。", "success");
+                setTimeout(() => window.location.href = "community.html", 900);
+            } else {
+                showCenterToast("删除失败：" + await response.text(), "error");
+            }
+        } catch (error) {
+            console.error("删除出错:", error);
+            showCenterToast("网络错误，无法连接到后端", "error");
+        }
+    });
 }
