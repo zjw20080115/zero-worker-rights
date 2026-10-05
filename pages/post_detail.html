@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>帖子详情 - 权益互助墙</title>
-    <link rel="stylesheet" href="../style.css">
+    
     <style>
-        /* 基础全局样式，匹配你的主页风格 */
+        /* 基础全局样式 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; background-color: #f4f7f9; color: #333; line-height: 1.6; }
         a { text-decoration: none; color: inherit; }
 
-        /* 顶部导航栏 (完全复用你主页的深蓝色) */
+        /* 顶部导航栏 */
         .top-nav { background-color: #1e5a8a; color: white; padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
         .logo { font-size: 22px; font-weight: 800; letter-spacing: 2px; }
         .nav-links a { color: #cbd5e1; margin-left: 20px; transition: color 0.3s; font-size: 15px; }
@@ -46,7 +46,6 @@
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
     <nav class="top-nav">
         <div class="logo">权益互助墙</div>
         <div class="nav-links">
@@ -54,24 +53,16 @@
         </div>
     </nav>
 
-    <!-- 主体内容 -->
     <div class="page-container">
-        <!-- 帖子详情区域 -->
         <div class="post-card">
-            <!-- 这里的 ID 必须与 JS 里获取的 ID 对应 -->
             <h1 class="post-title" id="postTitle">加载中...</h1>
             <div class="post-meta" id="postMeta"></div>
             <div class="post-content" id="postContent"></div>
         </div>
 
-        <!-- 评论区域 -->
         <div class="comment-section">
             <h3>全部评论 (<span id="commentCount">0</span>)</h3>
-            <div id="commentList">
-                <!-- 评论将会通过 JS 渲染在这里 -->
-            </div>
-
-            <!-- 发表评论表单 -->
+            <div id="commentList"></div>
             <div class="comment-form">
                 <textarea id="commentInput" placeholder="输入你的回复..."></textarea>
                 <button onclick="submitComment()">回复</button>
@@ -79,13 +70,10 @@
         </div>
     </div>
 
-    <!-- 底部版权 -->
     <footer class="footer">
         <p>© 2026 权益互助墙 · 正式内容请根据当地最新官方信息核验</p>
-        <p>技术支持：数字媒体创新大赛团队</p>
     </footer>
 
-    <!-- 引入详情页 JS -->
     <script src="../js/post_detail.js"></script>
 </body>
 </html>
