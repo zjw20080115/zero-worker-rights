@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/comments/**").permitAll()
                         .requestMatchers("/api/likes/**").permitAll()
                         .requestMatchers("/api/reports/**").permitAll()
+                        .requestMatchers("/api/rights-records/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
