@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log("准备发送给后端的数据：", postData);
 
-        // 3. 发送 POST 请求 (替换为 C 同学的 IP)
-        const PUBLISH_API_URL = 'http://192.168.134.1:8080/api/posts'; 
+        // 3. 发送 POST 请求 (替换为 C 同学最新的 IP)
+        const PUBLISH_API_URL = 'http://10.72.39.141:8080/api/posts'; 
 
         try {
             const response = await fetch(PUBLISH_API_URL, {

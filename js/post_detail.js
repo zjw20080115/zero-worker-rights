@@ -1,9 +1,9 @@
 // js/post_detail.js
 
-// 1. 后端 API 地址 (已替换为 C 同学的 IP)
-const API_BASE_URL = 'http://192.168.134.1:8080/api'; 
+// ⚠️ 注意：等 C 同学重启后端后，如果 IP 变了，改这里
+const API_BASE_URL = 'http://10.72.39.141:8080/api'; 
 
-// 2. 从 URL 中获取帖子 ID
+// 1. 从 URL 中获取帖子 ID (例如 post_detail.html?id=1)
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
@@ -12,27 +12,29 @@ if (!postId) {
     window.location.href = "community.html";
 }
 
-// 3. 页面加载时，获取帖子和评论
+// 2. 页面加载时，获取帖子详情
 document.addEventListener('DOMContentLoaded', function() {
     fetchPostDetail(postId);
-    // 注意：评论接口 C 同学还没给，暂时先保留之前的逻辑，等他有接口了再改
-    // fetchComments(postId); 
+    
+    // ⚠️ 评论接口 C 同学还没给，先用假数据演示排版
+    // 等他给了接口，把下面这行注释掉，打开 fetchComments(postId);
+    loadMockComments(); 
+    // fetchComments(postId);
 });
 
-// 4. 获取帖子详情
+// 3. 获取帖子详情 (对接 C 同学的 GET /api/posts/{id})
 async function fetchPostDetail(id) {
     try {
         const response = await fetch(`${API_BASE_URL}/posts/${id}`);
         if (!response.ok) throw new Error('获取详情失败');
         const post = await response.json();
 
-        // 渲染到页面 (增强容错，防止字段缺失)
         document.getElementById('postTitle').textContent = post.title || "无标题";
         
-        // 根据 anonymous 和 userId 动态显示作者名
-        let displayAuthor = "匿名用户";
-        if (post.anonymous === false) {
-            displayAuthor = "用户" + (post.userId || "");
+        // 兼容处理：如果后端返回了 author 就用，没返回就根据 anonymous 判断
+        let displayAuthor = post.author;
+        if (!displayAuthor) {
+            displayAuthor = post.anonymous ? "匿名用户" : "用户" + (post.userId || "");
         }
         
         document.getElementById('postMeta').textContent = `${displayAuthor} 发布于 ${post.time || "刚刚"}`;
@@ -40,10 +42,55 @@ async function fetchPostDetail(id) {
         
     } catch (error) {
         console.error("获取详情失败:", error);
-        document.getElementById('postTitle').textContent = "加载帖子失败 (可能是 C 同学接口未启动)";
+        document.getElementById('postTitle').textContent = "加载帖子失败 (请检查C同学后端是否已启动/是否已配置跨域)";
     }
 }
 
-// 5. 评论相关代码 (暂时保留，等 C 同学提供评论接口后再启用)
-// function renderComments(comments) { ... }
-// async function submitComment() { ... }
+// 4. 渲染评论列表 (这个函数先保留，等有数据了直接调用)
+function renderComments(comments) {
+    const commentList = document.getElementById('commentList');
+    const commentCount = document.getElementById('commentCount');
+    
+    if (!commentList) return;
+
+    commentCount.textContent = comments.length;
+    commentList.innerHTML = ''; 
+
+    if (comments.length === 0) {
+        commentList.innerHTML = '<p style="color:#94a3b8; padding: 20px 0; text-align: center;">暂无评论，快来抢沙发吧！</p>';
+        return;
+    }
+
+    comments.forEach(comment => {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.innerHTML = `
+            <div class="comment-user">${comment.author || '匿名用户'}</div>
+            <div class="comment-text">${comment.content}</div>
+        `;
+        commentList.appendChild(div);
+    });
+}
+
+// ================== 以下为临时测试评论功能 ==================
+// C 同学补上评论接口后，把这块删掉，打开上面的 fetchComments 和 submitComment
+function loadMockComments() {
+    const mockComments = [
+        { author: "用户A", content: "我也遇到过类似问题，建议保存好工资流水。" },
+        { author: "用户B", content: "建议直接去劳动监察大队投诉。" }
+    ];
+    renderComments(mockComments);
+}
+
+// 提交评论（等 C 同学给接口后启用）
+async function submitComment() {
+    const input = document.getElementById('commentInput');
+    const content = input.value.trim();
+
+    if (!content) {
+        alert("请输入评论内容！");
+        return;
+    }
+
+    alert("评论接口 C 同学还没开通，目前只是演示！");
+}

@@ -1,7 +1,7 @@
 // js/community.js
 
-// 1. 后端 API 地址 (已替换为 C 同学的 IP)
-const API_BASE_URL = 'http://192.168.134.1:8080/api';
+// 1. 后端 API 地址 (已替换为 C 同学最新的 IP)
+const API_BASE_URL = 'http://10.72.39.141:8080/api';
 
 // 2. 声明一个全局变量 posts，供 community_render.js 使用
 let posts = [];
@@ -26,6 +26,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     } catch (error) {
         console.error("获取帖子失败:", error);
-        if(postList) postList.innerHTML = '<div class="empty-state" style="padding:40px; text-align:center; color:#94a3b8; border:1px dashed #cbd5e1; border-radius:8px;">⚠️ 无法连接到服务器，请检查 C 同学的后端是否已启动。</div>';
+        if(postList) postList.innerHTML = '<div class="empty-state" style="padding:40px; text-align:center; color:#94a3b8; border:1px dashed #cbd5e1; border-radius:8px;">⚠️ 无法连接到服务器，请检查 C 同学的后端是否已启动，以及 IP 地址是否正确。</div>';
     }
 });
