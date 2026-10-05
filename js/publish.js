@@ -1,4 +1,11 @@
 // js/publish.js
+
+// ⭐ 未登录不能发布
+if (!localStorage.getItem('userId')) {
+    alert("请先登录后再发布问题");
+    window.location.href = "community.html";
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     
     const publishForm = document.getElementById('publishForm');
@@ -33,11 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 showSuccessModal();
             } else {
-                showCenterToast("发布失败，请检查后端。", "error");
+                alert("发布失败，请检查后端。");
             }
         } catch (error) {
             console.error("发布出错:", error);
-            showCenterToast("网络错误，无法连接到后端。", "error");
+            alert("网络错误，无法连接到后端。");
         }
     });
 });

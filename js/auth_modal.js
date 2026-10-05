@@ -39,7 +39,7 @@ function showCenterToast(message, type = 'info') {
     document.body.appendChild(toast);
 }
 
-// ⭐ 通用居中确认弹窗（替代 confirm）
+// ⭐ 通用居中确认弹窗
 function showCenterConfirm(message, onConfirm) {
     const existing = document.getElementById('centerConfirm');
     if (existing) existing.remove();
@@ -69,6 +69,23 @@ function showCenterConfirm(message, onConfirm) {
     };
 }
 
+// ⭐ 检查是否已登录
+function checkLogin() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        showCenterToast("请先登录后再操作", "info");
+        setTimeout(() => openAuthModal(), 700);
+        return false;
+    }
+    return true;
+}
+
+// ⭐ 跳转发帖页（需要登录）
+function goPublish() {
+    if (!checkLogin()) return;
+    window.location.href = "publish.html";
+}
+
 // 2. 打开登录弹窗
 function openAuthModal() {
     document.getElementById('authModal').style.display = 'flex';
@@ -95,81 +112,90 @@ function switchAuthTab(type) {
     }
 }
 
-// 5. 点击遮罩层关闭弹窗
-document.getElementById('authModal').addEventListener('click', function(e) {
-    if (e.target === this) closeAuthModal();
-});
+// 5. 点击遮罩层关闭弹窗（空值保护）
+const authModalEl = document.getElementById('authModal');
+if (authModalEl) {
+    authModalEl.addEventListener('click', function(e) {
+        if (e.target === this) closeAuthModal();
+    });
+}
 
 // 6. 登录
-document.getElementById('modalLoginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const username = document.getElementById('modalLoginUsername').value.trim();
-    const password = document.getElementById('modalLoginPassword').value.trim();
+const loginFormEl = document.getElementById('modalLoginForm');
+if (loginFormEl) {
+    loginFormEl.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('modalLoginUsername').value.trim();
+        const password = document.getElementById('modalLoginPassword').value.trim();
 
-    try {
-        const response = await fetch(`${AUTH_API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const response = await fetch(`${AUTH_API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-        const result = await response.json();
-        console.log("登录接口返回：", result);
+            const result = await response.json();
+            console.log("登录接口返回：", result);
 
-        if (result.code === 200) {
-            const userData = result.data;
-            localStorage.setItem('userId', userData.userId);
-            localStorage.setItem('username', userData.username);
-            localStorage.setItem('nickname', userData.nickname);
-            if (userData.token) {
-                localStorage.setItem('token', userData.token);
+            if (result.code === 200) {
+                const userData = result.data;
+                localStorage.setItem('userId', userData.userId);
+                localStorage.setItem('username', userData.username);
+                localStorage.setItem('nickname', userData.nickname);
+                if (userData.token) {
+                    localStorage.setItem('token', userData.token);
+                }
+
+                closeAuthModal();
+                showCenterToast("登录成功！", "success");
+                setTimeout(() => location.reload(), 900);
+            } else {
+                showCenterToast(result.message || "登录失败", "error");
             }
-
-            closeAuthModal();
-            showCenterToast("登录成功！", "success");
-            setTimeout(() => location.reload(), 900);
-        } else {
-            showCenterToast(result.message || "登录失败", "error");
+        } catch (error) {
+            console.error("登录出错:", error);
+            showCenterToast("网络错误，无法连接到后端", "error");
         }
-    } catch (error) {
-        console.error("登录出错:", error);
-        showCenterToast("网络错误，无法连接到后端", "error");
-    }
-});
+    });
+}
 
 // 7. 注册
-document.getElementById('modalRegisterForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const username = document.getElementById('modalRegUsername').value.trim();
-    const password = document.getElementById('modalRegPassword').value.trim();
-    const nickname = document.getElementById('modalRegNickname').value.trim();
+const registerFormEl = document.getElementById('modalRegisterForm');
+if (registerFormEl) {
+    registerFormEl.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('modalRegUsername').value.trim();
+        const password = document.getElementById('modalRegPassword').value.trim();
+        const nickname = document.getElementById('modalRegNickname').value.trim();
 
-    try {
-        const response = await fetch(`${AUTH_API_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, nickname })
-        });
-
-        const text = await response.text();
-        let result;
         try {
-            result = JSON.parse(text);
-        } catch (e) {
-            result = { code: response.ok ? 200 : 400, message: text };
-        }
+            const response = await fetch(`${AUTH_API_URL}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, nickname })
+            });
 
-        if (response.ok && (result.code === 200 || result.code === undefined)) {
-            showCenterToast(result.message || "注册成功！请登录。", "success");
-            setTimeout(() => switchAuthTab('login'), 900);
-        } else {
-            showCenterToast(result.message || "注册失败", "error");
+            const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                result = { code: response.ok ? 200 : 400, message: text };
+            }
+
+            if (response.ok && (result.code === 200 || result.code === undefined)) {
+                showCenterToast(result.message || "注册成功！请登录。", "success");
+                setTimeout(() => switchAuthTab('login'), 900);
+            } else {
+                showCenterToast(result.message || "注册失败", "error");
+            }
+        } catch (error) {
+            console.error("注册出错:", error);
+            showCenterToast("网络错误，无法连接到后端", "error");
         }
-    } catch (error) {
-        console.error("注册出错:", error);
-        showCenterToast("网络错误，无法连接到后端", "error");
-    }
-});
+    });
+}
 
 // 8. 退出登录
 function logout() {
@@ -185,6 +211,8 @@ function logout() {
 // 9. 更新顶部用户区域
 function updateUserArea() {
     const userArea = document.getElementById('userArea');
+    if (!userArea) return;
+
     const userId = localStorage.getItem('userId');
     const nickname = localStorage.getItem('nickname');
 

@@ -22,8 +22,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// ⭐ 点赞/取消点赞切换
+// ⭐ 点赞/取消点赞切换（未登录先弹登录）
 async function likePost(postId, btnElement) {
+    // ⭐ 登录检查
+    if (!checkLogin()) return;
+
     if (btnElement.classList.contains('liking')) return;
     btnElement.classList.add('liking');
 
@@ -32,7 +35,6 @@ async function likePost(postId, btnElement) {
 
     try {
         if (isLiked) {
-            // ⭐ 取消点赞：DELETE /api/likes
             const response = await fetch(`${API_BASE_URL}/likes`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -47,10 +49,9 @@ async function likePost(postId, btnElement) {
                 }
                 btnElement.style.color = '';
             } else {
-                alert(await response.text());
+                showCenterToast(await response.text(), "error");
             }
         } else {
-            // ⭐ 点赞：POST /api/likes
             const response = await fetch(`${API_BASE_URL}/likes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -67,12 +68,12 @@ async function likePost(postId, btnElement) {
                 }
                 btnElement.style.color = '#dc3545';
             } else {
-                alert(text);
+                showCenterToast(text, "error");
             }
         }
     } catch (error) {
         console.error("点赞出错:", error);
-        alert("网络错误，无法连接到后端");
+        showCenterToast("网络错误，无法连接到后端", "error");
     } finally {
         btnElement.classList.remove('liking');
     }

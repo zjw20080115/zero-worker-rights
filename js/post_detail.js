@@ -6,11 +6,14 @@ const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
 if (!postId) {
-    showCenterToast("缺少帖子ID，即将返回首页", "error");
-    setTimeout(() => window.location.href = "community.html", 1000);
+    alert("缺少帖子ID，即将返回首页");
+    window.location.href = "community.html";
 }
 
-const currentUserId = parseInt(localStorage.getItem('userId')) || 1;
+// ⭐ 关键：未登录时 loggedInUserId 为 null，避免误判
+const loggedInUserId = localStorage.getItem('userId');
+const currentUserId = loggedInUserId ? parseInt(loggedInUserId) : null;
+
 let isDetailLiked = false;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -43,9 +46,10 @@ async function fetchPostDetail(id) {
             document.getElementById('likeBtn').classList.add('active-like');
         }
 
+        // ⭐ 未登录 / 非本人帖子 → 不显示删除按钮
         const deleteBtn = document.getElementById('deletePostBtn');
         if (deleteBtn) {
-            if (currentUserId == post.userId) {
+            if (loggedInUserId && loggedInUserId == post.userId) {
                 deleteBtn.style.display = 'flex';
             } else {
                 deleteBtn.style.display = 'none';
@@ -87,7 +91,9 @@ function renderComments(comments) {
     comments.forEach(comment => {
         const div = document.createElement('div');
         div.className = 'comment-item';
-        const showDelete = comment.userId == currentUserId;
+        
+        // ⭐ 未登录 / 非本人评论 → 不显示删除按钮
+        const showDelete = loggedInUserId && comment.userId == loggedInUserId;
         
         div.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -104,8 +110,9 @@ function renderComments(comments) {
     });
 }
 
-// 删除评论（居中确认弹窗）
+// 删除评论
 function deleteComment(commentId) {
+    if (!checkLogin()) return;
     showCenterConfirm("确定要删除这条评论吗？", async function() {
         try {
             const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
@@ -125,6 +132,7 @@ function deleteComment(commentId) {
 
 // 评论框显示/隐藏
 function toggleCommentInput() {
+    if (!checkLogin()) return;
     const area = document.getElementById('commentInputArea');
     if (area.style.display === 'block') {
         area.style.display = 'none';
@@ -136,6 +144,8 @@ function toggleCommentInput() {
 
 // 发表评论
 async function submitComment() {
+    if (!checkLogin()) return;
+
     const input = document.getElementById('commentInput');
     const content = input.value.trim();
 
@@ -170,8 +180,10 @@ async function submitComment() {
     }
 }
 
-// 详情页点赞/取消点赞
+// 详情页点赞
 async function likePost() {
+    if (!checkLogin()) return;
+
     const likeData = {
         postId: parseInt(postId),
         userId: currentUserId
@@ -223,6 +235,7 @@ async function likePost() {
 
 // 打开举报弹窗
 function reportPost() {
+    if (!checkLogin()) return;
     document.getElementById('reportModal').style.display = 'flex';
     document.querySelectorAll('input[name="reportReason"]').forEach(r => {
         r.checked = false;
@@ -295,8 +308,9 @@ function toggleRadio(radio) {
     }
 }
 
-// 删除帖子（居中确认弹窗）
+// 删除帖子
 function deletePost() {
+    if (!checkLogin()) return;
     showCenterConfirm("确定要删除这篇帖子吗？删除后无法恢复！", async function() {
         try {
             const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
