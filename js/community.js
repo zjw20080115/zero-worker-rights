@@ -1,33 +1,34 @@
 // js/community.js
-const posts = [
-    {
-        id: 1,
-        title: "工资一直没有正常发放",
-        category: "工资报酬",
-        content: "我在平台工作了三个月，上个月的工资一直拖着不给，老板也不回消息。有没有懂法律的朋友告诉我该怎么办？",
-        author: "匿名用户",
-        likes: 8,
-        comments: 3,
-        time: "2026-10-03"
-    },
-    {
-        id: 2,
-        title: "工作中受伤应该怎么办？",
-        category: "工作受伤",
-        content: "上周送外卖的时候摔骨折了，平台说我自己不小心，不给报工伤。大家有什么维权经验吗？",
-        author: "匿名用户",
-        likes: 12,
-        comments: 5,
-        time: "2026-10-02"
-    },
-    {
-        id: 3,
-        title: "签了合作协议，算劳动关系吗？",
-        category: "劳动关系",
-        content: "平台让我签的是合作协议，不是劳动合同，现在出了纠纷，我能去劳动仲裁吗？",
-        author: "匿名用户",
-        likes: 5,
-        comments: 2,
-        time: "2026-10-01"
+
+// 1. 定义后端 API 地址 (等 C 同学给你真实地址后，一定要把这里改掉！)
+// 例如：const API_BASE_URL = 'http://192.168.1.100:8080/api';
+const API_BASE_URL = 'http://localhost:8080/api';
+
+// 2. 声明一个全局变量 posts，供 community_render.js 使用
+// (之前这里是假数据，现在改成空数组，等后端数据填进来)
+let posts = [];
+
+// 3. 页面加载时，自动请求后端获取数据
+document.addEventListener('DOMContentLoaded', async function() {
+    
+    const postList = document.getElementById('postList');
+    if(postList) postList.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">正在加载帖子，请稍候...</div>';
+
+    try {
+        // 发起 GET 请求：GET /api/posts
+        const response = await fetch(`${API_BASE_URL}/posts`);
+        
+        if (!response.ok) throw new Error('网络请求失败');
+        
+        // 把后端返回的 JSON 数据赋值给全局变量 posts
+        posts = await response.json();
+        
+        // 调用 community_render.js 里的函数，将数据渲染到页面
+        // (此时 posts 已经有数据了，filterAndRender 会自动使用它)
+        filterAndRender(); 
+
+    } catch (error) {
+        console.error("获取帖子失败:", error);
+        if(postList) postList.innerHTML = '<div class="empty-state" style="padding:40px; text-align:center; color:#94a3b8; border:1px dashed #cbd5e1; border-radius:8px;">⚠️ 无法连接到服务器，请检查后端是否启动。如果是测试阶段，这是正常的。</div>';
     }
-];
+});
