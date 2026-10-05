@@ -5,7 +5,7 @@ import com.zeroworker.zero_worker_rights_backend.dto.UserRegisterDTO;
 import com.zeroworker.zero_worker_rights_backend.entity.User;
 import com.zeroworker.zero_worker_rights_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +14,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public String register(UserRegisterDTO dto) {
         // 1. 检查用户名是否已存在
