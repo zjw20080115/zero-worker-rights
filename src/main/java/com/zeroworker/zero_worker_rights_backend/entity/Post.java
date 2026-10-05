@@ -3,6 +3,7 @@ package com.zeroworker.zero_worker_rights_backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import jakarta.persistence.Transient;
 
 @Data
 @Entity
@@ -29,4 +30,7 @@ public class Post {
     private Integer status;
 
     private LocalDateTime createTime;
+
+    @Transient  // 加上这个注解，告诉 JPA 这个字段不是数据库里的列
+    private String author;
 }

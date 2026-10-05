@@ -16,4 +16,10 @@ public class LikeController {
     public String likePost(@RequestBody LikeDTO dto) {
         return likeService.likePost(dto);
     }
+
+    // 取消点赞（用 DELETE 请求）
+    @DeleteMapping
+    public String unlikePost(@RequestBody LikeDTO dto) {
+        return likeService.unlikePost(dto);
+    }
 }

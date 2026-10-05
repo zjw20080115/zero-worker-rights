@@ -25,4 +25,15 @@ public class LikeService {
         postLikeRepository.save(like);
         return "点赞成功！";
     }
+
+    // 取消点赞
+    public String unlikePost(LikeDTO dto) {
+        // 检查是否点过赞
+        if (postLikeRepository.findByPostIdAndUserId(dto.getPostId(), dto.getUserId()) == null) {
+            return "您还没有点过赞！";
+        }
+        // 删除点赞记录
+        postLikeRepository.deleteByPostIdAndUserId(dto.getPostId(), dto.getUserId());
+        return "取消点赞成功！";
+    }
 }

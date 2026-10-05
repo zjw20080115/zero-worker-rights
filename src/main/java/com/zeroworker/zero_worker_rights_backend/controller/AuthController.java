@@ -1,5 +1,7 @@
 package com.zeroworker.zero_worker_rights_backend.controller;
 
+import com.zeroworker.zero_worker_rights_backend.dto.LoginResultDTO;
+import com.zeroworker.zero_worker_rights_backend.dto.Result;
 import com.zeroworker.zero_worker_rights_backend.dto.UserLoginDTO;
 import com.zeroworker.zero_worker_rights_backend.dto.UserRegisterDTO;
 import com.zeroworker.zero_worker_rights_backend.service.UserService;
@@ -14,12 +16,12 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/register")
-    public String register(@RequestBody UserRegisterDTO dto) {
+    public Result<String> register(@RequestBody UserRegisterDTO dto) {
         return userService.register(dto);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserLoginDTO dto) {
+    public Result<LoginResultDTO> login(@RequestBody UserLoginDTO dto) {
         return userService.login(dto);
     }
 }

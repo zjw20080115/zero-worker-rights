@@ -17,4 +17,10 @@ public class ReportController {
     public Report addReport(@RequestBody ReportDTO dto) {
         return reportService.addReport(dto);
     }
+
+    // 删除举报（用 DELETE 请求）
+    @DeleteMapping("/{id}")
+    public String deleteReport(@PathVariable Integer id) {
+        return reportService.deleteReport(id);
+    }
 }

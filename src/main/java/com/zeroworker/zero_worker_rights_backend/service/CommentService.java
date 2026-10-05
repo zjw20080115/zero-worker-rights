@@ -27,4 +27,13 @@ public class CommentService {
         comment.setCreateTime(LocalDateTime.now());
         return commentRepository.save(comment);
     }
+
+    // 删除评论
+    public String deleteComment(Integer id) {
+        if (!commentRepository.existsById(id)) {
+            return "评论不存在！";
+        }
+        commentRepository.deleteById(id);
+        return "评论删除成功！";
+    }
 }

@@ -22,4 +22,13 @@ public class ReportService {
         report.setCreateTime(LocalDateTime.now());
         return reportRepository.save(report);
     }
+
+    // 删除举报
+    public String deleteReport(Integer id) {
+        if (!reportRepository.existsById(id)) {
+            return "举报记录不存在！";
+        }
+        reportRepository.deleteById(id);
+        return "举报记录删除成功！";
+    }
 }

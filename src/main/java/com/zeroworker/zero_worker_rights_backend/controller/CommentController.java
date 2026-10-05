@@ -23,4 +23,10 @@ public class CommentController {
     public Comment addComment(@RequestBody CommentDTO dto) {
         return commentService.addComment(dto);
     }
+
+    // 删除评论（用 DELETE 请求）
+    @DeleteMapping("/{id}")
+    public String deleteComment(@PathVariable Integer id) {
+        return commentService.deleteComment(id);
+    }
 }
