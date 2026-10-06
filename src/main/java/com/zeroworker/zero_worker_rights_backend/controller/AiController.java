@@ -5,6 +5,8 @@ import com.zeroworker.zero_worker_rights_backend.service.AiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/ai")
 public class AiController {
@@ -13,7 +15,7 @@ public class AiController {
     private AiService aiService;
 
     @PostMapping("/analyze")
-    public String analyze(@RequestBody AiRequestDTO dto) {
+    public Map analyze(@RequestBody AiRequestDTO dto) {
         return aiService.analyze(dto);
     }
 }
