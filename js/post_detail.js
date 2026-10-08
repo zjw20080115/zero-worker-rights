@@ -16,6 +16,16 @@ const currentUserId = loggedInUserId ? parseInt(loggedInUserId) : null;
 
 let isDetailLiked = false;
 
+// ⭐ 时间格式化函数
+function formatTime(timeStr) {
+    if (!timeStr) return '';
+    try {
+        return timeStr.replace('T', ' ').substring(0, 16);
+    } catch (e) {
+        return timeStr;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchPostDetail(postId);
     fetchComments(postId);
@@ -30,16 +40,14 @@ async function fetchPostDetail(id) {
 
         document.getElementById('postTitle').textContent = post.title || "无标题";
         
-        let displayAuthor = "匿名用户";
-        if (post.anonymous === false) {
-            displayAuthor = "用户" + (post.userId || "");
-        }
+        // 后端已经根据 anonymous 处理好了 author
+        const displayAuthor = post.author || '匿名用户';
         
-        document.getElementById('postMeta').textContent = `${displayAuthor} 发布于 ${post.time || "刚刚"}`;
+        document.getElementById('postMeta').textContent = `${displayAuthor} 发布于 ${formatTime(post.createTime)}`;
         document.getElementById('postContent').textContent = post.content || "无内容";
         
         const likeCountEl = document.getElementById('likeCount');
-        if (likeCountEl) likeCountEl.textContent = post.likes || 0;
+        if (likeCountEl) likeCountEl.textContent = post.likeCount || 0;
 
         if (post.liked === true) {
             isDetailLiked = true;

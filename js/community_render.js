@@ -10,6 +10,17 @@ const postCountSpan = document.getElementById('postCount');
 let currentCategory = '全部';
 let currentSearch = '';
 
+// === 时间格式化函数 ===
+function formatTime(timeStr) {
+    if (!timeStr) return '';
+    // createTime 格式：2026-10-05T15:28:13
+    try {
+        return timeStr.replace('T', ' ').substring(0, 16); // 截取到分钟
+    } catch (e) {
+        return timeStr;
+    }
+}
+
 // === 3. 渲染帖子的核心函数 ===
 function renderPosts(data) {
     if (postCountSpan) {
@@ -27,7 +38,7 @@ function renderPosts(data) {
             <div class="post-card" onclick="window.location.href='post_detail.html?id=${post.id}'" style="cursor: pointer;">
                 <div class="post-header">
                     <span class="post-category">${post.category}</span>
-                    <span class="post-time">${post.time || ''}</span>
+                    <span class="post-time">${formatTime(post.createTime)}</span>
                 </div>
                 <h3 class="post-title">${post.title}</h3>
                 <p class="post-excerpt">${(post.content || '').substring(0, 60)}...</p>
@@ -43,7 +54,7 @@ function renderPosts(data) {
                         </span>
                         <span class="stat-item like-btn" onclick="event.stopPropagation(); likePost(${post.id}, this)" title="点赞">
                             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                            <span class="like-count">${post.likes || 0}</span>
+                            <span class="like-count">${post.likeCount || 0}</span>
                         </span>
                     </div>
                 </div>
