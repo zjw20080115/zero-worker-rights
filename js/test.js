@@ -236,6 +236,8 @@ const quizForm = document.getElementById('quiz-form');
 const progressText = document.getElementById('progress');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const saveBtn = document.getElementById('save-record-btn');
+const saveMessage = document.getElementById('save-message');
 
 /* ---------- 3. 渲染答题区：遍历 questions 动态生成 HTML ---------- */
 function renderQuiz() {
@@ -549,7 +551,11 @@ function getResultEl(id) {
 const LIGHT_ICONS = { green: '🟢', yellow: '🟡', red: '🔴' };
 const LIGHT_TEXT = { green: '绿灯', yellow: '黄灯', red: '红灯' };
 
+/* 暂存最近一次 calcResult() 的结果，供"保存到我的权益记录"按钮组装数据 */
+let lastCalcResult = null;
+
 function renderResult(result) {
+    lastCalcResult = result;
     const {
         answers,
         dimensionScores,
@@ -690,6 +696,12 @@ quizForm.addEventListener('submit', (e) => {
     // 渲染完成后平滑滚动到结果区顶部：答题区较高，隐藏后页面会缩短，
     // 若不主动滚动，视口会停留在原位置（约等于结果页底部的 AI 分析区）
     resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 显示"保存到我的权益记录"按钮，并复位提示区
+    if (saveBtn) saveBtn.style.display = 'block';
+    if (saveMessage) {
+        saveMessage.style.display = 'none';
+        saveMessage.textContent = '';
+    }
 });
 
 // 8.4 重新测试：彻底清空状态，重置进度，回到说明区
@@ -717,6 +729,16 @@ restartBtn.addEventListener('click', () => {
         conclusionEl.style.borderRadius = '';
     }
     progressText.textContent = `0/${questions.length}`;
+    // 隐藏保存按钮与提示区，等待下一次提交后重新显示
+    if (saveBtn) {
+        saveBtn.style.display = 'none';
+        saveBtn.disabled = false;
+    }
+    if (saveMessage) {
+        saveMessage.style.display = 'none';
+        saveMessage.textContent = '';
+    }
+    window.currentAiResult = null; // 新一轮自测开始，旧的 AI 分析不再计入保存数据
     resultSection.classList.add('hidden');
     introSection.classList.remove('hidden');
 });
@@ -728,8 +750,57 @@ const aiInput = document.getElementById('ai-input');
 const aiAnalyzeBtn = document.getElementById('ai-analyze-btn');
 const aiResult = document.getElementById('ai-result');
 
+/* 模拟开关：后端接口未通时改为 true，使用 setTimeout 假数据联调 */
+const USE_MOCK = false;
+
+/* 真实后端接口地址 */
+const AI_API_URL = 'http://10.72.39.141:8080/api/ai/analyze';
+
+/* 请求超时时间（毫秒）：后端电脑未开机时避免一直停留在"思考中" */
+const AI_TIMEOUT = 10000;
+
+/* 模拟返回数据：字段结构与后端 JSON 完全一致 */
+const MOCK_AI_RESPONSE = {
+    aiAnalysis: '初步分析：涉及工资拖欠。',
+    materials: '工资流水、聊天记录、平台账号信息。',
+    checkResult: '确认用工事实与报酬标准约定情况。',
+    nextStep: '向劳动监察大队投诉。',
+};
+
+/* 全局保存最近一次 AI 分析结果，供"保存到我的权益记录"直接取用 */
+window.currentAiResult = null;
+
+/* 转义 HTML，防止后端返回的文本被当成标签渲染 */
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+/* 把 AI 返回的 JSON 结构化为四个区块渲染到 #ai-result */
+function renderAiResult(data) {
+    const blocks = [
+        { icon: '💡', title: '初步分析', text: data.aiAnalysis },
+        { icon: '📋', title: '建议材料', text: data.materials },
+        { icon: '✅', title: '申报前检查', text: data.checkResult },
+        { icon: '➡️', title: '下一步建议', text: data.nextStep },
+    ];
+    aiResult.innerHTML = blocks
+        .map(
+            (b) => `
+            <div style="margin-bottom: 12px;">
+                <h4 style="margin:0 0 4px;color:#1769aa;">${b.icon} ${b.title}</h4>
+                <p style="margin:0;">${escapeHtml(b.text) || '无'}</p>
+            </div>`
+        )
+        .join('');
+}
+
 // 9.1 监听"开始AI分析"按钮点击
-aiAnalyzeBtn.addEventListener('click', () => {
+aiAnalyzeBtn.addEventListener('click', async () => {
     const description = aiInput.value.trim();
 
     // 9.2 空输入校验
@@ -740,39 +811,141 @@ aiAnalyzeBtn.addEventListener('click', () => {
 
     // 9.3 显示"思考中"提示，并禁用按钮防止重复点击
     aiResult.style.display = 'block';
+    aiResult.style.color = ''; // 复位上次失败时的红色样式
     aiResult.innerHTML = '<p>AI正在思考中...</p>';
     aiAnalyzeBtn.disabled = true;
 
-    /* ----------------------------------------------------------
-     * 后端接口就绪后：删掉下方 setTimeout 模拟代码块（9.4），
-     * 启用这段真实 fetch 请求即可（description 已在上方取好）：
-     *
-     * fetch('https://你的后端地址/api/analyze', {
-     *     method: 'POST',
-     *     headers: { 'Content-Type': 'application/json' },
-     *     body: JSON.stringify({ description: description }),
-     * })
-     *     .then((res) => {
-     *         if (!res.ok) throw new Error('接口请求失败');
-     *         return res.json();
-     *     })
-     *     .then((data) => {
-     *         aiResult.innerHTML = `<p>${data.result}</p>`;
-     *     })
-     *     .catch(() => {
-     *         aiResult.innerHTML = '<p>AI 分析失败，请稍后重试。</p>';
-     *     })
-     *     .finally(() => {
-     *         aiAnalyzeBtn.disabled = false;
-     *     });
-     * ---------------------------------------------------------- */
-
-    // 9.4 模拟后端接口：延迟 1.5 秒后返回假的分析结果
-    setTimeout(() => {
-        aiResult.innerHTML = `
-            <p><strong>初步分析：</strong>涉及工资拖欠。</p>
-            <p><strong>建议准备：</strong>工资流水、聊天记录。</p>
-            <p><strong>下一步建议：</strong>向劳动监察大队投诉。</p>`;
+    try {
+        let data;
+        if (USE_MOCK) {
+            // 9.4 模拟模式：延迟 1.5 秒后返回与后端同结构的假数据
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            data = MOCK_AI_RESPONSE;
+        } else {
+            // 9.5 真实模式：POST 请求，返回 JSON 对象
+            //     { aiAnalysis, materials, checkResult, nextStep }
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), AI_TIMEOUT);
+            const res = await fetch(AI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userInput: description }),
+                signal: controller.signal,
+            });
+            clearTimeout(timer);
+            if (!res.ok) {
+                throw new Error(`接口返回状态码 ${res.status}`);
+            }
+            data = await res.json();
+        }
+        // 9.6 分析成功：存入全局变量并结构化渲染四个区块
+        window.currentAiResult = data;
+        renderAiResult(data);
+    } catch (err) {
+        // 9.7 请求失败（后端未启动、网络不通、CORS 跨域拦截等）：显示红色提示
+        console.error('[test.js] AI 请求失败：', err);
+        window.currentAiResult = null;
+        aiResult.style.color = '#e5484d';
+        aiResult.innerHTML = '<p>AI 连接失败，请检查网络或联系管理员</p>';
+    } finally {
         aiAnalyzeBtn.disabled = false;
-    }, 1500);
+    }
 });
+
+/* ============================================================
+ * 10. 保存到我的权益记录（真实接口对接，无 Mock）
+ * ============================================================ */
+
+/* 保存接口地址 */
+const SAVE_API_URL = 'http://10.72.39.141:8080/api/rights-records';
+
+/* 在 #save-message 中显示提示文字（绿色成功 / 红色失败） */
+function showSaveMessage(text, color) {
+    if (!saveMessage) return;
+    saveMessage.style.display = 'block';
+    saveMessage.style.color = color;
+    saveMessage.textContent = text;
+}
+
+/* 组装要保存的权益记录（字段名与后端约定严格一致，勿改） */
+function buildSavePayload() {
+    const { dimensionScores, overallLevel } = lastCalcResult;
+
+    // userId：暂时从 localStorage 取，取不到默认 1（TODO 登录做好后替换）
+    const userId = Number(localStorage.getItem('userId')) || 1;
+
+    // problemType：取本次自测得分最高的维度简单映射；
+    // 全部 0 分时兜底"权益咨询"。如需写死，把下面两行换成 '权益咨询' 即可
+    const topDim = Object.keys(DIMENSION_FULL).reduce(
+        (best, dim) =>
+            dimensionScores[dim] > dimensionScores[best] ? dim : best,
+        'A'
+    );
+    const problemType =
+        dimensionScores[topDim] > 0 ? `${DIMENSION_NAMES[topDim]}问题` : '权益咨询';
+
+    // description：用户在 #ai-input 里输入的原话（未填写则为空字符串）
+    const description = aiInput.value.trim();
+
+    // selfTestResult：拼接总分与风险等级，例如：【中】风险，A:3/7，B:2/5...
+    const dimParts = Object.keys(DIMENSION_FULL)
+        .map((dim) => `${dim}:${dimensionScores[dim]}/${DIMENSION_FULL[dim]}`)
+        .join('，');
+    const selfTestResult = `【${overallLevel}】风险，${dimParts}`;
+
+    // 四个 AI 字段：取全局变量中存储的最新 AI 分析结果；
+    // 未进行 AI 分析就保存时，四个字段都传空字符串
+    const ai = window.currentAiResult || {};
+    const aiAnalysis = ai.aiAnalysis || '';
+    const materials = ai.materials || '';
+    const checkResult = ai.checkResult || '';
+    const nextStep = ai.nextStep || '';
+
+    return {
+        userId: userId,
+        problemType: problemType,
+        description: description,
+        selfTestResult: selfTestResult,
+        aiAnalysis: aiAnalysis,
+        materials: materials,
+        checkResult: checkResult,
+        nextStep: nextStep,
+    };
+}
+
+// 10.1 点击"保存到我的权益记录"
+if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+        if (!lastCalcResult) {
+            showSaveMessage('暂无自测结果可保存，请先完成自测', '#e5484d');
+            return;
+        }
+
+        // 组装数据并打印到控制台，方便与 C 核对字段格式
+        const payload = buildSavePayload();
+        console.log('[test.js] 即将保存的权益记录：', payload);
+
+        // 按钮变灰、文字改为"正在保存..."，防止重复提交
+        saveBtn.disabled = true;
+        saveBtn.textContent = '正在保存...';
+
+        try {
+            const res = await fetch(SAVE_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) {
+                throw new Error(`接口返回状态码 ${res.status}`);
+            }
+            // 状态码 200：绿色成功提示
+            showSaveMessage('✅ 保存成功！已存入数据库', '#28a745');
+        } catch (err) {
+            console.error('[test.js] 保存失败：', err);
+            showSaveMessage('❌ 保存失败，请检查网络或查看F12报错', '#e5484d');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '保存到我的权益记录';
+        }
+    });
+}

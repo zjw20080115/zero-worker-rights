@@ -27,8 +27,7 @@
         <section id="intro" class="intro">
             <h1>权益自测</h1>
             <p>
-                本自测包含 20 道题目，帮助你快速了解自己作为零工劳动者
-                可能面临的权益风险。测试结果仅供个人参考，不构成法律意见。
+                本自测包含 20 道题目，帮助你快速了解自己作为零工劳动者可能面临的权益风险。测试结果仅供个人参考，不构成法律意见。
             </p>
             <button id="start-btn" class="btn" type="button">开始自测</button>
         </section>
@@ -81,6 +80,11 @@
               <div id="ai-result" style="margin-top: 15px; background: #fdfdfd; border: 1px solid #edf0f4; padding: 15px; border-radius: 8px; display: none;"></div>
             </div>
     
+            <!-- 保存到我的权益记录（默认隐藏，提交自测后由 JS 显示） -->
+            <button id="save-record-btn" class="btn" style="margin-top: 20px; background: #28a745; display: none;">保存到我的权益记录</button>
+            <!-- 保存结果提示区（默认隐藏） -->
+            <div id="save-message" style="margin-top: 10px; font-weight: bold; display: none;"></div>
+
             <!-- 免责声明 -->
             <div id="result-disclaimer" style="margin-top: 20px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px;">
                本自测仅作科普参考，不构成法律意见。用工关系的最终认定以劳动仲裁机构或人民法院依据用工事实（而非合同名称）判定为准；职业伤害保障覆盖以您所在行业与地方当年政策为准，本系统提示仅供参考。
