@@ -1,1 +1,475 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>权益知识</title><link rel="stylesheet" href="../css/style.css"></head><body><header><div class="container header"><div><h1>新就业形态灵活就业人员权益助手</h1><p>了解权益，保护自己</p></div><nav><a href="../index.html">首页</a><a href="diagnose.html">我遇到问题</a><a class="active" href="knowledge.html">权益知识</a><a href="apply.html">申报助手</a><a href="cases.html">我的权益记录</a><a href="community.html">互助墙</a></nav></div></header><main class="container page"><h2>权益知识</h2><p>这里预留资料位置，你们后续主要填资料。</p><div id="knowledge-list" class="cards"></div></main><script src="../js/data.js"></script><script src="../js/knowledge.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>权益知识库 - 新就业形态灵活就业人员权益助手</title>
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f5f7fa;
+    color: #263445;
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+}
+
+.library-banner {
+    height: 190px;
+    background: linear-gradient(120deg, #eaf3ff, #f8fbff);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.library-banner h2 {
+    font-size: 38px;
+    color: #4778b8;
+    margin: 0 0 22px;
+    letter-spacing: 6px;
+}
+
+.search-box {
+    width: min(600px, 90%);
+    display: flex;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #cbd8e8;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+}
+
+.search-box button {
+    padding: 0 24px;
+    border: none;
+    background: #638fc9;
+    color: white;
+    cursor: pointer;
+}
+
+.library-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: white;
+    max-width: 1100px;
+    margin: -20px auto 20px;
+    position: relative;
+    box-shadow: 0 3px 12px #0000000d;
+    border-radius: 6px;
+}
+
+.library-tabs button {
+    flex: 1;
+    min-width: 100px;
+    padding: 20px 10px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    color: #45566b;
+}
+
+.library-tabs button.active {
+    background: #dce8f8;
+    color: #315f9d;
+    font-weight: bold;
+}
+
+.library-layout {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 16px;
+    padding: 0 12px;
+}
+
+.catalog, .article-panel {
+    background: white;
+    border: 1px solid #e4e9f0;
+    border-radius: 5px;
+}
+
+.catalog h3 {
+    margin: 0;
+    padding: 16px;
+    background: #edf2f8;
+    font-size: 16px;
+}
+
+.catalog button {
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #edf0f4;
+    background: white;
+    padding: 13px;
+    cursor: pointer;
+    color: #394b60;
+}
+
+.catalog button:hover,
+.catalog button.active {
+    background: #edf5ff;
+    color: #386eb0;
+}
+
+.article-panel {
+    padding: 24px;
+    min-height: 420px;
+}
+
+.article-panel h2 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.article-content {
+    line-height: 2;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+    .library-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog {
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    .library-banner h2 {
+        font-size: 30px;
+    }
+
+    .article-panel {
+        padding: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container header">
+        <div>
+            <h1>新就业形态灵活就业人员权益助手</h1>
+            <p>了解权益，保护自己</p>
+        </div>
+
+        <nav>
+            <a href="../index.html">首页</a>
+            <a href="../test.html">权益自测</a>
+            <a class="active" href="knowledge.html">权益知识</a>
+            <a href="../records.html">我的权益记录</a>
+            <a href="community.html">互助墙</a>
+            <div id="userArea"></div>
+        </nav>
+    </div>
+</header>
+
+<div class="library-banner">
+    <h2>民商法知识库</h2>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="输入关键词搜索法律条文"
+        >
+        <button onclick="searchArticles()">⌕ 搜索</button>
+    </div>
+</div>
+
+<div class="library-tabs">
+    <button class="active" onclick="switchCategory('全部', this)">▤ 全部资料</button>
+    <button onclick="switchCategory('法律法规', this)">⚖ 法律法规</button>
+    <button onclick="switchCategory('劳动关系', this)">♧ 劳动关系</button>
+    <button onclick="switchCategory('工资报酬', this)">▤ 工资报酬</button>
+    <button onclick="switchCategory('社会保险', this)">▣ 社会保险</button>
+</div>
+
+<div class="library-layout">
+
+    <aside class="catalog">
+        <h3>☷ 目录</h3>
+
+        <button class="active" onclick="showArticle(0, this)">
+            中华人民共和国劳动争议调解仲裁法
+        </button>
+
+        <button onclick="showArticle(1, this)">
+            第一章　总则
+        </button>
+
+        <button onclick="showArticle(2, this)">
+            第二章　调解
+        </button>
+
+        <button onclick="showArticle(3, this)">
+            第三章　仲裁
+        </button>
+
+        <button onclick="showArticle(4, this)">
+            工资报酬相关知识
+        </button>
+
+        <button onclick="showArticle(5, this)">
+            劳动关系相关知识
+                <button onclick="showArticle(6, this)">
+            社会保险相关知识
+        </button>
+
+    </aside>
+
+    <main class="article-panel">
+
+        <div style="font-size:13px;color:#8190a3;margin-bottom:18px;">
+            首页　&gt;　权益知识　&gt;　法律全文
+        </div>
+
+        <h2 id="articleTitle">
+            中华人民共和国劳动争议调解仲裁法
+        </h2>
+
+        <div id="articleContent" class="article-content">
+            第一章　总则
+
+            第一条
+            为了公正及时解决劳动争议，保护当事人合法权益，促进劳动关系和谐稳定，制定本法。
+
+            第二条
+            中华人民共和国境内的用人单位与劳动者发生的下列劳动争议，适用本法：
+            （一）因确认劳动关系发生的争议；
+            （二）因订立、履行、变更、解除和终止劳动合同发生的争议；
+            （三）因除名、辞退和辞职、离职发生的争议；
+            （四）因工作时间、休息休假、社会保险、福利、培训以及劳动保护发生的争议；
+            （五）因劳动报酬、工伤医疗费、经济补偿或者赔偿金等发生的争议；
+            （六）法律、法规规定的其他劳动争议。
+
+            第二章　调解
+
+            第十条
+            发生劳动争议，当事人可以到下列调解组织申请调解：
+            （一）企业劳动争议调解委员会；
+            （二）依法设立的基层人民调解组织；
+            （三）在乡镇、街道设立的具有劳动争议调解职能的组织。
+
+            第三章　仲裁
+
+            第二十七条
+            劳动争议申请仲裁的时效期间为一年。仲裁时效期间从当事人知道或者应当知道其权利被侵害之日起计算。
+
+            提示：以上内容为知识库演示资料。正式办理前，请核对现行法律全文及当地相关规定。
+        </div>
+
+    </main>
+
+</div>
+<script>
+const articles = [
+    {
+        title: "中华人民共和国劳动争议调解仲裁法",
+        category: "法律法规",
+        content: `第一章 总则
+第一条
+为了公正及时解决劳动争议，保护当事人合法权益，促进劳动关系和谐稳定，制定本法。
+
+第二条
+中华人民共和国境内的用人单位与劳动者发生的下列劳动争议，适用本法：
+（一）因确认劳动关系发生的争议；
+（二）因订立、履行、变更、解除和终止劳动合同发生的争议；
+（三）因除名、辞退和辞职、离职发生的争议；
+（四）因工作时间、休息休假、社会保险、福利、培训以及劳动保护发生的争议；
+（五）因劳动报酬、工伤医疗费、经济补偿或者赔偿金等发生的争议；
+（六）法律、法规规定的其他劳动争议。
+
+以上为演示内容，正式使用前请核对现行法律全文。`
+    },
+    {
+        title: "第一章 总则",
+        category: "法律法规",
+        content: `本章节介绍劳动争议调解仲裁法的立法目的、适用范围和基本原则。
+
+遇到工资拖欠、劳动关系确认等问题时，可以先整理相关证据，再了解适用的处理途径。`
+    },
+    {
+        title: "第二章 调解",
+        category: "劳动关系",
+        content: `发生劳动争议后，当事人可以依法了解劳动争议调解途径。
+
+具体可以咨询当地相关调解组织，并根据争议情况和办理要求选择适当途径。`
+    },
+    {
+        title: "第三章 仲裁",
+        category: "法律法规",
+        content: `劳动争议仲裁是解决劳动争议的重要途径之一。
+
+办理前可以整理身份信息、劳动关系证明、工资记录、工作沟通记录等材料。
+
+具体申请条件、仲裁时效及材料要求，请以现行法律和当地仲裁机构的要求为准。`
+    },
+    {
+        title: "工资报酬相关知识",
+        category: "工资报酬",
+        content: `遇到拖欠工资或工资计算争议时，可以先整理：
+
+1. 工作起止时间；
+2. 约定的工资标准；
+3. 已支付和未支付的工资金额；
+4. 劳动合同、考勤记录及工作记录；
+5. 工资条、银行流水和相关聊天记录。
+
+根据实际情况了解劳动保障监察、劳动争议调解或仲裁等处理途径。`
+    },
+    {
+        title: "劳动关系相关知识",
+        category: "劳动关系",
+        content: `劳动关系是否成立，需要结合实际用工情况判断。
+
+可以整理招聘或入职记录、工作安排、考勤记录、工资支付记录、工作沟通记录等材料。
+
+平台用工等情况可能存在差异，不能仅凭单一材料作出最终判断。`
+    },
+    {
+        title: "社会保险相关知识",
+        category: "社会保险",
+        content: `遇到社会保险参保或缴费问题时，可以先确认参保地、参保记录、缴费记录及自己的用工情况。
+
+不同就业形式的参保规则可能不同，建议向参保地社会保险经办机构咨询核实。`
+    }
+];
+
+function showArticle(index, button) {
+    const article = articles[index];
+
+    if (!article) return;
+
+    // 显示文章标题和正文
+    document.getElementById("articleTitle").textContent =
+        article.title;
+
+    document.getElementById("articleContent").textContent =
+        article.content;
+
+    // 恢复所有目录按钮
+    document.querySelectorAll(".catalog button").forEach(function(item) {
+        item.style.display = "block";
+        item.classList.remove("active");
+    });
+
+    // 高亮当前选中的目录
+    if (button) {
+        button.classList.add("active");
+    }
+
+    // 清空搜索框，方便继续浏览
+    const searchInput = document.getElementById("searchInput");
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+}
+function searchArticles() {
+    const input = document.getElementById("searchInput");
+    const keyword = input.value.trim().toLowerCase();
+
+    if (!keyword) {
+        alert("请输入要搜索的关键词");
+        return;
+    }
+
+    // 搜索所有文章
+    const results = articles.filter(function(article) {
+        const title = String(article.title || "").toLowerCase();
+        const category = String(article.category || "").toLowerCase();
+        const content = String(article.content || "").toLowerCase();
+
+        return title.includes(keyword) ||
+               category.includes(keyword) ||
+               content.includes(keyword);
+    });
+
+    // 没有找到资料
+    if (results.length === 0) {
+        document.getElementById("articleTitle").textContent =
+            "没有找到相关资料";
+
+        document.getElementById("articleContent").textContent =
+            "请尝试搜索：劳动、工资、社会保险。";
+
+        return;
+    }
+
+    // 显示搜索结果
+    document.getElementById("articleTitle").textContent =
+        "搜索结果（共 " + results.length + " 条）";
+
+    document.getElementById("articleContent").textContent =
+        results.map(function(article, index) {
+            return (index + 1) + "、" + article.title +
+                   "\n分类：" + article.category +
+                   "\n" + article.content;
+        }).join("\n\n");
+}
+
+   
+document.getElementById("searchInput").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        searchArticles();
+    }
+});
+// 顶部分类切换功能
+function switchCategory(category, button) {
+    // 更新顶部按钮的高亮状态
+    document.querySelectorAll(".library-tabs button").forEach(function(item) {
+        item.classList.remove("active");
+    });
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+    // 清空搜索框
+    const input = document.getElementById("searchInput");
+    if (input) {
+        input.value = "";
+    }
+
+    // 显示或隐藏左侧目录
+    const catalogButtons = document.querySelectorAll(".catalog button");
+
+    catalogButtons.forEach(function(item, index) {
+        const article = articles[index];
+
+        if (category === "全部") {
+            item.style.display = "block";
+        } else if (article && article.category === category) {
+            item.style.display = "block";
+        } else {
+            item.style.display = "none";
+        }
+
+        item.classList.remove("active");
+    });
+
+    // 清空右侧原来的文章内容
+    document.getElementById("articleTitle").textContent = "请选择左侧目录";
+    document.getElementById("articleContent").textContent =
+        "点击左侧目录，查看对应的权益知识。";
+}
+</script>
+<script src="../js/auth_modal.js"></script>
