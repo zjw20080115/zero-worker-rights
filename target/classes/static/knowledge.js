@@ -1,0 +1,1 @@
+document.getElementById("knowledge-list").innerHTML=KNOWLEDGE_DATA.map(x=>`<div class="problem" id="${x[0]}"><h3>${x[1]}</h3><p>这里填写${x[1]}相关知识、常见案例和处理提示。</p><p><b>案例：</b>这里预留案例内容。</p><p><b>怎么办：</b>这里预留实际处理提示。</p></div>`).join("");
