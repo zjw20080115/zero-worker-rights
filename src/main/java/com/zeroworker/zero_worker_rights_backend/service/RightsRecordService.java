@@ -27,6 +27,8 @@ public class RightsRecordService {
         record.setCheckResult(dto.getCheckResult());
         record.setNextStep(dto.getNextStep());
         record.setCreateTime(LocalDateTime.now(java.time.ZoneId.of("Asia/Shanghai")));
+        record.setRawAnswers(dto.getRawAnswers() != null ? dto.getRawAnswers() : "");
+        record.setFullResult(dto.getFullResult() != null ? dto.getFullResult() : "");
         return rightsRecordRepository.save(record);
     }
 

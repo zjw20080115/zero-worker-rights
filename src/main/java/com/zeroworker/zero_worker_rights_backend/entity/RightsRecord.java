@@ -12,25 +12,31 @@ public class RightsRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer userId;          // 用户ID
-    private String problemType;      // 权益问题类型
+    private Integer userId;
+    private String problemType;
     @Column(columnDefinition = "TEXT")
-    private String description;      // 问题描述
+    private String description;
 
     @Column(columnDefinition = "TEXT")
-    private String selfTestResult;   // 权益自测结果
+    private String rawAnswers;     // 新增：原始问卷作答（JSON）
 
     @Column(columnDefinition = "TEXT")
-    private String aiAnalysis;       // AI 初步分析
+    private String fullResult;     // 新增：完整的自测结果（JSON）
 
     @Column(columnDefinition = "TEXT")
-    private String materials;        // 材料准备
+    private String selfTestResult;
 
     @Column(columnDefinition = "TEXT")
-    private String checkResult;      // 申报前检查
+    private String aiAnalysis;
 
     @Column(columnDefinition = "TEXT")
-    private String nextStep;         // 下一步
+    private String materials;
+
+    @Column(columnDefinition = "TEXT")
+    private String checkResult;
+
+    @Column(columnDefinition = "TEXT")
+    private String nextStep;
 
     private LocalDateTime createTime;
 }

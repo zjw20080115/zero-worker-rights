@@ -7,6 +7,8 @@ public class RightsRecordDTO {
     private Integer userId;
     private String problemType;
     private String description;
+    private String rawAnswers;     // 新增
+    private String fullResult;     // 新增
     private String selfTestResult;
     private String aiAnalysis;
     private String materials;
