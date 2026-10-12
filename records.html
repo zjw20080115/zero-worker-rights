@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的权益记录 - 零工权益助手</title>
+    <!-- 全局样式（队友A编写，勿修改） -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 本模块专属样式 -->
+    <link rel="stylesheet" href="css/records.css">
+</head>
+<body>
+    <!-- ==================== 顶部导航栏（与 test.html 保持一致） ==================== -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="knowledge.html">权益知识</a></li>
+                <li><a href="test.html">权益自测</a></li>
+                <li><a href="data.html">数据分析</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container page">
+        <!-- ==================== 我的权益记录 ==================== -->
+        <h2>我的权益记录</h2>
+        <!-- 记录卡片由 js/records.js 动态渲染 --> 
+        <div id="records-list"></div>
+    </main>
+
+    <!-- 本模块脚本：底部引入，保证 DOM 加载完成后执行 -->
+    <script src="js/records.js"></script>
+</body>
+</html>

@@ -893,13 +893,30 @@ function buildSavePayload() {
         .join('，');
     const selfTestResult = `【${overallLevel}】风险，${dimParts}`;
 
-    // 四个 AI 字段：取全局变量中存储的最新 AI 分析结果；
-    // 未进行 AI 分析就保存时，四个字段都传空字符串
-    const ai = window.currentAiResult || {};
-    const aiAnalysis = ai.aiAnalysis || '';
-    const materials = ai.materials || '';
-    const checkResult = ai.checkResult || '';
-    const nextStep = ai.nextStep || '';
+    // C 特别要求：未进行 AI 分析时这四个字段必须是空字符串 ""，
+    // 不能是 null / undefined，保证后端存库安全。
+    // 用可选链 + || "" 判空，最后 String() 强制转字符串兜底
+    const aiAnalysis = String(window.currentAiResult?.aiAnalysis || '');
+    const materials = String(window.currentAiResult?.materials || '');
+    const checkResult = String(window.currentAiResult?.checkResult || '');
+    const nextStep = String(window.currentAiResult?.nextStep || '');
+
+    // rawAnswers：遍历 questions 构建用户作答数组，再 JSON.stringify 转字符串。
+    // 每个元素形如 { 题目id: 作答 }，
+    // 例如 [{"A1":"平台企业"},{"A2":"未签订任何书面协议"}]
+    const rawAnswersArr = questions.map((q) => {
+        const selected = quizForm.querySelector(
+            `.option[data-question-id="${q.id}"].selected`
+        );
+        const entry = {};
+        entry[q.id] = selected ? selected.textContent.trim() : '';
+        return entry;
+    });
+    const rawAnswers = JSON.stringify(rawAnswersArr);
+
+    // fullResult：calcResult() 的完整结果对象（总分、风险等级、
+    // 各维度得分、风险灯、红旗等）转成 JSON 字符串
+    const fullResult = JSON.stringify(lastCalcResult);
 
     return {
         userId: userId,
@@ -910,6 +927,9 @@ function buildSavePayload() {
         materials: materials,
         checkResult: checkResult,
         nextStep: nextStep,
+        // C 新增的两个字段（均为 JSON 字符串）
+        rawAnswers: rawAnswers,
+        fullResult: fullResult,
     };
 }
 
