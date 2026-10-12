@@ -1,1 +1,0 @@
-document.getElementById("apply-list").innerHTML=Object.values(RIGHTS_DATA).map(x=>`<div class="problem"><h3>${x.title}</h3><p>${x.short}</p><h4>材料清单</h4><ul class="check-list">${x.materials.map(i=>`<li>□ ${i}</li>`).join("")}</ul><h4>处理步骤</h4><ol class="check-list">${x.steps.map(i=>`<li>${i}</li>`).join("")}</ol><p><b>官方渠道：</b>${x.official}</p></div>`).join("");
