@@ -1,0 +1,112 @@
+/* ===== 我的权益记录模块专属样式 ===== */
+
+/* 隐藏类：配合 JS 切换 .show 类控制折叠（注意不能加 !important，否则 .show 无法覆盖） */
+.hidden {
+    display: none;
+}
+
+/* 记录卡片：白色背景、圆角、阴影、内边距 */
+.record-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* 卡片头部：Flex 两端对齐（左侧问题徽章，右侧日期） */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* 问题类型徽章：蓝色背景、白色文字、圆角标签 */
+.problem-badge {
+    display: inline-block;
+    background: #1769aa;
+    color: #ffffff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+/* 日期：灰色小字，靠右 */
+.record-date {
+    color: #999999;
+    font-size: 13px;
+}
+
+/* 用户描述预览：浅灰小字 */
+.record-desc {
+    color: #888888;
+    font-size: 14px;
+    margin: 0 0 10px;
+}
+
+/* 详情链接：带下划线，悬浮时变蓝 + 手型 */
+.detail-link {
+    display: inline-block;
+    color: #333333;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 8px 0;
+    font-size: 15px;
+}
+.detail-link:hover {
+    color: #1769aa;
+}
+
+/* 详情内容：默认隐藏，点击链接后由 JS 切换 .show 类显示 */
+.detail-content {
+    display: none;
+    background: #f7f9fc;
+    border: 1px solid #edf0f4;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 6px 0 10px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #444444;
+}
+.detail-content.show {
+    display: block;
+}
+.detail-content p {
+    margin: 4px 0;
+}
+
+/* 原始问卷：单题问答条目 */
+.qa-item {
+    border-bottom: 1px dashed #e0e0e0;
+    padding: 6px 0;
+}
+
+/* 报告：总体风险等级徽章（背景色由 JS 按等级设置） */
+.report-level {
+    display: inline-block;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 2px 12px;
+    border-radius: 6px;
+    margin: 0 4px;
+}
+
+/* 报告：维度风险灯徽章（背景色由 JS 按灯色设置） */
+.risk-light {
+    display: inline-block;
+    margin: 4px 8px 4px 0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+/* 报告：路径推荐小卡片 */
+.rec-card {
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 8px 0;
+}
