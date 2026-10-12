@@ -92,13 +92,12 @@
         }
 
         /* ============================================
-           ⭐ 顶部蓝色区（包含标题 + 搜索 + 七个卡片）
+           顶部蓝色区（标题 + 搜索 + 七个卡片）
            ============================================ */
         .header {
             background:
                 radial-gradient(circle at 50% 0%, rgba(120, 180, 255, 0.4) 0%, transparent 60%),
                 linear-gradient(135deg, #1e5a8a 0%, #2c7ab5 50%, #3d8fd0 100%);
-            /* ⭐ 底部留出足够空间，让卡片"沉"在蓝色里 */
             padding: 50px 20px 40px;
             text-align: center;
             position: relative;
@@ -106,7 +105,6 @@
             box-shadow: 0 10px 40px rgba(30, 90, 138, 0.25);
         }
 
-        /* 装饰光点 */
         .header::before {
             content: '';
             position: absolute;
@@ -222,7 +220,7 @@
         }
 
         /* ============================================
-           ⭐ 七个功能入口（现在放在蓝色背景里）
+           七个功能入口
            ============================================ */
         .feature-nav {
             max-width: 1200px;
@@ -311,7 +309,6 @@
             font-weight: 600;
         }
 
-        /* 每个入口的颜色 */
         .f1 { --accent: #2c7ab5; --bg: #e8f1fa; }
         .f2 { --accent: #d97706; --bg: #fef3e2; }
         .f3 { --accent: #7c3aed; --bg: #f0e8fd; }
@@ -513,7 +510,6 @@
             color: #2c7ab5;
         }
 
-        /* 响应式 */
         @media (max-width: 1100px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 12px; }
             .nav-links { flex-wrap: wrap; justify-content: center; }
@@ -537,15 +533,15 @@
             <div class="nav-brand-subtitle">了解权益，保护自己</div>
         </div>
         <div class="nav-links">
-            <a href="community.html">首页</a>
-            <a href="publish.html">我遇到问题</a>
+            <a href="../index.html">首页</a>
+            <a href="../test.html">权益自测</a>
             <a href="book.html" class="active">权益知识</a>
-            <a href="#">我的权益记录</a>
+            <a href="../records.html">我的权益记录</a>
             <a href="community.html">互助墙</a>
         </div>
     </nav>
 
-    <!-- ⭐ 顶部蓝色区（标题 + 搜索 + 七个卡片 都在里面） -->
+    <!-- 顶部蓝色区 -->
     <header class="header">
         <h1 class="title">权益知识库</h1>
 
@@ -572,7 +568,7 @@
             <span>条旨</span>
         </div>
 
-        <!-- ⭐ 七个功能入口（现在在蓝色背景里） -->
+        <!-- 七个功能入口 -->
         <nav class="feature-nav">
             <div class="feature-item f1 active">
                 <div class="icon-wrap">
@@ -637,7 +633,7 @@
         <section class="content-panel">
             <div class="content-header">
                 <div class="breadcrumb">
-                    权益知识 › 第一章 <b>工资报酬权益</b>
+                    权益知识 › 第一章 <b id="current-category">工资报酬权益</b>
                 </div>
                 <div class="badge">第 1 条</div>
             </div>
@@ -691,6 +687,52 @@
         </section>
 
     </main>
+
+    <!-- ==================== JS：分类高亮 + 搜索 ==================== -->
+    <script>
+    (function () {
+        "use strict";
+
+        // 1. 左侧分类点击：切换 active 高亮 + 更新面包屑
+        var catalogItems = document.querySelectorAll(".catalog-item");
+        var breadcrumbCat = document.getElementById("current-category");
+
+        catalogItems.forEach(function (item) {
+            item.addEventListener("click", function () {
+                catalogItems.forEach(function (i) { i.classList.remove("active"); });
+                item.classList.add("active");
+                if (breadcrumbCat) {
+                    breadcrumbCat.textContent = item.textContent.trim();
+                }
+            });
+        });
+
+        // 2. 支持 URL 参数 ?cat=xxx 跳转过来时自动高亮对应分类
+        var params = new URLSearchParams(location.search);
+        var cat = params.get("cat");
+        if (cat) {
+            catalogItems.forEach(function (el) {
+                if (el.textContent.indexOf(cat) !== -1) {
+                    catalogItems.forEach(function (i) { i.classList.remove("active"); });
+                    el.classList.add("active");
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    if (breadcrumbCat) {
+                        breadcrumbCat.textContent = el.textContent.trim();
+                    }
+                }
+            });
+        }
+
+        // 3. 顶部 7 个功能入口点击：切换 active 高亮
+        var featureItems = document.querySelectorAll(".feature-item");
+        featureItems.forEach(function (item) {
+            item.addEventListener("click", function () {
+                featureItems.forEach(function (i) { i.classList.remove("active"); });
+                item.classList.add("active");
+            });
+        });
+    })();
+    </script>
 
 </body>
 </html>
