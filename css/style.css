@@ -1,1 +1,496 @@
-*{box-sizing:border-box}body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;background:#f5f8fc;color:#222;line-height:1.8}a{text-decoration:none;color:inherit}.container{max-width:1150px;margin:auto;padding:0 22px}header{background:#1769aa;color:white}.header{display:flex;justify-content:space-between;align-items:center;gap:25px;padding:24px 22px}header h1{font-size:25px;margin:0}header p{margin:2px 0;opacity:.9}nav{display:flex;flex-wrap:wrap;gap:7px}nav a{padding:7px 12px;border-radius:6px}nav a:hover,nav a.active{background:#ffffff2e}.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;padding-top:55px;padding-bottom:35px}.hero h2{font-size:40px;line-height:1.3}.hero p{font-size:18px;color:#555}.tag{background:#e8f2fb;color:#1769aa;padding:4px 12px;border-radius:20px}.btn{display:inline-block;background:#1769aa;color:white;padding:10px 22px;border-radius:7px;margin-top:10px}.quick,.section,.box,.result{background:white;border-radius:12px;box-shadow:0 2px 10px #00000012}.quick{padding:25px;display:flex;flex-direction:column;gap:9px}.quick a{background:#f5f8fc;padding:8px 12px;color:#1769aa;border-radius:7px}.section{padding:30px;margin-bottom:28px}.section h2,.page h2{color:#1769aa}.steps,.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.steps div{background:#f7f9fc;padding:18px;border-radius:9px}.steps b{color:#1769aa;font-size:22px}.cards{grid-template-columns:repeat(3,1fr)}.cards a,.problem{background:#f7f9fc;border:1px solid #edf0f4;padding:20px;border-radius:9px;color:#1769aa}.cards small{color:#666}.page{padding-top:35px;padding-bottom:20px}.box,.result{padding:25px;margin-bottom:22px}textarea,input{width:100%;padding:11px;border:1px solid #ccd6e0;border-radius:7px;font:inherit}.option-list{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 20px}.option{padding:9px 14px;background:white;border:1px solid #ccd6e0;border-radius:7px;cursor:pointer}.option.selected{background:#e8f2fb;border-color:#1769aa;color:#1769aa}.check-list{padding-left:22px}.notice{background:#fff8e6;padding:12px 15px;border-left:4px solid #d99b00}footer{margin-top:40px;background:#202a33;color:#ddd;padding:25px;text-align:center}@media(max-width:800px){.header,.hero{display:block}.hero h2{font-size:32px}.quick{margin-top:25px}.steps,.cards{grid-template-columns:1fr}nav{margin-top:15px}}
+*{box-sizing:border-box}body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;background:#f5f8fc;color:#222;line-height:1.8}a{text-decoration:none;color:inherit}.container{max-width:1150px;margin:auto;padding:0 22px}header{background:#1769aa;color:white}.header{display:flex;justify-content:space-between;align-items:center;gap:25px;padding:24px 22px}header h1{font-size:25px;margin:0}header p{margin:2px 0;opacity:.9}nav{display:flex;flex-wrap:wrap;gap:7px}nav a{padding:7px 12px;border-radius:6px}nav a:hover,nav a.active{background:#ffffff2e}.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;padding-top:55px;padding-bottom:35px}.hero h2{font-size:40px;line-height:1.3}.hero p{font-size:18px;color:#555}.tag{background:#e8f2fb;color:#1769aa;padding:4px 12px;border-radius:20px}.btn{display:inline-block;background:#1769aa;color:white;padding:10px 22px;border-radius:7px;margin-top:10px}.quick,.section,.box,.result{background:white;border-radius:12px;box-shadow:0 2px 10px #00000012}.quick{padding:25px;display:flex;flex-direction:column;gap:9px}.quick a{background:#f5f8fc;padding:8px 12px;color:#1769aa;border-radius:7px}.section{padding:30px;margin-bottom:28px}.section h2,.page h2{color:#1769aa}.steps,.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.steps div{background:#f7f9fc;padding:18px;border-radius:9px}.steps b{color:#1769aa;font-size:22px}.cards{grid-template-columns:repeat(3,1fr)}.cards a,.problem{background:#f7f9fc;border:1px solid #edf0f4;padding:20px;border-radius:9px;color:#1769aa}.cards small{color:#666}.page{padding-top:35px;padding-bottom:20px}.box,.result{padding:25px;margin-bottom:22px}textarea,input{width:100%;padding:11px;border:1px solid #ccd6e0;border-radius:7px;font:inherit}.option-list{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 20px}.option{padding:9px 14px;background:white;border:1px solid #ccd6e0;border-radius:7px;cursor:pointer}.option.selected{background:#e8f2fb;border-color:#1769aa;color:#1769aa}.check-list{padding-left:22px}.notice{background:#fff8e6;padding:12px 15px;border-left:4px solid #d99b00}footer{margin-top:40px;background:#202a33;color:#ddd;padding:25px;text-align:center}@media(max-width:800px){.header,.hero{display:block}.hero h2{font-size:32px}.quick{margin-top:25px}.steps,.cards{grid-template-columns:1fr}nav{margin-top:15px}}/* ================================
+   A-front：首页统一视觉优化
+   ================================ */
+
+/* 全局字体与基础间距 */
+body {
+    font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+}
+
+/* 页面主要标题 */
+h1 {
+    font-size: 34px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+/* 二级标题 */
+h2 {
+    font-size: 28px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+/* 三级标题 */
+h3 {
+    font-size: 21px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+/* 普通正文 */
+p {
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+/* 导航栏文字 */
+nav a {
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    white-space:nowrap;
+}
+nav {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+}
+/* 按钮统一样式 */
+button,
+.btn {
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* 表单文字 */
+input,
+textarea,
+select {
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* 页面主要内容间距 */
+main {
+    line-height: 1.7;
+}
+
+/* 页面区块之间的距离 */
+section {
+    margin-bottom: 36px;
+}
+
+/* 列表文字 */
+li {
+    line-height: 1.8;
+}
+
+/* 手机端字体适配 */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    h3 {
+        font-size: 19px;
+    }
+
+    p {
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    nav a {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    button,
+    .btn {
+        font-size: 15px;
+        padding: 9px 16px;
+    }
+}
+/* ================================
+   A-front：首页间距优化
+   ================================ */
+
+/* 首页整体内容宽度 */
+.container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+/* 顶部导航区域 */
+.header {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* 首页首屏 */
+.hero {
+    padding-top: 48px;
+    padding-bottom: 42px;
+    gap: 36px;
+}
+
+/* 首屏标题 */
+.hero h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+/* 首屏说明文字 */
+.hero p {
+    margin-top: 0;
+    margin-bottom: 22px;
+}
+
+/* 快速问题卡片 */
+.quick {
+    padding: 26px;
+    gap: 11px;
+}
+
+/* 快速问题卡片里的每一项 */
+.quick a {
+    padding: 11px 14px;
+}
+
+/* 首页各大区块 */
+.section {
+    padding: 32px;
+    margin-bottom: 30px;
+}
+
+/* 区块标题 */
+.section h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+}
+
+/* 使用流程 */
+.steps {
+    gap: 20px;
+}
+
+.steps div {
+    padding: 22px;
+}
+
+/* 功能卡片 */
+.cards {
+    gap: 20px;
+}
+
+.cards a,
+.problem {
+    padding: 22px;
+}
+
+/* 按钮与上方文字保持距离 */
+.btn {
+    margin-top: 12px;
+}
+
+/* 页面底部 */
+footer {
+    margin-top: 50px;
+}
+/* ================================
+   登录 / 注册弹窗
+   ================================ */
+
+.auth-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-box {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+}
+
+.auth-box h2 {
+    margin-top: 0;
+    margin-bottom: 6px;
+    color: #1769aa;
+    text-align: center;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.auth-close {
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    border: none;
+    background: none;
+    color: #777;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.auth-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e9ee;
+    margin-bottom: 22px;
+}
+
+.auth-tab {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px;
+    color: #777;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.auth-tab.active {
+    color: #1769aa;
+    border-bottom: 2px solid #1769aa;
+}
+
+.auth-box label {
+    display: block;
+    margin: 12px 0 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.auth-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid #ccd6e0;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+.auth-box input:focus {
+    outline: none;
+    border-color: #1769aa;
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: 20px;
+    padding: 11px;
+    border: none;
+    border-radius: 7px;
+    background: #1769aa;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.auth-submit:hover {
+    background: #125789;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#userArea {
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+}
+
+.login-btn,
+.logout-btn {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.login-btn {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.login-btn:hover,
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.user-info {
+    color: white;
+    white-space: nowrap;
+}
+
+.logout-btn {
+    margin-left: 8px;
+}
+/* 遇到问题，从这里开始 */
+.help-section {
+    margin-top: 30px;
+}
+
+.section-desc {
+    margin-top: -10px;
+    margin-bottom: 22px;
+    color: #667788;
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.help-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    border: 1px solid #e9eef3;
+    border-radius: 10px;
+    transition: all .2s ease;
+}
+
+.help-card:hover {
+    background: #f4f9fd;
+    border-color: #c7dff2;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 14px rgba(0,0,0,.06);
+}
+
+.help-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #eef6fc;
+    border-radius: 10px;
+    font-size: 22px;
+}
+
+.help-card h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+}
+
+.help-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #667788;
+}
+
+@media (max-width: 768px) {
+    .help-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== 开始权益诊断按钮动态效果 ===== */
+
+/* ===== 开始权益诊断：高级动态按钮 ===== */
+
+.main-action {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    min-width: 190px;
+    padding: 14px 24px !important;
+
+    color: #ffffff !important;
+    background: #1769aa !important;
+
+    border: 1px solid #145d96;
+    border-radius: 10px;
+
+    overflow: hidden;
+    text-decoration: none;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+}
+
+/* 柔和的滑动层 */
+.main-action::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.18),
+        transparent
+    );
+
+    transition: left .55s ease;
+}
+
+/* 鼠标移入 */
+.main-action:hover::before {
+    left: 120%;
+}
+
+/* 按钮轻微上浮 */
+.main-action:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(23,105,170,.22);
+}
+
+/* 文字 */
+.main-action span {
+    position: relative;
+    z-index: 2;
+}
+
+/* 箭头 */
+.main-action .action-arrow {
+    font-size: 21px;
+    transition: transform .3s ease;
+}
+
+/* 箭头移动 */
+.main-action:hover .action-arrow {
+    transform: translateX(6px);
+}
