@@ -1,0 +1,53 @@
+/* ===== 权益自测模块专属样式 ===== */
+
+/* 最核心的隐藏类！必须加 !important 防止被覆盖 */
+.hidden {
+    display: none !important;
+}
+
+/* 复用 A 的 .section 样式稍作调整 */
+.intro, .quiz, .result {
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    margin-bottom: 28px;
+}
+
+/* 进度文本 */
+#progress {
+    color: #1769aa;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* 选项样式（配合 A 的 style.css 里的 .option 使用） */
+.question-block {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+.question-block h3 {
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+/* 未作答题目：红色星号（不闪烁，保持醒目） */
+.error-star {
+    color: #e5484d !important;
+    font-weight: bold;
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+/* 未作答题目：整道题背景闪烁两次后停止 */
+.highlight-error {
+    /* 闪烁两次：每次 0.4秒，总共 2 秒，forwards 让动画停在初始状态（白色） */
+    animation: bg-pulse 0.6s ease-in-out 2 forwards;
+    border-radius: 8px;
+}
+
+@keyframes bg-pulse {
+    0%   { background-color: #ffe0e0; } /* 深一点的红色，直接出现 */
+    100% { background-color: #ffffff; } /* 回到白色 */
+}
+

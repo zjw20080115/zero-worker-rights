@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的权益记录 - 零工权益助手</title>
+    <!-- 全局样式（队友A编写，勿修改） -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 本模块专属样式 -->
+    <link rel="stylesheet" href="css/records.css">
+</head>
+<body>
+      <!-- ==================== 顶部导航栏 ==================== -->
+   <!-- ==================== 顶部导航栏 ==================== -->
+<!-- 顶部导航栏 -->
+<header>
+    <div class="container header">
+        <div>
+            <h1>新就业形态灵活就业人员权益助手</h1>
+            <p>了解权益，保护自己</p >
+        </div>
+
+        <nav>
+            <a href="index.html">首页</a >
+            <a href="test.html">权益自测</a >
+            <a href="pages/knowledge.html">权益知识</a >
+            <a class="active" href="records.html">我的权益记录</a >
+            <a href="pages/community.html">互助墙</a >
+           <div id="userArea"></div>
+        </nav>
+    </div>
+</header>
+
+    <main class="container page">
+        <!-- ==================== 我的权益记录 ==================== -->
+        <h2>我的权益记录</h2>
+        <!-- 记录卡片由 js/records.js 动态渲染 --> 
+        <div id="records-list"></div>
+    </main>
+
+    <!-- 本模块脚本：底部引入，保证 DOM 加载完成后执行 -->
+    <script src="js/records.js"></script>
+    <script src="/js/auth_modal.js"></script>
+</body>
+</html>
