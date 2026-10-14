@@ -15,6 +15,7 @@
  *   - 事件全部用事件委托绑定在 #records-list 上，列表重建后依然有效
  * ============================================================ */
 
+console.log("records.js 成功加载！");
 /* ---------- 1. 用户 ID 与接口地址 ---------- */
 const userId = localStorage.getItem('userId') || 1;
 const RECORDS_API_BASE = 'http://10.72.39.141:8080/api/rights-records';
@@ -115,9 +116,9 @@ function renderRecords(records) {
             </div>
             <p class="record-desc">${escapeHtml(r.description || '无描述')}</p>
             <div class="detail-link" data-target="raw-answers-${r.id}">历史问卷</div>
-            <div id="raw-answers-${r.id}" class="detail-content hidden"></div>
+            <div id="raw-answers-${r.id}" class="detail-content" style="display: none;"></div>
             <div class="detail-link" data-target="full-result-${r.id}">我的权益诊断</div>
-            <div id="full-result-${r.id}" class="detail-content hidden"></div>
+            <div id="full-result-${r.id}" class="detail-content" style="display: none;"></div>
         </div>`
         )
         .join('');
@@ -142,6 +143,7 @@ function renderAiBlock(r) {
  *   新格式（数组）：[{"A1":"平台企业"},{"A2":"未签订任何书面协议"}]
  *   旧格式（对象）：{"A1":"平台企业","A2":"未签订任何书面协议"} */
 function renderRawAnswers(r) {
+    console.log('准备渲染的历史问卷数据:', r.rawAnswers);
     const raw = safeParse(r.rawAnswers);
     let entries = [];
 
@@ -238,19 +240,30 @@ function renderFullResult(r) {
 
 /* ---------- 6. 加载记录（真实接口） ---------- */
 async function loadRecords() {
+    console.log('[records.js] ① loadRecords 开始执行，请求地址：', RECORDS_API_URL);
     const list = document.getElementById('records-list');
-    if (list) list.innerHTML = '<p>加载中...</p>';
+    if (!list) {
+        console.error('[records.js] 未找到 #records-list 容器，渲染中止');
+        return;
+    }
+    list.innerHTML = '<p>加载中...</p>';
 
     try {
         const res = await fetch(RECORDS_API_URL);
+        console.log('[records.js] ② 收到响应，状态码：', res.status);
         if (!res.ok) {
             throw new Error(`接口返回状态码 ${res.status}`);
         }
         const data = await res.json();
+        console.log(
+            '[records.js] ③ 数据解析成功，记录条数：',
+            Array.isArray(data) ? data.length : '非数组，按空列表处理'
+        );
         // 防御：后端若意外返回非数组（如 { data: [...] } 包了一层），按空列表处理
         renderRecords(Array.isArray(data) ? data : []);
+        console.log('[records.js] ④ 列表渲染完成');
     } catch (err) {
-        console.error('[records.js] 加载权益记录失败：', err);
+        console.error('[records.js] ⑤ 加载权益记录失败：', err);
         if (list) {
             list.innerHTML =
                 '<p style="color:#e5484d;font-weight:bold;">❌ 加载失败，请检查网络或查看F12报错</p>';
@@ -260,6 +273,7 @@ async function loadRecords() {
 
 /* ---------- 7. 删除记录 ---------- */
 async function deleteRecord(recordId, btn) {
+    console.log('[records.js] 准备删除记录，请求地址：', `${RECORDS_API_BASE}/${recordId}`);
     btn.disabled = true;
     try {
         const res = await fetch(`${RECORDS_API_BASE}/${recordId}`, {
@@ -283,6 +297,7 @@ const recordsList = document.getElementById('records-list');
 if (recordsList) {
     recordsList.addEventListener('click', (e) => {
         // 分支一：删除按钮
+        console.log('=== 点击被触发了！目标：', e.target);
         const delBtn = e.target.closest('.delete-btn');
         if (delBtn) {
             const recordId = delBtn.dataset.id;
@@ -309,9 +324,21 @@ if (recordsList) {
         } else {
             target.innerHTML = renderFullResult(record);
         }
-        target.classList.toggle('show');
+        // 用内联样式直接控制显隐（绕过任何 CSS 类与 !important 的冲突）：
+        // 当前隐藏（none 或空）则显示，否则隐藏
+        target.style.display =
+            target.style.display === 'none' || target.style.display === ''
+                ? 'block'
+                : 'none';
+        console.log('显示状态切换为:', target.style.display);
     });
 }
 
 /* ---------- 9. 页面加载时拉取数据 ---------- */
-loadRecords();
+/* 绑定在 DOMContentLoaded 上，确保 DOM 就绪后再发请求；
+   若脚本执行时 DOM 已就绪（readyState 非 loading），直接执行 */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadRecords);
+} else {
+    loadRecords();
+}
