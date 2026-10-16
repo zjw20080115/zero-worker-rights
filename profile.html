@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息 - 零工权益助手</title>
+    <!-- 全局样式（队友A编写，勿修改） -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 本模块专属样式 -->
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <!-- ==================== 顶部导航栏（顺序：首页、权益自测、权益知识、互助墙、个人信息、登录/注册） ==================== -->
+    <header>
+        <div class="container header">
+            <div>
+                <h1>新就业形态灵活就业人员权益助手</h1>
+                <p>了解权益，保护自己</p>
+            </div>
+
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="test.html">权益自测</a>
+                <a href="pages/knowledge.html">权益知识</a>
+                <a href="pages/community.html">互助墙</a>
+                <a class="active" href="profile.html" aria-current="page">个人信息</a>
+                <!-- 登录用户区域（auth_modal.js 自动渲染 登录/注册 或 欢迎+退出登录） -->
+                <div id="userArea"></div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ==================== 主体：左菜单 + 右内容 ==================== -->
+    <main class="container page profile-layout">
+        <!-- 左侧边栏 -->
+        <aside id="sidebar">
+            <a class="menu-item" href="records.html">我的权益记录</a>
+            <a class="menu-item" href="#" data-menu>我的帖子</a>
+            <a class="menu-item" href="#" data-menu>我的基本资料</a>
+            <!-- 退出登录：沉底红色警示，调用 auth_modal.js 的全局 logout() -->
+            <button class="menu-item logout-item" type="button" onclick="logout()">退出登录</button>
+        </aside>
+
+        <!-- 右侧内容区（暂为空容器，具体页面后续填充） -->
+        <section id="main-content">
+            <p>欢迎来到个人中心，请选择左侧菜单</p>
+        </section>
+    </main>
+
+    <!-- ==================== 登录注册弹窗（与 index.html 保持一致） ==================== -->
+    <!-- 注意：必须放在 auth_modal.js 之前，脚本加载时会立即绑定表单事件 -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-box">
+            <button class="auth-close" onclick="closeAuthModal()">×</button>
+            <h2>账户登录</h2>
+            <p class="auth-subtitle">登录后可以保存你的权益记录</p>
+            <div class="auth-tabs">
+                <button id="modalTabLogin" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button id="modalTabRegister" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+            <!-- 登录 -->
+            <form id="modalLoginForm">
+                <label>用户名</label>
+                <input id="modalLoginUsername" type="text" placeholder="请输入用户名" required>
+                <label>密码</label>
+                <input id="modalLoginPassword" type="password" placeholder="请输入密码" required>
+                <button type="submit" class="auth-submit">登录</button>
+            </form>
+            <!-- 注册 -->
+            <form id="modalRegisterForm" class="hidden">
+                <label>用户名</label>
+                <input id="modalRegUsername" type="text" placeholder="请输入用户名" required>
+                <label>昵称</label>
+                <input id="modalRegNickname" type="text" placeholder="请输入昵称" required>
+                <label>密码</label>
+                <input id="modalRegPassword" type="password" placeholder="请输入密码" required>
+                <button type="submit" class="auth-submit">注册</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 本模块脚本：auth_modal.js 先引入（全局函数 + 弹窗事件绑定），再加载页面脚本 -->
+    <script src="js/auth_modal.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

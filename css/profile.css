@@ -1,0 +1,73 @@
+/* ===== 个人信息页专属样式 ===== */
+
+/* 主体：左右两栏 Flex 布局 */
+.profile-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+/* 左侧边栏：240px 白底圆角阴影，纵向排布让退出登录沉底 */
+#sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    padding: 15px;
+}
+
+/* 菜单项：卡片式按钮，悬浮时背景变蓝、文字变白 */
+.menu-item {
+    display: block;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    color: #333333;
+    font-size: 15px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.menu-item:hover {
+    background: #1769aa;
+    color: #ffffff;
+}
+
+/* 退出登录：沉底 + 红色警示（悬浮保持红色系） */
+.menu-item.logout-item {
+    color: #dc3545;
+    font-weight: bold;
+    margin-top: auto; /* 推到侧边栏底部 */
+    margin-bottom: 0;
+}
+.menu-item.logout-item:hover {
+    background: #fdecea;
+    color: #dc3545;
+}
+
+/* 右侧内容区：自适应剩余宽度（flex: 1） */
+#main-content {
+    flex: 1;
+    min-height: 400px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    padding: 30px;
+    color: #555555;
+}
+
+/* 小屏：改为上下堆叠，侧边栏占满宽度 */
+@media (max-width: 800px) {
+    .profile-layout {
+        flex-direction: column;
+    }
+    #sidebar {
+        width: 100%;
+    }
+}
