@@ -649,30 +649,12 @@ function renderResult(result) {
 
 /* ---------- 8. 事件绑定 ---------- */
 
-// 8.1 开始自测：先做登录拦截，未登录则提示并弹登录框，绝不进入答题区
+// 8.1 开始自测：隐藏说明区，渲染题目，显示答题区
 startBtn.addEventListener('click', () => {
-    const loginError = document.getElementById('login-error');
-
-    // 未登录（localStorage 中没有 userId）：显示红字 + 300ms 后弹登录框，直接终止
-    if (!localStorage.getItem('userId')) {
-        if (loginError) loginError.style.display = 'block';
-        setTimeout(() => {
-            if (typeof window.openAuthModal === 'function') {
-                window.openAuthModal();
-            }
-        }, 300);
-        return;
-    }
-
-    // 已登录：隐藏红字提示，正常进入自测
-    if (loginError) loginError.style.display = 'none';
-
     renderQuiz();
     progressText.textContent = `0/${questions.length}`;
     introSection.classList.add('hidden');
     quizSection.classList.remove('hidden');
-    // 平滑滚动到页面顶部，从第一道题开始作答
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 // 8.2 选项点击（事件委托）：同一题内单选，选中的选项加 .selected 类

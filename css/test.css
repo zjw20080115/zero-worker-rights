@@ -51,13 +51,3 @@
     100% { background-color: #ffffff; } /* 回到白色 */
 }
 
-/* 未登录提示：渐显动画（display 从 none 切到 block 时自动播放） */
-#login-error {
-    animation: login-error-fade 0.4s ease-in-out;
-}
-
-@keyframes login-error-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-

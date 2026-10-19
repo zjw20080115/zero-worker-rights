@@ -38,40 +38,8 @@
         <div id="records-list"></div>
     </main>
 
-    <!-- ==================== 登录注册弹窗（与 index.html 保持一致） ==================== -->
-    <!-- 注意：必须放在 auth_modal.js 之前，脚本加载时会立即绑定表单事件 -->
-    <div id="authModal" class="auth-modal">
-        <div class="auth-box">
-            <button class="auth-close" onclick="closeAuthModal()">×</button>
-            <h2>账户登录</h2>
-            <p class="auth-subtitle">登录后可以保存你的权益记录</p>
-            <div class="auth-tabs">
-                <button id="modalTabLogin" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
-                <button id="modalTabRegister" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
-            </div>
-            <!-- 登录 -->
-            <form id="modalLoginForm">
-                <label>用户名</label>
-                <input id="modalLoginUsername" type="text" placeholder="请输入用户名" required>
-                <label>密码</label>
-                <input id="modalLoginPassword" type="password" placeholder="请输入密码" required>
-                <button type="submit" class="auth-submit">登录</button>
-            </form>
-            <!-- 注册 -->
-            <form id="modalRegisterForm" class="hidden">
-                <label>用户名</label>
-                <input id="modalRegUsername" type="text" placeholder="请输入用户名" required>
-                <label>昵称</label>
-                <input id="modalRegNickname" type="text" placeholder="请输入昵称" required>
-                <label>密码</label>
-                <input id="modalRegPassword" type="password" placeholder="请输入密码" required>
-                <button type="submit" class="auth-submit">注册</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 本模块脚本：auth_modal.js 先引入（全局函数 + 弹窗事件绑定），再加载页面脚本 -->
-    <script src="js/auth_modal.js"></script>
+    <!-- 本模块脚本：底部引入，保证 DOM 加载完成后执行 -->
     <script src="js/records.js"></script>
+    <script src="js/auth_modal.js"></script>
 </body>
 </html>
