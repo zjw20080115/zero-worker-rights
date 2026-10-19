@@ -494,3 +494,267 @@ footer {
 .main-action:hover .action-arrow {
     transform: translateX(6px);
 }
+/* ================================
+   C-front：首页新版布局（仅 index.html 使用，纯追加不影响其他页面）
+   ================================ */
+
+/* 顶部 Banner：横向铺满、图片下方不留白 */
+.site-banner img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    max-height: 400px;
+}
+
+/* 导航栏：深蓝铺满，内部完全居中对齐（已去掉左侧 Logo，只保留菜单 + 用户区） */
+.main-nav {
+    display: block; /* 覆盖全局 nav 的 flex 规则，条状铺满由 inner 控制 */
+    background: #1769aa;
+    color: #ffffff;
+}
+.main-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    padding: 14px 22px;
+    flex-wrap: wrap;
+}
+/* 菜单链接：等距排列，呼吸感更强（gap: 45px） */
+.main-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 45px;
+}
+/* 用户区：与菜单拉开距离（仅首页导航生效，不影响其他页面） */
+.main-nav-inner #userArea {
+    margin-left: 60px;
+}
+.main-nav-links a {
+    color: #ffffff;
+    padding: 7px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.main-nav-links a:hover,
+.main-nav-links a.active {
+    background: #ffffff2e;
+}
+
+/* 主体内容区：限宽居中，左右卡片 70% / 30% */
+.home-main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 22px;
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+}
+.carousel-card,
+.policy-card {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+}
+.carousel-card {
+    width: 70%;
+}
+.policy-card {
+    width: 30%;
+}
+.banner-carousel {
+    height: 100%;
+    min-height: 260px;
+    background: #e0f2fe;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0369a1;
+    font-size: 18px;
+}
+.policy-card h2 {
+    margin: 0 0 12px;
+    color: #1769aa;
+    font-size: 20px;
+}
+.policy-card ul {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 2.1;
+}
+.policy-card a {
+    color: #1769aa;
+}
+
+/* 工作流区域：浅蓝卡片 + 横向四步骤 */
+.workflow-card {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    padding: 24px 22px;
+    background: #e8f2fb;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+}
+.workflow-card h2 {
+    margin: 0 0 16px;
+    color: #1769aa;
+    font-size: 20px;
+}
+.workflow-steps {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.workflow-step {
+    flex: 1;
+    min-width: 180px;
+    background: #ffffff;
+    border-radius: 9px;
+    padding: 18px;
+}
+.workflow-step b {
+    color: #1769aa;
+    font-size: 22px;
+}
+.workflow-step h3 {
+    margin: 6px 0 4px;
+    font-size: 17px;
+}
+.workflow-step p {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+}
+
+/* 互助墙高赞贴：浅蓝标题条 + 内容预留区 */
+.hot-posts-card {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+.hot-posts-title {
+    background: #e8f2fb;
+    padding: 14px 22px;
+    color: #1769aa;
+    font-size: 20px;
+    font-weight: bold;
+}
+#community-hot-posts {
+    padding: 16px 22px;
+    color: #666666;
+}
+
+/* 权益知识六宫格：Grid 三列两行 */
+.knowledge-section {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 22px;
+}
+.knowledge-section h2 {
+    margin: 0 0 16px;
+    color: #1769aa;
+    font-size: 20px;
+}
+.knowledge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.knowledge-card {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    color: #1769aa;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.knowledge-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+.knowledge-card h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+.knowledge-card p {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+}
+
+/* 手机端：主区上下堆叠、六宫格变两列、导航间距收紧 */
+@media (max-width: 768px) {
+    .home-main {
+        flex-direction: column;
+    }
+    .carousel-card,
+    .policy-card {
+        width: 100%;
+    }
+    .knowledge-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .main-nav-links {
+        gap: 14px;
+    }
+    .main-nav-inner #userArea {
+        margin-left: 0;
+    }
+}
+
+/* 首页高赞贴条目 */
+.hot-post-item {
+    padding: 14px 2px;
+    border-bottom: 1px dashed #e5edf4;
+    transition: background-color 0.15s ease;
+}
+.hot-post-item:last-child {
+    border-bottom: none;
+}
+.hot-post-item:hover {
+    background: #f8fbff;
+}
+.hot-post-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.hot-post-category {
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+.hot-post-time {
+    color: #aab7c4;
+    font-size: 12px;
+}
+.hot-post-title {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: #1e293b;
+}
+.hot-post-excerpt {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #667788;
+}
+.hot-post-foot {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #94a3b8;
+}

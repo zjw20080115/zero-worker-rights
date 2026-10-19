@@ -6,11 +6,11 @@
     <title>个人信息 - 零工权益助手</title>
     <!-- 全局样式（队友A编写，勿修改） -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- 本模块专属样式 -->
+    <!-- 本模块专属样式（权益记录已迁至自测页，不再需要 records.css） -->
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
-    <!-- ==================== 顶部导航栏（顺序：首页、权益自测、权益知识、互助墙、个人信息、登录/注册） ==================== -->
+    <!-- ==================== 顶部导航栏 ==================== -->
     <header>
         <div class="container header">
             <div>
@@ -30,22 +30,68 @@
         </div>
     </header>
 
-    <!-- ==================== 主体：左菜单 + 右内容 ==================== -->
-    <main class="container page profile-layout">
-        <!-- 左侧边栏 -->
-        <aside id="sidebar">
-            <a class="menu-item" href="records.html">我的权益记录</a>
-            <a class="menu-item" href="#" data-menu>我的帖子</a>
-            <a class="menu-item" href="#" data-menu>我的基本资料</a>
-            <!-- 退出登录：沉底红色警示，调用 auth_modal.js 的全局 logout() -->
-            <button class="menu-item logout-item" type="button" onclick="logout()">退出登录</button>
-        </aside>
+    <!-- ==================== 主体：卡片仪表盘布局（左个人信息 + 右记录/帖子） ==================== -->
+    <main class="container page">
+        <div class="profile-container" style="display: flex; gap: 20px; margin-top: 20px;">
+            <!-- 左侧卡片：个人信息区（约 300px） -->
+            <div class="profile-info-card">
+                <div class="avatar-wrap">
+                    <!-- 点击头像弹出选择弹窗；默认图缺失时由 profile.js 替换为灰色圆形占位符 -->
+                    <img id="user-avatar" src="images/default-avatar.png" alt="头像" title="点击修改头像">
+                    <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+                </div>
+                <p class="greeting">你好，欢迎回来 👋</p>
+                <div id="user-name-display" title="点击修改用户名">当前用户名</div>
+                <textarea id="suggestion-input" rows="5" placeholder="写下您的建议..."></textarea>
+                <button id="suggestion-submit" class="btn" type="button">提交建议</button>
+                <!-- 修改密码（点击弹出修改密码弹窗） -->
+                <button id="change-pwd-btn" class="btn" style="margin-bottom: 10px; width: 100%; background: #ffffff; color: #94a3b8; border: 1px solid #e2e8f0;">修改密码</button>
+                <!-- 登录态按钮：已登录显示"退出登录"（logout()），未登录显示"立即登录/注册"（openAuthModal()） -->
+                <button id="profile-auth-btn" class="profile-logout-btn" type="button">退出登录</button>
+            </div>
 
-        <!-- 右侧内容区（暂为空容器，具体页面后续填充） -->
-        <section id="main-content">
-            <p>欢迎来到个人中心，请选择左侧菜单</p>
-        </section>
+            <!-- 右侧区块：内容区（flex: 1），权益记录已迁至权益自测页 -->
+            <div class="profile-main">
+                <!-- 我的帖子 -->
+                <div id="panel-posts" class="profile-panel">
+                    <h3>我的帖子</h3>
+                    <p>暂无帖子，快去互助墙发帖吧！</p>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <!-- ==================== 头像修改弹窗 ==================== -->
+    <div id="avatar-modal" class="mini-modal" style="display:none;">
+        <div class="mini-modal-box">
+            <h4>修改头像</h4>
+            <button id="avatar-shoot-btn" class="btn" type="button">拍摄</button>
+            <button id="avatar-album-btn" class="btn" type="button">从相册选择</button>
+            <button id="avatar-cancel-btn" class="mini-cancel" type="button">取消</button>
+        </div>
+    </div>
+
+    <!-- ==================== 修改用户名弹窗 ==================== -->
+    <div id="edit-username-modal" class="mini-modal" style="display:none;">
+        <div class="mini-modal-box">
+            <h4>修改用户名</h4>
+            <input id="new-username" type="text" placeholder="请输入新用户名">
+            <button id="edit-username-confirm" class="btn" type="button">确认修改</button>
+            <button id="edit-username-cancel" class="mini-cancel" type="button">取消</button>
+        </div>
+    </div>
+
+    <!-- ==================== 修改密码弹窗 ==================== -->
+    <div id="edit-password-modal" class="mini-modal" style="display:none;">
+        <div class="mini-modal-box">
+            <h4>修改密码</h4>
+            <input type="password" id="old-password" placeholder="请输入原密码" required>
+            <input id="new-password" type="password" placeholder="请输入新密码（至少 6 位）">
+            <input id="confirm-password" type="password" placeholder="请再次输入新密码">
+            <button id="edit-password-confirm" class="btn" type="button">确认修改</button>
+            <button id="edit-password-cancel" class="mini-cancel" type="button">取消</button>
+        </div>
+    </div>
 
     <!-- ==================== 登录注册弹窗（与 index.html 保持一致） ==================== -->
     <!-- 注意：必须放在 auth_modal.js 之前，脚本加载时会立即绑定表单事件 -->
