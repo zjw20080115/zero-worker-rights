@@ -3,538 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>权益知识库</title>
+    <title>权益知识库 - 零工权益助手</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/book.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-        }
-
+        /* ============================================
+           页面整体美化
+           ============================================ */
         body {
-            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            color: #333;
-            padding-bottom: 60px;
-
             background:
-                radial-gradient(ellipse at 20% 0%, rgba(120, 170, 240, 0.25) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 100%, rgba(160, 130, 220, 0.2) 0%, transparent 50%),
-                linear-gradient(180deg, #f0f4fa 0%, #eaf0f8 100%);
-            min-height: 100vh;
+                radial-gradient(circle at 20% 0%, rgba(120, 170, 240, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 100%, rgba(160, 130, 220, 0.12) 0%, transparent 50%),
+                #f0f4fa;
         }
 
-        /* ============================================
-           顶部导航栏
-           ============================================ */
-        .navbar {
-            background: linear-gradient(135deg, #1e5a8a 0%, #2c7ab5 50%, #3d8fd0 100%);
-            color: white;
-            padding: 18px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(30, 90, 138, 0.25);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-brand {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .nav-brand-title {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .nav-brand-subtitle {
-            font-size: 13px;
-            color: #bfdbfe;
-            letter-spacing: 2px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-links a {
-            color: #e0f2fe;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            padding: 10px 18px;
-            border-radius: 8px;
-            transition: all 0.25s;
-            letter-spacing: 1px;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-        }
-
-        .nav-links a.active {
-            background: rgba(255, 255, 255, 0.22);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        /* ============================================
-           ⭐ 顶部蓝色区（包含标题 + 搜索 + 七个卡片）
-           ============================================ */
-        .header {
+        .knowledge-hero {
             background:
-                radial-gradient(circle at 50% 0%, rgba(120, 180, 255, 0.4) 0%, transparent 60%),
-                linear-gradient(135deg, #1e5a8a 0%, #2c7ab5 50%, #3d8fd0 100%);
-            /* ⭐ 底部留出足够空间，让卡片"沉"在蓝色里 */
-            padding: 50px 20px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+                radial-gradient(circle at 50% 0%, rgba(120, 180, 255, 0.45) 0%, transparent 60%),
+                linear-gradient(135deg, #2c7ab5 0%, #3d8fd0 50%, #4a9fe0 100%);
+            padding: 28px 20px 55px;
             box-shadow: 0 10px 40px rgba(30, 90, 138, 0.25);
         }
 
-        /* 装饰光点 */
-        .header::before {
+        .knowledge-hero::before {
             content: '';
             position: absolute;
             inset: 0;
             background-image:
-                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
-                radial-gradient(circle at 75% 60%, rgba(255,255,255,0.2) 1px, transparent 1.5px),
-                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.2) 1px, transparent 1.5px),
-                radial-gradient(circle at 90% 20%, rgba(255,255,255,0.15) 1px, transparent 1.5px),
-                radial-gradient(circle at 25% 70%, rgba(255,255,255,0.2) 1px, transparent 1.5px);
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.3) 1px, transparent 1.5px),
+                radial-gradient(circle at 75% 60%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
+                radial-gradient(circle at 90% 20%, rgba(255,255,255,0.2) 1px, transparent 1.5px),
+                radial-gradient(circle at 25% 70%, rgba(255,255,255,0.25) 1px, transparent 1.5px);
             background-size: 300px 300px, 400px 400px, 350px 350px, 500px 500px, 450px 450px;
             pointer-events: none;
         }
 
-        .title {
+        .hero-content { position: relative; z-index: 2; }
+
+        .hero-title {
             font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', serif;
             font-size: 56px;
             color: #ffffff;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
             font-weight: 400;
-            margin-bottom: 20px;
-            position: relative;
+            margin: 0 0 22px;
             text-shadow:
-                0 0 30px rgba(180, 220, 255, 0.7),
-                0 4px 12px rgba(0, 30, 60, 0.4);
+                0 0 40px rgba(180, 220, 255, 0.8),
+                0 4px 14px rgba(0, 30, 60, 0.35);
         }
 
-        .search-bar {
-            max-width: 700px;
-            margin: 0 auto;
+        /* 搜索栏 */
+        .knowledge-hero .search-bar {
+            max-width: 620px;
+            margin: 0 auto 18px;
             display: flex;
             align-items: stretch;
-            border-radius: 8px;
+            border-radius: 50px;
             overflow: hidden;
-            background: white;
-            box-shadow: 0 8px 24px rgba(0, 30, 60, 0.2);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow:
+                0 10px 30px rgba(0, 30, 60, 0.18),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+            transition: transform .3s, box-shadow .3s;
             position: relative;
-            z-index: 2;
+        }
+        .knowledge-hero .search-bar:focus-within {
+            transform: translateY(-2px);
+            box-shadow:
+                0 16px 40px rgba(0, 30, 60, 0.25),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.8);
         }
 
-        .search-select {
-            padding: 0 15px;
+        .knowledge-hero .search-bar .search-select {
+            padding: 0 16px;
             border: none;
-            border-right: 1px solid #e5e9f0;
-            background: #f8fafc;
-            color: #475569;
+            background: transparent;
+            position: relative;
+        }
+        .knowledge-hero .search-bar .search-select select {
+            height: 100%;
+            padding: 0 14px 0 12px;
+            border: none;
+            background: transparent;
+            color: #334155;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             outline: none;
-            min-width: 110px;
+            appearance: none;
+            -webkit-appearance: none;
         }
-
-        .search-input {
+        .knowledge-hero .search-bar .search-select::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #94a3b8;
+            border-bottom: 2px solid #94a3b8;
+            transform: translateY(-70%) rotate(45deg);
+            pointer-events: none;
+        }
+        .knowledge-hero .search-bar input {
             flex: 1;
-            padding: 14px 18px;
+            padding: 14px 16px;
             border: none;
             outline: none;
             font-size: 14px;
-            color: #333;
+            color: #1e293b;
+            background: transparent;
         }
-
-        .search-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .search-btn {
-            padding: 0 28px;
+        .knowledge-hero .search-bar input::placeholder { color: #94a3b8; font-size: 14px; }
+        .knowledge-hero .search-bar .search-btn {
+            padding: 0 22px;
+            margin: 6px;
+            border-radius: 50px;
             background: linear-gradient(135deg, #ffb547 0%, #ff9500 100%);
-            color: white;
-            border: none;
+            color: #fff;
             font-size: 14px;
             font-weight: 600;
+            border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.3s;
-            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1);
+            transition: all .3s;
+            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
         }
-
-        .search-btn:hover {
+        .knowledge-hero .search-bar .search-btn:hover {
             background: linear-gradient(135deg, #ff9500 0%, #e07e00 100%);
             transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(255, 149, 0, 0.45);
         }
 
-        .tabs-mini {
-            max-width: 700px;
-            margin: 18px auto 0;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-            position: relative;
-            z-index: 2;
-        }
-
-        .tabs-mini span {
-            cursor: pointer;
-            padding: 4px 12px;
-            border-radius: 20px;
-            transition: all 0.2s;
-        }
-
-        .tabs-mini span.active {
-            color: #ffffff;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .tabs-mini span:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* ============================================
-           ⭐ 七个功能入口（现在放在蓝色背景里）
-           ============================================ */
-        .feature-nav {
-            max-width: 1200px;
-            margin: 40px auto 0;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 12px;
-            position: relative;
-            z-index: 5;
-        }
-
-        .feature-item {
-            padding: 22px 12px 18px;
-            text-align: center;
-            cursor: pointer;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 30, 60, 0.15);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent);
-            opacity: 0.9;
-            transition: all 0.3s;
-        }
-
-        .feature-item:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 35px rgba(0, 30, 60, 0.25);
-        }
-
-        .feature-item:hover::before {
-            height: 100%;
-            opacity: 0.08;
-        }
-
-        .feature-item.active {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 30, 60, 0.25);
-        }
-
-        .feature-item .icon-wrap {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            transition: all 0.3s;
-        }
-
-        .feature-item .icon {
-            width: 24px;
-            height: 24px;
-            stroke: var(--accent);
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .feature-item .label {
-            font-size: 13px;
-            color: #475569;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .feature-item.active .label {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* 每个入口的颜色 */
-        .f1 { --accent: #2c7ab5; --bg: #e8f1fa; }
-        .f2 { --accent: #d97706; --bg: #fef3e2; }
-        .f3 { --accent: #7c3aed; --bg: #f0e8fd; }
-        .f4 { --accent: #059669; --bg: #e3f5ed; }
-        .f5 { --accent: #dc2626; --bg: #fdeaea; }
-        .f6 { --accent: #0891b2; --bg: #e0f4f8; }
-        .f7 { --accent: #db2777; --bg: #fce6ef; }
-
-        /* ============================================
-           主体内容区
-           ============================================ */
-        .main-content {
-            max-width: 1200px;
-            margin: 40px auto 0;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 20px;
-        }
-
-        .sidebar {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(30, 90, 138, 0.08);
-            padding: 20px;
-            height: fit-content;
-            position: sticky;
-            top: 90px;
-        }
-
-        .sidebar-title {
+        /* 标签 */
+        .hero-tabs { margin-bottom: 28px; }
+        .hero-tabs .tab {
             font-size: 15px;
-            font-weight: 700;
-            color: #1e5a8a;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #eef4f9;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 7px 20px;
+            border-radius: 20px;
+            transition: all .25s;
+        }
+        .hero-tabs .tab.active {
+            background: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
         }
 
-        .sidebar-title::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: linear-gradient(135deg, #2c7ab5, #3d8fd0);
-            border-radius: 2px;
-        }
-
-        .catalog-item {
-            padding: 12px 14px;
-            font-size: 14px;
-            color: #475569;
-            cursor: pointer;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .catalog-item::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-
-        .catalog-item:hover {
-            background: #f0f6fc;
-            color: #1e5a8a;
-            padding-left: 18px;
-        }
-
-        .catalog-item.active {
-            background: linear-gradient(90deg, #e8f1fa 0%, #f0f6fc 100%);
-            color: #1e5a8a;
-            font-weight: 600;
-            border-left: 3px solid #2c7ab5;
-            padding-left: 15px;
-        }
-
-        .catalog-item.active::before {
-            background: #2c7ab5;
-            box-shadow: 0 0 8px rgba(44, 122, 181, 0.6);
-        }
-
-        .content-panel {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(30, 90, 138, 0.08);
-            padding: 30px 35px;
-            min-height: 500px;
+        /* 7 个快捷卡片 */
+        .quick-cards { gap: 16px; top: 24px; }
+        .quick-cards .card {
+            width: 118px;
+            height: 108px;
+            border-radius: 14px;
+            padding: 14px 8px;
+            box-shadow: 0 6px 18px rgba(0, 30, 60, 0.12);
+            transition: transform .28s ease, box-shadow .28s ease;
             position: relative;
             overflow: hidden;
         }
-
-        .content-panel::before {
+        .quick-cards .card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
+            height: 0;
+            background: var(--card-accent, #1769aa);
+            opacity: 0.07;
+            transition: height .3s ease;
+        }
+        .quick-cards .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 36px rgba(0, 30, 60, 0.2);
+        }
+        .quick-cards .card:hover::after { height: 100%; }
+        .quick-cards .card .icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            line-height: 1;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+        }
+        .quick-cards .card .label {
+            font-size: 13px;
+            color: #334155;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* 左侧分类：彩色圆角图标 + 序号 */
+        .sidebar-left .category-list { gap: 12px; }
+        .sidebar-left .category-list li {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(30, 90, 138, 0.06);
+            transition: all .25s ease;
+            border-left: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-left .category-list li::after {
+            content: '';
+            position: absolute;
+            top: 12px; bottom: 12px; left: 0;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--accent, #2c7ab5);
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+        .sidebar-left .category-list li:hover {
+            transform: translateX(4px);
+            box-shadow: 0 10px 26px rgba(30, 90, 138, 0.12);
+            background: #fafcff;
+        }
+        .sidebar-left .category-list li.active {
+            background: linear-gradient(90deg, #f0f7ff 0%, #fafcff 100%);
+            box-shadow: 0 10px 26px rgba(44, 122, 181, 0.16);
+        }
+        .sidebar-left .category-list li.active::after { opacity: 1; }
+
+        .sidebar-left .category-list li .folder-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg, #e8f1fa);
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent, #2c7ab5);
+            font-weight: 700;
+            font-size: 16px;
+            transition: transform .25s;
+        }
+        .sidebar-left .category-list li .folder-icon::before,
+        .sidebar-left .category-list li .folder-icon::after { content: none; }
+
+        .sidebar-left .category-list { counter-reset: catnum; }
+        .sidebar-left .category-list li { counter-increment: catnum; }
+        .sidebar-left .category-list li .folder-icon::before {
+            content: counter(catnum);
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            position: static;
+            width: auto; height: auto;
+            background: none; border-radius: 0;
+        }
+
+        .sidebar-left .category-list li:nth-child(1) .folder-icon { background: #e8f1fa; color: #2c7ab5; }
+        .sidebar-left .category-list li:nth-child(1) { --accent: #2c7ab5; }
+        .sidebar-left .category-list li:nth-child(2) .folder-icon { background: #fef3e2; color: #d97706; }
+        .sidebar-left .category-list li:nth-child(2) { --accent: #d97706; }
+        .sidebar-left .category-list li:nth-child(3) .folder-icon { background: #f0e8fd; color: #7c3aed; }
+        .sidebar-left .category-list li:nth-child(3) { --accent: #7c3aed; }
+        .sidebar-left .category-list li:nth-child(4) .folder-icon { background: #e3f5ed; color: #059669; }
+        .sidebar-left .category-list li:nth-child(4) { --accent: #059669; }
+        .sidebar-left .category-list li:nth-child(5) .folder-icon { background: #fdeaea; color: #dc2626; }
+        .sidebar-left .category-list li:nth-child(5) { --accent: #dc2626; }
+        .sidebar-left .category-list li:nth-child(6) .folder-icon { background: #e0f4f8; color: #0891b2; }
+        .sidebar-left .category-list li:nth-child(6) { --accent: #0891b2; }
+
+        .sidebar-left .category-list li .cat-name {
+            font-size: 15px; color: #1e293b; font-weight: 600; margin-bottom: 3px;
+        }
+        .sidebar-left .category-list li .cat-sub {
+            font-size: 12px; color: #94a3b8; letter-spacing: 0.5px;
+        }
+        .sidebar-left .category-list li .cat-arrow {
+            font-size: 18px; color: #cbd5e1;
+            transition: transform .25s, color .25s;
+        }
+        .sidebar-left .category-list li:hover .cat-arrow {
+            transform: translateX(4px);
+            color: var(--accent, #2c7ab5);
+        }
+        .sidebar-left .category-list li:hover .folder-icon { transform: scale(1.06); }
+
+        .knowledge-main {
+            margin-top: 24px;
+            padding-bottom: 60px;
+        }
+
+        /* 右侧内容区 */
+        .content-right {
+            border-radius: 14px;
+            box-shadow: 0 6px 24px rgba(30, 90, 138, 0.08);
+            position: relative;
+            overflow: hidden;
+            padding: 34px 38px;
+        }
+        .content-right::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
             height: 4px;
             background: linear-gradient(90deg, #2c7ab5, #7c3aed, #db2777);
         }
 
-        .content-header {
+        /* 文档列表：竖排精美卡片 */
+        .doc-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .doc-item {
+            border-radius: 14px;
+            padding: 20px 24px;
+            border: 1px solid #eef4f9;
+            background: #fafcff;
+            cursor: pointer;
+            transition: all .25s ease;
+            position: relative;
+            overflow: hidden;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eef4f9;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 18px;
+        }
+        .doc-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #2c7ab5, #7c3aed);
+            opacity: 0;
+            transition: opacity .25s;
+        }
+        .doc-item:hover {
+            background: #f0f7ff;
+            transform: translateX(4px);
+            box-shadow: 0 10px 24px rgba(44, 122, 181, 0.12);
+            border-color: #d6e7f6;
+        }
+        .doc-item:hover::before { opacity: 1; }
+
+        .doc-item .doc-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e8f1fa 0%, #dbeafc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            color: #2c7ab5;
         }
 
-        .content-header .breadcrumb {
-            font-size: 13px;
-            color: #94a3b8;
-        }
+        .doc-item .doc-body { flex: 1; min-width: 0; }
 
-        .content-header .breadcrumb b {
-            color: #1e5a8a;
-            font-weight: 600;
-        }
-
-        .content-header .badge {
-            padding: 5px 14px;
-            background: linear-gradient(135deg, #ffb547, #ff9500);
-            color: white;
-            font-size: 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3);
-        }
-
-        .article-item {
-            margin-bottom: 30px;
-            padding: 20px 22px;
-            background: linear-gradient(135deg, #fafcff 0%, #f5f9ff 100%);
-            border-radius: 10px;
-            border-left: 4px solid #2c7ab5;
-            transition: all 0.3s;
-        }
-
-        .article-item:hover {
-            background: linear-gradient(135deg, #f0f6fc 0%, #e8f1fa 100%);
-            box-shadow: 0 4px 15px rgba(44, 122, 181, 0.1);
-            transform: translateX(3px);
-        }
-
-        .article-title {
+        .doc-item h3 {
+            margin: 0 0 6px;
             font-size: 16px;
             color: #1e5a8a;
             font-weight: 700;
-            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .doc-item .doc-meta {
+            font-size: 13px;
+            color: #94a3b8;
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        .doc-item .doc-meta .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            background: #e8f1fa;
+            color: #2c7ab5;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .doc-item .doc-meta .tag.orange { background: #fef3e2; color: #d97706; }
+        .doc-item .doc-meta .tag.purple { background: #f0e8fd; color: #7c3aed; }
+        .doc-item .doc-meta .tag.green { background: #e3f5ed; color: #059669; }
+        .doc-item .doc-meta .tag.red { background: #fdeaea; color: #dc2626; }
+        .doc-item .doc-meta .tag.cyan { background: #e0f4f8; color: #0891b2; }
 
-        .article-title .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2c7ab5, #7c3aed);
-            box-shadow: 0 0 8px rgba(44, 122, 181, 0.5);
+        .doc-item .doc-arrow {
+            font-size: 20px;
+            color: #cbd5e1;
+            transition: transform .25s, color .25s;
             flex-shrink: 0;
         }
-
-        .article-body {
-            font-size: 14px;
-            line-height: 2;
-            color: #475569;
-            padding-left: 18px;
-        }
-
-        .article-body b {
-            color: #1e5a8a;
-        }
-
-        .article-body ul {
-            margin: 8px 0 8px 20px;
-        }
-
-        .article-body li {
-            margin-bottom: 6px;
-            color: #5a6678;
-        }
-
-        .article-body li::marker {
+        .doc-item:hover .doc-arrow {
+            transform: translateX(4px);
             color: #2c7ab5;
         }
 
-        /* 响应式 */
-        @media (max-width: 1100px) {
-            .navbar { padding: 15px 20px; flex-direction: column; gap: 12px; }
-            .nav-links { flex-wrap: wrap; justify-content: center; }
-            .nav-links a { padding: 8px 14px; font-size: 14px; }
-            .feature-nav { grid-template-columns: repeat(4, 1fr); }
+        .detail-content {
+            border-radius: 14px;
+            padding: 26px 30px;
+            background: #fafcff;
+            line-height: 2;
+        }
+        .book-back {
+            border-radius: 8px;
+            transition: all .25s;
+        }
+        .book-back:hover {
+            background: #e6f0fa;
+            transform: translateX(-2px);
         }
 
         @media (max-width: 900px) {
-            .feature-nav { grid-template-columns: repeat(3, 1fr); }
-            .main-content { grid-template-columns: 1fr; }
-            .title { font-size: 40px; }
+            .hero-title { font-size: 40px; letter-spacing: 6px; }
+            .quick-cards .card { width: 100px; height: 96px; }
+            .knowledge-hero .search-bar { max-width: 92%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 顶部导航栏 -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <div class="nav-brand-title">新就业形态灵活就业人员权益助手</div>
-            <div class="nav-brand-subtitle">了解权益，保护自己</div>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="brand">
+            <h1>新就业形态灵活就业人员权益助手</h1>
+            <p>了解权益，保护自己</p>
         </div>
         <div class="nav-links">
             <a href="community.html">首页</a>
@@ -543,154 +443,78 @@
             <a href="community.html">互助墙</a>
             <a href="../profile.html">个人信息</a>
         </div>
-    </nav>
+    </div>
+</header>
 
-    <!-- ⭐ 顶部蓝色区（标题 + 搜索 + 七个卡片 都在里面） -->
-    <header class="header">
-        <h1 class="title">权益知识库</h1>
+<section class="knowledge-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">权益知识库</h1>
 
         <div class="search-bar">
-            <select class="search-select">
-                <option>全部知识</option>
-                <option>工资报酬</option>
-                <option>工伤赔偿</option>
-                <option>劳动合同</option>
-                <option>社会保险</option>
-                <option>解除辞退</option>
-                <option>维权途径</option>
-            </select>
-            <input type="text" class="search-input" placeholder="输入关键词，如：工资拖欠、工伤认定、劳动合同">
-            <button class="search-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                搜索
-            </button>
+            <div class="search-select">
+                <select id="search-scope">
+                    <option value="all">全部知识</option>
+                </select>
+            </div>
+            <input id="search-input" type="text" placeholder="搜索关键词，如：加班、工伤、合同…">
+            <button class="search-btn" id="search-btn">🔍 搜索</button>
         </div>
 
-        <div class="tabs-mini">
-            <span class="active">正文</span>
-            <span>释义</span>
-            <span>条旨</span>
+        <div class="hero-tabs">
+            <span class="tab active" data-tab="main">正文</span>
+            <span class="tab" data-tab="interpret">释义</span>
+            <span class="tab" data-tab="summary">条旨</span>
         </div>
 
-        <!-- ⭐ 七个功能入口（现在在蓝色背景里） -->
-        <nav class="feature-nav">
-            <div class="feature-item f1 active">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                </div>
-                <div class="label">工资报酬</div>
-            </div>
-            <div class="feature-item f2">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M8 7l-3 6h6z"/><path d="M16 7l-3 6h6z"/><path d="M8 20h8"/></svg>
-                </div>
-                <div class="label">工伤赔偿</div>
-            </div>
-            <div class="feature-item f3">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                </div>
-                <div class="label">劳动合同</div>
-            </div>
-            <div class="feature-item f4">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-                <div class="label">社会保险</div>
-            </div>
-            <div class="feature-item f5">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="label">解除辞退</div>
-            </div>
-            <div class="feature-item f6">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                </div>
-                <div class="label">维权途径</div>
-            </div>
-            <div class="feature-item f7">
-                <div class="icon-wrap">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                </div>
-                <div class="label">政策解读</div>
-            </div>
-        </nav>
-    </header>
+        <div class="quick-cards" id="quick-cards"></div>
+    </div>
+</section>
 
-    <!-- 主体内容区 -->
-    <main class="main-content">
+<main class="container page knowledge-main">
+    <aside class="sidebar-left">
+        <ul class="category-list" id="category-list"></ul>
+    </aside>
 
-        <aside class="sidebar">
-            <div class="sidebar-title">知识分类</div>
-            <div class="catalog-item active">工资报酬权益</div>
-            <div class="catalog-item">工伤认定与赔偿</div>
-            <div class="catalog-item">劳动合同签订</div>
-            <div class="catalog-item">社会保险权益</div>
-            <div class="catalog-item">解除与辞退</div>
-            <div class="catalog-item">维权途径</div>
-            <div class="catalog-item">新就业形态</div>
-            <div class="catalog-item">政策法规</div>
-        </aside>
+    <section class="content-right">
+        <div id="welcome-view">
+            <p style="color:#94a3b8;text-align:center;padding:60px 20px;font-size:15px;">
+                请从左侧选择分类，查看对应的权益知识文档。
+            </p>
+        </div>
 
-        <section class="content-panel">
-            <div class="content-header">
-                <div class="breadcrumb">
-                    权益知识 › 第一章 <b>工资报酬权益</b>
-                </div>
-                <div class="badge">第 1 条</div>
+        <div id="doc-view" class="hidden">
+            <div class="breadcrumb">
+                <span>权益知识</span> &gt; <span id="doc-cat-title"></span>
+            </div>
+            <ul class="doc-list" id="doc-list"></ul>
+        </div>
+
+        <div id="detail-view" class="hidden">
+            <div class="breadcrumb">
+                <span>权益知识</span> &gt; <span id="detail-cat-title"></span> &gt; <span id="detail-doc-title"></span>
             </div>
 
-            <div class="article-item">
-                <h3 class="article-title"><span class="dot"></span>第一条　工资支付</h3>
-                <div class="article-body">
-                    <p><b>【立法目的】</b>劳动者享有按时足额获得劳动报酬的权利。用人单位应当以货币形式按月支付劳动者工资，不得克扣或者无故拖欠劳动者的工资。</p>
-                </div>
+            <div class="article-header">
+                <h2 id="detail-title"></h2>
+                <span class="article-tag" id="detail-tag">第 1 条</span>
             </div>
 
-            <div class="article-item">
-                <h3 class="article-title"><span class="dot"></span>第二条　加班费标准</h3>
-                <div class="article-body">
-                    <p>用人单位安排劳动者加班的，应当按下列标准支付加班费：</p>
-                    <ul>
-                        <li>平时加班：不低于工资的 <b>150%</b>；</li>
-                        <li>休息日加班又不能安排补休：不低于工资的 <b>200%</b>；</li>
-                        <li>法定节假日加班：不低于工资的 <b>300%</b>。</li>
-                    </ul>
-                </div>
+            <div id="detail-content" class="detail-content"></div>
+
+            <button id="back-to-doc" class="btn book-back">← 返回列表</button>
+        </div>
+
+        <div id="search-view" class="hidden">
+            <div class="breadcrumb">
+                <span>搜索结果</span> &gt; <span id="search-keyword-label"></span>
             </div>
+            <ul class="doc-list" id="search-list"></ul>
+        </div>
+    </section>
+</main>
 
-            <div class="article-item">
-                <h3 class="article-title"><span class="dot"></span>第三条　拖欠工资的救济</h3>
-                <div class="article-body">
-                    <p>用人单位拖欠工资的，劳动者可以向当地劳动监察部门投诉，或者向劳动人事争议仲裁委员会申请仲裁。</p>
-                </div>
-            </div>
-
-            <div class="article-item">
-                <h3 class="article-title"><span class="dot"></span>第四条　证据保存</h3>
-                <div class="article-body">
-                    <p>建议劳动者保存以下证据：</p>
-                    <ul>
-                        <li>劳动合同、入职登记表；</li>
-                        <li>工资条、银行转账记录；</li>
-                        <li>考勤记录、工作聊天记录；</li>
-                        <li>与用人单位沟通的录音、截图等。</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="article-item">
-                <h3 class="article-title"><span class="dot"></span>第五条　新业态从业者</h3>
-                <div class="article-body">
-                    <p>外卖骑手、网约车司机、网络主播等新就业形态劳动者，同样享有获得劳动报酬的权利。平台不得以"合作关系"为由拒绝支付应得报酬。</p>
-                </div>
-            </div>
-
-        </section>
-
-    </main>
+<script src="../js/book.js"></script>
+<script src="../js/auth_modal.js"></script>
 
 </body>
 </html>
