@@ -5,10 +5,11 @@
     display: none !important;
 }
 
-/* 复用 A 的 .section 样式稍作调整 */
+/* 复用 A 的 .section 样式稍作调整（浅蓝细边框） */
 .intro, .quiz, .result {
     padding: 30px;
     background: #ffffff;
+    border: 1px solid #dbeafe;
     border-radius: 12px;
     box-shadow: 0 2px 10px #00000012;
     margin-bottom: 28px;
@@ -49,5 +50,140 @@
 @keyframes bg-pulse {
     0%   { background-color: #ffe0e0; } /* 深一点的红色，直接出现 */
     100% { background-color: #ffffff; } /* 回到白色 */
+}
+
+/* ===== 双栏布局（自测入口 + 权益记录） ===== */
+.test-dashboard {
+    max-width: 1200px;
+    margin: 20px auto 28px;
+    padding: 0 22px;
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+}
+.intro-card {
+    width: 40%;
+    margin-bottom: 0;
+}
+.records-card {
+    width: 60%;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00000012;
+    padding: 24px;
+}
+.records-card h2 {
+    color: #1769aa;
+    margin-top: 0;
+}
+
+/* 左侧问题列表：纵向排列 + 圆形序号 + 悬浮微变 */
+.problem-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    counter-reset: problem;
+}
+.problem-list li {
+    counter-increment: problem;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+.problem-list li:hover {
+    background: #f0f7fd;
+}
+.problem-list li::before {
+    content: counter(problem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: #e8f2fb;
+    color: #1769aa;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* ===== 右侧记录卡片亲和化（样式与 profile.html 个人中心版完全一致） ===== */
+#records-list .record-card {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+#records-list .record-card:hover {
+    box-shadow: 0 10px 28px rgba(149, 157, 165, 0.16);
+}
+
+/* 问题标签：大圆角药丸、极浅蓝底、深蓝文字、小字号 */
+.problem-badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+}
+
+/* 日期：更小更浅，更低调 */
+.record-date {
+    font-size: 12px;
+    color: #aab7c4;
+}
+
+/* 删除按钮：默认弱化，悬停整张卡片时才亮红（防误触） */
+.delete-btn {
+    background: transparent;
+    color: #b6c2cd;
+    border: 1px solid #e8edf2;
+}
+.record-card:hover .delete-btn {
+    color: #e5484d;
+    border-color: #f3b7bc;
+}
+.record-card:hover .delete-btn:hover {
+    background: #e5484d;
+    color: #ffffff;
+    border-color: #e5484d;
+}
+
+/* 详情链接：悬停平滑下划线动画 */
+.detail-link {
+    position: relative;
+    text-decoration: none;
+    color: #0369a1;
+}
+.detail-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: #3b82f6;
+    border-radius: 2px;
+    transition: width 0.25s ease;
+}
+.detail-link:hover {
+    color: #1d4ed8;
+}
+.detail-link:hover::after {
+    width: 100%;
+}
+
+/* 手机端：双栏改上下排列 */
+@media (max-width: 768px) {
+    .test-dashboard {
+        flex-direction: column;
+    }
+    .intro-card,
+    .records-card {
+        width: 100%;
+    }
 }
 

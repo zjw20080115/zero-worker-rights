@@ -16,10 +16,8 @@
  * ============================================================ */
 
 console.log("records.js 成功加载！");
-/* ---------- 1. 用户 ID 与接口地址 ---------- */
-const userId = localStorage.getItem('userId') || 1;
+/* ---------- 1. 接口地址（userId 在 loadRecords 内动态获取，未登录时不发请求） ---------- */
 const RECORDS_API_BASE = 'http://10.72.39.141:8080/api/rights-records';
-const RECORDS_API_URL = `${RECORDS_API_BASE}/user/${userId}`;
 
 /* 当前记录列表（渲染与点击展开时共用） */
 let currentRecords = [];
@@ -240,30 +238,44 @@ function renderFullResult(r) {
 
 /* ---------- 6. 加载记录（真实接口） ---------- */
 async function loadRecords() {
-    console.log('[records.js] ① loadRecords 开始执行，请求地址：', RECORDS_API_URL);
+    console.log('[records.js] ① loadRecords 开始执行');
     const list = document.getElementById('records-list');
     if (!list) {
         console.error('[records.js] 未找到 #records-list 容器，渲染中止');
         return;
     }
+
+    // 前置拦截：未登录时不发网络请求，直接展示友好提示 + 登录引导
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        console.log('[records.js] ② 未登录，跳过接口请求，展示登录引导');
+        list.innerHTML = `
+            <p style="text-align: center; color: #666; font-size: 16px; margin: 40px 0 20px;">暂未有可查看的权益记录，快去自测吧！</p >
+            <div style="text-align: center;"><button class="btn" onclick="openAuthModal()">立即登录 / 注册</button></div>`;
+        return; // 未登录路径到此为止，绝不进入 fetch / catch
+    }
+
+    // 已登录：按 userId 拼接口地址，正常拉取
+    const RECORDS_API_URL = `${RECORDS_API_BASE}/user/${userId}`;
+    console.log('[records.js] ③ 已登录（userId =', userId, '），请求地址：', RECORDS_API_URL);
     list.innerHTML = '<p>加载中...</p>';
 
     try {
         const res = await fetch(RECORDS_API_URL);
-        console.log('[records.js] ② 收到响应，状态码：', res.status);
+        console.log('[records.js] ④ 收到响应，状态码：', res.status);
         if (!res.ok) {
             throw new Error(`接口返回状态码 ${res.status}`);
         }
         const data = await res.json();
         console.log(
-            '[records.js] ③ 数据解析成功，记录条数：',
+            '[records.js] ⑤ 数据解析成功，记录条数：',
             Array.isArray(data) ? data.length : '非数组，按空列表处理'
         );
         // 防御：后端若意外返回非数组（如 { data: [...] } 包了一层），按空列表处理
         renderRecords(Array.isArray(data) ? data : []);
-        console.log('[records.js] ④ 列表渲染完成');
+        console.log('[records.js] ⑥ 列表渲染完成');
     } catch (err) {
-        console.error('[records.js] ⑤ 加载权益记录失败：', err);
+        console.error('[records.js] ⑦ 加载权益记录失败：', err);
         if (list) {
             list.innerHTML =
                 '<p style="color:#e5484d;font-weight:bold;">❌ 加载失败，请检查网络或查看F12报错</p>';
