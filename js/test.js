@@ -238,6 +238,7 @@ const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const saveBtn = document.getElementById('save-record-btn');
 const saveMessage = document.getElementById('save-message');
+const testDashboard = document.getElementById('test-dashboard');
 
 /* ---------- 3. 渲染答题区：遍历 questions 动态生成 HTML ---------- */
 function renderQuiz() {
@@ -651,10 +652,34 @@ function renderResult(result) {
 
 // 8.1 开始自测：隐藏说明区，渲染题目，显示答题区
 startBtn.addEventListener('click', () => {
+    // 未登录拦截：userId 为空则提示 + 弹登录框，绝不进入答题区
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+        // 未登录：显示红字提示，300ms 后弹出登录框
+        const loginError = document.getElementById('login-error');
+        if (loginError) loginError.style.display = 'block';
+        setTimeout(() => {
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            }
+        }, 300);
+        return;
+    }
+
+    // 已登录：隐藏红字提示，正常进入自测
+    const loginError = document.getElementById('login-error');
+    if (loginError) loginError.style.display = 'none';
+
+    // 隐藏左右双栏区域，进入答题区
+    if (testDashboard) testDashboard.style.display = 'none';
+
     renderQuiz();
     progressText.textContent = `0/${questions.length}`;
     introSection.classList.add('hidden');
     quizSection.classList.remove('hidden');
+    // 滚动回页面顶部，从第一道题开始作答
+    window.scrollTo(0, 0);
 });
 
 // 8.2 选项点击（事件委托）：同一题内单选，选中的选项加 .selected 类
@@ -741,6 +766,9 @@ restartBtn.addEventListener('click', () => {
     window.currentAiResult = null; // 新一轮自测开始，旧的 AI 分析不再计入保存数据
     resultSection.classList.add('hidden');
     introSection.classList.remove('hidden');
+    // 重新显示左右双栏区域，并刷新右侧权益记录
+    if (testDashboard) testDashboard.style.display = 'flex';
+    loadRecords();
 });
 
 /* ============================================================
@@ -969,3 +997,241 @@ if (saveBtn) {
         }
     });
 }
+
+/* ============================================================
+ * 11. 右侧权益记录（逻辑移植自 js/records.js）
+ *     loadRecords：GET 拉取 + 渲染；deleteRecord：DELETE + 刷新；
+ *     事件委托：删除按钮 + 历史问卷/权益诊断展开（动态卡片生效）
+ * ============================================================ */
+
+const RECORDS_API_BASE = 'http://10.72.39.141:8080/api/rights-records';
+const recordsList = document.getElementById('records-list');
+let currentRecords = [];
+
+/* 题目编号 -> 题干：直接由 questions 数组生成，与 records.js 保持一致 */
+const QUESTION_TEXTS = {};
+questions.forEach((q) => {
+    QUESTION_TEXTS[q.id] = q.text;
+});
+
+/* 风险灯底色（渲染完整报告用） */
+const LIGHT_BG = { green: '#e8f5e9', yellow: '#fff8e1', red: '#fdecea' };
+
+/* 总体风险等级配色（渲染完整报告用，与 records.js / profile.js 保持一致） */
+const LEVEL_COLORS = { 强: '#e5484d', 中: '#d99b00', 弱: '#2e7d32' };
+
+/* 安全解析 JSON 字符串：空值 / 非法 JSON 一律返回 null，不抛异常 */
+function safeParse(json) {
+    if (typeof json !== 'string' || json.trim() === '') return null;
+    try {
+        return JSON.parse(json);
+    } catch (err) {
+        console.warn('[test.js] JSON 解析失败，已按空数据处理：', err);
+        return null;
+    }
+}
+
+/* AI 分析区块（诊断区下方附带显示） */
+function renderAiBlock(r) {
+    if (!r.aiAnalysis) {
+        return '<p>您尚未进行 AI 分析，无法生成诊断结果</p>';
+    }
+    return `
+        <p>💡 初步分析：${escapeHtml(r.aiAnalysis)}</p>
+        <p>📋 建议材料：${escapeHtml(r.materials)}</p>
+        <p>✅ 申报前检查：${escapeHtml(r.checkResult)}</p>
+        <p>➡️ 下一步建议：${escapeHtml(r.nextStep)}</p>`;
+}
+
+/* 原始问卷：rawAnswers -> 只读问答列表（兼容数组与对象两种历史格式） */
+function renderRawAnswers(r) {
+    const raw = safeParse(r.rawAnswers);
+    let entries = [];
+    if (Array.isArray(raw)) {
+        raw.forEach((item) => {
+            if (item && typeof item === 'object') {
+                Object.entries(item).forEach(([qid, answer]) => {
+                    entries.push([qid, answer]);
+                });
+            }
+        });
+    } else if (raw && typeof raw === 'object') {
+        entries = Object.entries(raw);
+    }
+    if (entries.length === 0) {
+        return '<p>数据损坏或暂无记录</p>';
+    }
+    return entries
+        .map(([qid, answer]) => {
+            const text = QUESTION_TEXTS[qid] || qid;
+            const answerText = escapeHtml(answer) || '（未作答）';
+            return `
+            <p class="qa-item"><strong>题目：${text}</strong><br>您的作答：${answerText}</p>`;
+        })
+        .join('');
+}
+
+/* 完整报告：fullResult -> 等级/维度得分/风险灯/路径推荐 + AI 区块 */
+function renderFullResult(r) {
+    const full = safeParse(r.fullResult);
+    let html = '';
+    if (r.selfTestResult) {
+        html += `<p><strong>自测总结：</strong>${escapeHtml(r.selfTestResult)}</p>`;
+    }
+    if (full && typeof full === 'object') {
+        const level = full.overallLevel || '未知';
+        const color = LEVEL_COLORS[level] || '#666666';
+        html += `
+            <p><strong>总体风险等级：</strong><span class="report-level" style="background:${color};">${escapeHtml(level)}</span>A+B 核心得分：${full.abTotal ?? '—'} / 12 分</p>`;
+        const scores = full.dimensionScores || {};
+        const lights = full.lights || {};
+        html += `<div>${Object.keys(DIMENSION_FULL)
+            .map((dim) => {
+                const light = lights[dim] || '';
+                const icon = LIGHT_ICONS[light] || '';
+                const bg = LIGHT_BG[light] || '#f7f9fc';
+                return `<span class="risk-light" style="background:${bg};">${icon} ${DIMENSION_NAMES[dim]} ${scores[dim] ?? 0}/${DIMENSION_FULL[dim]}分</span>`;
+            })
+            .join('')}</div>`;
+        if (Array.isArray(full.redFlags) && full.redFlags.length > 0) {
+            html += `<p><strong>⚠️ 红旗拦截：</strong>${full.redFlags.map(escapeHtml).join('、')}</p>`;
+        }
+        const recs = full.recommendations;
+        if (Array.isArray(recs) && recs.length > 0) {
+            html += recs
+                .map((rec) => {
+                    const badgeBg = rec.level === '强' ? '#e5484d' : '#d99b00';
+                    return `
+                <div class="rec-card">
+                    <p style="margin:0 0 4px;"><strong>${escapeHtml(rec.title)}</strong><span style="font-size:12px;background:${badgeBg};color:#ffffff;padding:1px 8px;border-radius:10px;margin-left:8px;">${escapeHtml(rec.level)}</span></p>
+                    ${rec.description ? `<p style="margin:0 0 4px;">${escapeHtml(rec.description)}</p>` : ''}
+                    ${rec.templates && rec.templates.length ? `<p style="margin:0;"><strong>相关模板：</strong>${rec.templates.map(escapeHtml).join('、')}</p>` : ''}
+                    ${rec.laws && rec.laws.length ? `<p style="margin:0;"><strong>相关法规：</strong>${rec.laws.map(escapeHtml).join('、')}</p>` : ''}
+                </div>`;
+                })
+                .join('');
+        }
+    } else if (!r.selfTestResult) {
+        html += '<p>暂无详细报告</p>';
+    }
+    html += renderAiBlock(r);
+    return html;
+}
+
+/* 渲染记录卡片（横向长条 + 可展开详情） */
+function renderRecords(records) {
+    if (!recordsList) return;
+    if (currentRecords.length === 0) {
+        recordsList.innerHTML = '<p>暂未有记录，快去自测吧！</p>';
+        return;
+    }
+    recordsList.innerHTML = currentRecords
+        .map(
+            (r) => `
+        <div class="record-card">
+            <div class="card-header">
+                <span class="problem-badge">${escapeHtml(r.problemType)}</span>
+                <div class="header-right">
+                    <span class="record-date">${escapeHtml(r.createTime)}</span>
+                    <button class="delete-btn" data-id="${r.id}">删除</button>
+                </div>
+            </div>
+            <p class="record-desc">${escapeHtml(r.description || '无描述')}</p>
+            <div class="detail-link" data-target="raw-answers-${r.id}">历史问卷</div>
+            <div id="raw-answers-${r.id}" class="detail-content" style="display: none;"></div>
+            <div class="detail-link" data-target="full-result-${r.id}">我的权益诊断</div>
+            <div id="full-result-${r.id}" class="detail-content" style="display: none;"></div>
+        </div>`
+        )
+        .join('');
+}
+
+/* 拉取并渲染记录（未登录拦截 + GET 请求） */
+async function loadRecords() {
+    if (!recordsList) return;
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        // 未登录：不请求，展示登录引导
+        recordsList.innerHTML = `
+            <p style="text-align: center; color: #666; font-size: 16px; margin: 40px 0 20px;">暂未有记录，快去自测吧！</p>
+            <div style="text-align: center;"><button class="btn" onclick="openAuthModal()">立即登录 / 注册</button></div>`;
+        return;
+    }
+    recordsList.innerHTML = '<p>加载中...</p>';
+    try {
+        const res = await fetch(`${RECORDS_API_BASE}/user/${userId}`);
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        const data = await res.json();
+        currentRecords = Array.isArray(data) ? data : [];
+        renderRecords(currentRecords);
+    } catch (err) {
+        console.error('[test.js] 加载权益记录失败：', err);
+        recordsList.innerHTML =
+            '<p style="color:#e5484d;font-weight:bold;">❌ 加载失败，请检查网络或查看F12报错</p>';
+    }
+}
+
+/* 删除记录：确认 + DELETE + 刷新列表 */
+async function deleteRecord(recordId, btn) {
+    btn.disabled = true;
+    try {
+        const res = await fetch(`${RECORDS_API_BASE}/${recordId}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        alert('删除成功');
+        loadRecords(); // 删除成功后刷新列表
+    } catch (err) {
+        console.error('[test.js] 删除记录失败：', err);
+        alert('删除失败，请检查网络或查看F12报错');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+/* 记录列表事件委托：绑定在 #records-list 容器上，删除按钮 + 历史问卷/权益诊断展开（动态卡片生效） */
+if (recordsList) {
+    recordsList.addEventListener('click', (e) => {
+        // 调试日志：确认点击事件已触发（每次点击都会打印）
+        console.log('点击了:', e.target);
+
+        // 分支一：删除按钮
+        const delBtn = e.target.closest('.delete-btn');
+        if (delBtn) {
+            const recordId = delBtn.dataset.id;
+            if (!confirm(`确定删除这条记录（ID：${recordId}）吗？`)) return;
+            deleteRecord(recordId, delBtn);
+            return;
+        }
+
+        // 分支二：详情链接（历史问卷 / 我的权益诊断）
+        const link = e.target.closest('.detail-link');
+        if (!link) return;
+        const targetId = link.dataset.target;
+        console.log('点击了:', targetId);
+
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        const recordId = targetId.replace(/^(raw-answers|full-result)-/, '');
+        const record = currentRecords.find((r) => String(r.id) === recordId);
+        if (!record) return;
+
+        if (targetId.startsWith('raw-answers')) {
+            target.innerHTML = renderRawAnswers(record);
+        } else {
+            target.innerHTML = renderFullResult(record);
+        }
+        // 内联样式切换显隐（与 profile.js 的可用版本保持一致）
+        target.style.display =
+            target.style.display === 'none' || target.style.display === ''
+                ? 'block'
+                : 'none';
+    });
+}
+
+/* 页面加载：自动拉取一次右侧权益记录 */
+loadRecords();

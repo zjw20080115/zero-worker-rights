@@ -6,41 +6,57 @@
     <title>权益自测 - 零工权益助手</title>
     <!-- 全局样式（队友A编写，勿修改） -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- 记录卡片样式（右侧权益记录卡片复用） -->
+    <link rel="stylesheet" href="css/records.css">
     <!-- 本模块专属样式 -->
     <link rel="stylesheet" href="css/test.css">
 </head>
 <body>
-    <!-- ==================== 顶部导航栏 ==================== -->
-   <!-- ==================== 顶部导航栏 ==================== -->
-<!-- 顶部导航栏 -->
-<header>
-    <div class="container header">
-        <div>
-            <h1>新就业形态灵活就业人员权益助手</h1>
-            <p>了解权益，保护自己</p >
-        </div>
-
-        <nav>
-            <a href="index.html">首页</a >
-            <a href="test.html" class="active">权益自测</a >
-            <a href="pages/book.html">权益知识</a >
-            <a href="records.html">我的权益记录</a >
-            <a href="pages/community.html">互助墙</a >
-             <!-- 登录用户区域 -->
-            <div id="userArea"></div>
-        </nav>
+    <!-- ==================== 1. 顶部 Banner（与 index.html 一致） ==================== -->
+    <div class="site-banner">
+        <img src="images/banner.png" alt="灵活就业人员权益助手" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
     </div>
-</header>
+
+    <!-- ==================== 2. 导航栏（与 index.html 一致，含用户登录状态区域） ==================== -->
+    <nav class="main-nav">
+        <div class="main-nav-inner">
+            <div class="main-nav-links">
+                <a href="index.html">首页</a>
+                <a class="active" href="test.html">权益自测</a>
+                <a href="pages/book.html">权益知识</a>
+                <a href="pages/community.html">互助墙</a>
+                <a href="profile.html">个人信息</a>
+            </div>
+            <!-- 登录/注册容器（auth_modal.js 自动渲染，逻辑保持原样） -->
+            <div id="userArea"></div>
+        </div>
+    </nav>
 
     <main>
-        <!-- ==================== 区域一：说明区（intro） ==================== -->
-        <section id="intro" class="intro">
-            <h1>权益自测</h1>
-            <p>
-                本自测包含 20 道题目，帮助你快速了解自己作为零工劳动者可能面临的权益风险。测试结果仅供个人参考，不构成法律意见。
-            </p>
-            <button id="start-btn" class="btn" type="button">开始自测</button>
-        </section>
+        <!-- ==================== 左右双栏区域（问题入口 + 权益记录） ==================== -->
+        <div id="test-dashboard" class="test-dashboard">
+            <!-- 左侧卡片（约 40%）：常见问题列表 + 开始自测 -->
+            <section id="intro" class="intro intro-card">
+                <h1>你遇到如下问题</h1>
+                <ul class="problem-list">
+                    <li>工资没发</li>
+                    <li>工作受伤</li>
+                    <li>劳动关系不明确</li>
+                    <li>社会保险有问题</li>
+                    <li>被解除/辞退</li>
+                    <li>其他权益问题</li>
+                </ul>
+                <button id="start-btn" class="btn" type="button">开始自测</button>
+                <!-- 未登录提示（默认隐藏，未登录点击开始自测时由 JS 显示） -->
+                <div id="login-error" style="display: none; color: #dc3545; font-size: 14px; font-weight: bold; margin-top: 10px;">请先登录</div>
+            </section>
+
+            <!-- 右侧卡片（约 60%）：权益记录 -->
+            <section class="records-card">
+                <h2>权益记录</h2>
+                <div id="records-list" style="max-height: 500px; overflow-y: auto;"></div>
+            </section>
+        </div>
 
         <!-- ==================== 区域二：答题区（quiz，初始隐藏） ==================== -->
         <section id="quiz" class="quiz hidden">
@@ -103,8 +119,40 @@
 
     </main>
 
-    <!-- 本模块脚本：底部引入，保证 DOM 加载完成后执行 -->
-    <script src="js/test.js"></script>
+    <!-- ==================== 登录注册弹窗（与 index.html 保持一致） ==================== -->
+    <!-- 注意：必须放在 auth_modal.js 之前，脚本加载时会立即绑定表单事件 -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-box">
+            <button class="auth-close" onclick="closeAuthModal()">×</button>
+            <h2>账户登录</h2>
+            <p class="auth-subtitle">登录后可以保存你的权益记录</p>
+            <div class="auth-tabs">
+                <button id="modalTabLogin" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button id="modalTabRegister" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+            <!-- 登录 -->
+            <form id="modalLoginForm">
+                <label>用户名</label>
+                <input id="modalLoginUsername" type="text" placeholder="请输入用户名" required>
+                <label>密码</label>
+                <input id="modalLoginPassword" type="password" placeholder="请输入密码" required>
+                <button type="submit" class="auth-submit">登录</button>
+            </form>
+            <!-- 注册 -->
+            <form id="modalRegisterForm" class="hidden">
+                <label>用户名</label>
+                <input id="modalRegUsername" type="text" placeholder="请输入用户名" required>
+                <label>昵称</label>
+                <input id="modalRegNickname" type="text" placeholder="请输入昵称" required>
+                <label>密码</label>
+                <input id="modalRegPassword" type="password" placeholder="请输入密码" required>
+                <button type="submit" class="auth-submit">注册</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 本模块脚本：auth_modal.js 先引入（全局函数 + 弹窗事件绑定），再加载页面脚本 -->
     <script src="js/auth_modal.js"></script>
+    <script src="js/test.js"></script>
 </body>
 </html>
