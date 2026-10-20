@@ -742,8 +742,8 @@ footer {
 
 /* 互助墙高赞贴：浅蓝标题条 + 内容预留区 */
 .hot-posts-card {
-    max-width: 1200px; /* ★ 加上最大宽度限制 */
-    margin: 0 auto 20px; /* ★ 改成 auto 让它在屏幕中间 */
+    max-width: 1200px;
+    margin: 0 auto 20px;
     background: #ffffff;
     border: 1px solid #dbeafe;
     border-radius: 12px;
@@ -867,3 +867,33 @@ footer {
     font-size: 13px;
     color: #94a3b8;
 }
+
+/* ===== 统一 SVG 线稿图标样式 ===== */
+.icon-svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+    opacity: 0.8; 
+}
+
+/* 优化首页高赞帖底部的排版对齐 */
+.hot-post-foot {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* 控制作者、点赞、评论图标之间的间距 */
+    font-size: 13px;
+    color: #94a3b8; /* 设置默认的灰色 */
+}
+
+/* 鼠标移上去时的高亮效果 */
+.hot-post-foot .stat-item:hover {
+    color: #1769aa; /* 悬浮变成蓝色 */
+    cursor: pointer;
+}
+
+
