@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>权益互助墙 | 专业门户</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -94,17 +94,25 @@
 </head>
 <body>
 
-    <nav class="top-nav">
-        <div class="logo">权益互助墙</div>
-        <div class="nav-links">
-            <a href="#" class="active">首页</a>
-            <a href="#">热门问题</a>
-            <a href="#">政策解读</a>
-            <a href="#">维权指南</a>
-            <a href="#">联系我们</a>
-            <div id="userArea">
-                <span class="login-btn" onclick="openAuthModal()">登录/注册</span>
+    <!-- ==================== 顶部 Banner（与全站一致，路径 ../images/） ==================== -->
+    <div class="site-banner">
+        <img src="../images/banner.png" alt="灵活就业人员权益助手" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
+    </div>
+
+    <!-- ==================== 导航栏（与 index.html 一致，路径已修正为 ../） ==================== -->
+    <nav class="main-nav">
+        <div class="main-nav-inner">
+            <div class="main-nav-links">
+                <a href="../index.html">首页</a>
+                <a href="../test.html">权益自测</a>
+                <a href="book.html">权益知识</a>
+                <a class="active" href="community.html">互助墙</a>
+                <a href="../profile.html">个人信息</a>
             </div>
+            <!-- 登录/注册容器（auth_modal.js 自动渲染） -->
+            <div id="userArea"></div>
+            <!-- 导航头像：点击放大（Lightbox）；默认图缺失时由 nav_avatar.js 替换为占位图 -->
+            <img id="nav-avatar" src="../images/default-avatar.png" alt="头像" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); margin-left: 20px;">
         </div>
     </nav>
 
@@ -187,8 +195,14 @@
         </div>
     </div>
 
+    <!-- ==================== 头像放大遮罩层（默认隐藏，点击导航头像打开） ==================== -->
+    <div id="avatar-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; justify-content: center; align-items: center; cursor: zoom-out;">
+        <img id="lightbox-img" src="" style="max-width: 80%; max-height: 80%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    </div>
+
     <script src="../js/community.js"></script>
     <script src="../js/community_render.js"></script>
     <script src="../js/auth_modal.js"></script>
+    <script src="../js/nav_avatar.js"></script>
 </body>
 </html>
