@@ -31,19 +31,92 @@
 
     <!-- ==================== 3. 主体内容区（左轮播 70% + 右政策文件 30%） ==================== -->
     <main class="home-main">
-        <div class="carousel-card">
-            <div class="banner-carousel">轮播图区域</div>
+
+        <!-- 左侧：轮播图区域 -->
+        <div class="slider-wrapper">
+            <div class="slider-track" id="sliderTrack">
+                <!-- ===== 左侧备用组 ===== -->
+                <div class="slide-item card-action">
+                    <div class="card-content">
+                        <h3>不知道权益是否被侵犯？</h3>
+                        <p>只需 1 分钟，AI 帮你快速诊断，生成专属维权报告。</p>
+                        <a href="test.html" class="glass-btn"><span>开始测评</span></a>
+                    </div>
+                </div>
+                <div class="slide-item"><img src="images/p1.jpg" alt="1"></div>
+                <div class="slide-item"><img src="images/p2.jpg" alt="2"></div>
+                <div class="slide-item"><img src="images/p3.jpg" alt="3"></div>
+                <div class="slide-item"><img src="images/p4.jpg" alt="4"></div>
+
+                <!-- ===== 中间真实组 ===== -->
+                <div class="slide-item card-action">
+                    <div class="card-content">
+                        <h3>不知道权益是否被侵犯？</h3>
+                        <p>只需 1 分钟，AI 帮你快速诊断，生成专属维权报告。</p>
+                        <a href="test.html" class="glass-btn"><span>开始测评</span></a>
+                    </div>
+                </div>
+                <div class="slide-item"><img src="images/p1.jpg" alt="1"></div>
+                <div class="slide-item"><img src="images/p2.jpg" alt="2"></div>
+                <div class="slide-item"><img src="images/p3.jpg" alt="3"></div>
+                <div class="slide-item"><img src="images/p4.jpg" alt="4"></div>
+
+                <!-- ===== 右侧备用组 ===== -->
+                <div class="slide-item card-action">
+                    <div class="card-content">
+                        <h3>不知道权益是否被侵犯？</h3>
+                        <p>只需 1 分钟，AI 帮你快速诊断，生成专属维权报告。</p>
+                        <a href="test.html" class="glass-btn"><span>开始测评</span></a>
+                    </div>
+                </div>
+                <div class="slide-item"><img src="images/p1.jpg" alt="1"></div>
+                <div class="slide-item"><img src="images/p2.jpg" alt="2"></div>
+                <div class="slide-item"><img src="images/p3.jpg" alt="3"></div>
+                <div class="slide-item"><img src="images/p4.jpg" alt="4"></div>
+            </div>
+
+            <!-- 小圆点 -->
+            <div class="slider-dots" id="sliderDots">
+                <div class="dot active" data-index="0"></div>
+                <div class="dot" data-index="1"></div>
+                <div class="dot" data-index="2"></div>
+                <div class="dot" data-index="3"></div>
+                <div class="dot" data-index="4"></div>
+            </div>
         </div>
-        <div class="policy-card">
-            <h2>政策文件</h2>
-            <ul>
-                <li><a href="pages/book.html">新就业形态劳动者权益保障指导意见</a></li>
-                <li><a href="pages/book.html">新就业形态人员职业伤害保障办法（试行）</a></li>
-                <li><a href="pages/book.html">劳动保障监察条例</a></li>
-                <li><a href="pages/book.html">中华人民共和国劳动合同法</a></li>
-                <li><a href="pages/book.html">中华人民共和国社会保险法</a></li>
-            </ul>
+
+        <!-- 右侧：最新政策通知卡片 -->
+        <div class="side-card">
+            <div class="side-header">
+                <h3>📢 最新政策通知</h3>
+            </div>
+            <div class="notice-scroll-area">
+                <ul class="notice-list">
+                    <li>
+                        <span class="notice-tag">新规</span>
+                        <a href="#">《新就业形态劳动者权益保障指引》正式发布</a>
+                        <span class="notice-date">2026-10-15</span>
+                    </li>
+                    <li>
+                        <span class="notice-tag">社保</span>
+                        <a href="#">灵活就业人员参保取消户籍限制，全面放开</a>
+                        <span class="notice-date">2026-10-10</span>
+                    </li>
+                    <li>
+                        <span class="notice-tag">工伤</span>
+                        <a href="#">职业伤害保障试点范围扩大至全国 20 个省份</a>
+                        <span class="notice-date">2026-09-28</span>
+                    </li>
+                    <li>
+                        <span class="notice-tag">欠薪</span>
+                        <a href="#">关于开展根治欠薪冬季专项行动的通知</a>
+                        <span class="notice-date">2026-09-15</span>
+                    </li>
+                </ul>
+            </div>
+            <a href="pages/book.html" class="more-notice">查看更多政策 &rarr;</a>
         </div>
+
     </main>
 
     <!-- ==================== 4. 工作流区域（浅蓝卡片，横向四步骤） ==================== -->
@@ -147,6 +220,75 @@
     </div>
 
     <!-- ==================== JS ==================== -->
+    <!-- ★ 轮播图控制逻辑 -->
+    <script>
+        (function () {
+            const track = document.getElementById('sliderTrack');
+            const dots = document.querySelectorAll('.dot');
+            if (!track) return;
+
+            const totalReal = 5;
+            const startOffset = 5;
+            let currentIndex = startOffset;
+            let isPaused = false;
+            let isJumping = false;
+
+            function getItemWidth() {
+                return track.querySelector('.slide-item').offsetWidth + 15;
+            }
+
+            function moveToIndex(index, smooth = true) {
+                const itemWidth = getItemWidth();
+                const offset = (track.clientWidth - track.querySelector('.slide-item').offsetWidth) / 2;
+                const x = -(itemWidth * index - offset);
+
+                track.style.transition = smooth ? 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+                track.style.transform = `translateX(${x}px)`;
+
+                track.querySelectorAll('.slide-item').forEach((item, i) => {
+                    item.classList.toggle('active-slide', i === index);
+                });
+
+                let realDotIndex = (index - startOffset) % totalReal;
+                if (realDotIndex < 0) realDotIndex += totalReal;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === realDotIndex);
+                });
+            }
+
+            function autoSlide() {
+                if (isPaused || isJumping) return;
+                isJumping = true;
+                currentIndex++;
+                moveToIndex(currentIndex, true);
+
+                if (currentIndex >= startOffset + totalReal) {
+                    setTimeout(() => {
+                        currentIndex = currentIndex - totalReal;
+                        moveToIndex(currentIndex, false);
+                        setTimeout(() => { isJumping = false; }, 50);
+                    }, 600);
+                } else {
+                    setTimeout(() => { isJumping = false; }, 600);
+                }
+            }
+
+            let slideInterval = setInterval(autoSlide, 3000);
+            track.addEventListener('mouseenter', () => isPaused = true);
+            track.addEventListener('mouseleave', () => isPaused = false);
+
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = startOffset + i;
+                    moveToIndex(currentIndex, true);
+                });
+            });
+
+            setTimeout(() => moveToIndex(currentIndex, false), 100);
+        })();
+    </script>
+
+    <!-- 原有 JS -->
     <script src="js/data.js"></script>
     <script src="js/auth_modal.js"></script>
     <script src="js/index.js"></script>
