@@ -60,8 +60,22 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ⭐ 监听返回和详情页发评论的事件
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted && posts.length > 0) applyCacheAndRender();
+// 修改 community.js 中的 pageshow 监听
+window.addEventListener('pageshow', async function(event) {
+    // 如果是从详情页返回（不管是缓存页面还是重新加载）
+    if (event.persisted || (performance.navigation && performance.navigation.type === 2)) {
+        // 重新拉取后端数据，保证评论数和点赞数是最新的
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts`);
+            if (response.ok) {
+                posts = await response.json();
+                applyCacheAndRender();
+            }
+        } catch (e) {
+            console.error("返回页面刷新数据失败", e);
+            if (posts.length > 0) applyCacheAndRender();
+        }
+    }
 });
 window.addEventListener('commentUpdated', function() {
     if (posts.length > 0) applyCacheAndRender();
