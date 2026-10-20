@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人信息 - 零工权益助手</title>
+    <title>个人主页 - 灵活就业人员权益助手</title>
     <!-- 全局样式（队友A编写，勿修改） -->
     <link rel="stylesheet" href="css/style.css">
     <!-- 本模块专属样式（权益记录已迁至自测页，不再需要 records.css） -->
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
-    <!-- ==================== 顶部导航栏 ==================== -->
-    <header>
-        <div class="container header">
-            <div>
-                <h1>新就业形态灵活就业人员权益助手</h1>
-                <p>了解权益，保护自己</p>
-            </div>
+    <!-- ==================== 1. 顶部 Banner（与全站一致，根目录路径无需 ../） ==================== -->
+    <div class="site-banner">
+        <img src="images/banner.png" alt="灵活就业人员权益助手" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
+    </div>
 
-            <nav>
+    <!-- ==================== 2. 导航栏（与 test.html 一致，深蓝居中，最右侧用户区） ==================== -->
+    <nav class="main-nav">
+        <div class="main-nav-inner">
+            <div class="main-nav-links">
                 <a href="index.html">首页</a>
                 <a href="test.html">权益自测</a>
                 <a href="pages/book.html">权益知识</a>
                 <a href="pages/community.html">互助墙</a>
-                <a class="active" href="profile.html" aria-current="page">个人信息</a>
-                <!-- 登录用户区域（auth_modal.js 自动渲染 登录/注册 或 欢迎+退出登录） -->
-                <div id="userArea"></div>
-            </nav>
+                <a class="active" href="profile.html" aria-current="page">个人主页</a>
+            </div>
+            <!-- 登录/注册容器（auth_modal.js 自动渲染） -->
+            <div id="userArea"></div>
         </div>
-    </header>
+    </nav>
 
     <!-- ==================== 主体：卡片仪表盘布局（左个人信息 + 右记录/帖子） ==================== -->
     <main class="container page">
