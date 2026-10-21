@@ -1126,23 +1126,36 @@ function renderRecords(records) {
         return;
     }
     recordsList.innerHTML = currentRecords
-        .map(
-            (r) => `
+        .map((r) => {
+            // 中部标题：优先取 description（两行截断由 CSS 处理）
+            const titleText = escapeHtml(r.description || r.problemType || '权益记录');
+            // 中部描述：优先 selfTestResult，其次 AI 初步分析
+            const descText = escapeHtml(r.selfTestResult || r.aiAnalysis || '');
+            return `
         <div class="record-card">
-            <div class="card-header">
-                <span class="problem-badge">${escapeHtml(r.problemType)}</span>
-                <div class="header-right">
-                    <span class="record-date">${escapeHtml(r.createTime)}</span>
+            <!-- 顶部栏：类型胶囊 + 时间胶囊 -->
+            <div class="record-card-top">
+                <span class="record-type-pill">${escapeHtml(r.problemType)}</span>
+                <span class="record-time-pill">${escapeHtml(r.createTime)}</span>
+            </div>
+            <!-- 中部：加粗标题 + 浅灰描述 -->
+            <h4 class="record-card-title">${titleText}</h4>
+            <p class="record-card-desc">${descText}</p>
+            <!-- 底部：Flex 左右布局（左操作链接，右圆形占位 + 删除） -->
+            <div class="record-card-bottom">
+                <div class="record-actions-left">
+                    <div class="detail-link" data-target="raw-answers-${r.id}">历史问卷</div>
+                    <div class="detail-link" data-target="full-result-${r.id}">权益诊断</div>
+                </div>
+                <div class="record-actions-right">
+                    <div class="record-avatar-slot"></div>
                     <button class="delete-btn" data-id="${r.id}">删除</button>
                 </div>
             </div>
-            <p class="record-desc">${escapeHtml(r.description || '无描述')}</p>
-            <div class="detail-link" data-target="raw-answers-${r.id}">历史问卷</div>
             <div id="raw-answers-${r.id}" class="detail-content" style="display: none;"></div>
-            <div class="detail-link" data-target="full-result-${r.id}">我的权益诊断</div>
             <div id="full-result-${r.id}" class="detail-content" style="display: none;"></div>
-        </div>`
-        )
+        </div>`;
+        })
         .join('');
 }
 
