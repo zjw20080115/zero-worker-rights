@@ -30,9 +30,15 @@ function navAvatarFallback() {
 /* 初始化：读取本地头像 + 绑定加载失败兜底 */
 (function initNavAvatar() {
     if (!navAvatar) return;
-    const savedAvatar = localStorage.getItem('avatarUrl');
+    const savedAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('avatarUrl');
     if (savedAvatar) {
-        navAvatar.src = savedAvatar;
+        // 路径按页面层级修正（复用 auth_modal.js 的 normalizeAvatarPath，解决 pages/ 下 404）
+        navAvatar.src =
+            typeof normalizeAvatarPath === 'function'
+                ? normalizeAvatarPath(savedAvatar)
+                : savedAvatar;
+    } else {
+        navAvatarFallback();
     }
     // 图片可能在脚本执行前就已加载失败（complete 且 naturalWidth 为 0）
     if (navAvatar.complete && navAvatar.naturalWidth === 0) {

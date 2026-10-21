@@ -27,8 +27,6 @@
             </div>
             <!-- 登录/注册容器（auth_modal.js 自动渲染） -->
             <div id="userArea"></div>
-            <!-- 导航头像：点击放大（Lightbox）；默认图缺失时由 nav_avatar.js 替换为占位图 -->
-            <img id="nav-avatar" src="images/default-avatar.png" alt="头像" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); margin-left: 20px;">
         </div>
     </nav>
 
@@ -39,7 +37,7 @@
             <div class="profile-info-card">
                 <div class="avatar-wrap">
                     <!-- 点击头像：未登录弹登录框，已登录弹出预设头像选择窗 -->
-                    <img id="user-avatar" src="images/default-avatar.png" alt="头像" title="点击修改头像">
+                    <img id="user-avatar" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Ccircle%20cx='60'%20cy='60'%20r='60'%20fill='%23cccccc'/%3E%3Ctext%20x='60'%20y='60'%20text-anchor='middle'%20dominant-baseline='central'%20font-size='48'%20fill='%23ffffff'%3E%E7%A9%BA%3C/text%3E%3C/svg%3E" alt="头像" title="点击修改头像">
                 </div>
                 <p class="greeting">你好，欢迎回来 👋</p>
                 <div id="user-name-display" title="点击修改用户名">当前用户名</div>

@@ -151,8 +151,14 @@
         </div>
     </div>
 
-    <!-- 本模块脚本：auth_modal.js 先引入（全局函数 + 弹窗事件绑定），再加载页面脚本 -->
+    <!-- ==================== 头像放大遮罩层（默认隐藏，点击导航头像打开） ==================== -->
+    <div id="avatar-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; justify-content: center; align-items: center; cursor: zoom-out;">
+        <img id="lightbox-img" src="" style="max-width: 80%; max-height: 80%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    </div>
+
+    <!-- 本模块脚本：auth_modal.js → nav_avatar.js（导航头像 Lightbox）→ test.js -->
     <script src="js/auth_modal.js"></script>
+    <script src="js/nav_avatar.js"></script>
     <script src="js/test.js"></script>
 </body>
 </html>
