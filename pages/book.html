@@ -13,429 +13,267 @@
 
     <style>
         /* ============================================
-           页面整体美化
+           全局大矩形包裹层 (Mega Container)
            ============================================ */
-        body {
-            background:
-                radial-gradient(circle at 20% 0%, rgba(120, 170, 240, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 100%, rgba(160, 130, 220, 0.12) 0%, transparent 50%),
-                #f0f4fa;
+        .mega-container {
+            max-width: 1200px;
+            margin: 30px auto 60px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px 30px 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
+            overflow: visible;
         }
 
+        /* ============================================
+           1. 顶部搜索与快捷入口
+           ============================================ */
         .knowledge-hero {
-            background:
-                radial-gradient(circle at 50% 0%, rgba(120, 180, 255, 0.45) 0%, transparent 60%),
-                linear-gradient(135deg, #2c7ab5 0%, #3d8fd0 50%, #4a9fe0 100%);
-            padding: 28px 20px 55px;
-            box-shadow: 0 10px 40px rgba(30, 90, 138, 0.25);
+            background: transparent;
+            box-shadow: none;
+            padding: 10px 0 30px 0; /* 稍微增加一点顶部留白 */
+            position: relative;
         }
 
-        .knowledge-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.3) 1px, transparent 1.5px),
-                radial-gradient(circle at 75% 60%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
-                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 1px, transparent 1.5px),
-                radial-gradient(circle at 90% 20%, rgba(255,255,255,0.2) 1px, transparent 1.5px),
-                radial-gradient(circle at 25% 70%, rgba(255,255,255,0.25) 1px, transparent 1.5px);
-            background-size: 300px 300px, 400px 400px, 350px 350px, 500px 500px, 450px 450px;
-            pointer-events: none;
-        }
-
-        .hero-content { position: relative; z-index: 2; }
-
-        .hero-title {
-            font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', serif;
-            font-size: 56px;
-            color: #ffffff;
-            letter-spacing: 12px;
-            font-weight: 400;
-            margin: 0 0 22px;
-            text-shadow:
-                0 0 40px rgba(180, 220, 255, 0.8),
-                0 4px 14px rgba(0, 30, 60, 0.35);
-        }
-
-        /* 搜索栏 */
+        /* ★ 核心修改：复刻图中的极简搜索栏 */
         .knowledge-hero .search-bar {
-            max-width: 620px;
-            margin: 0 auto 18px;
+            max-width: 600px;
+            margin: 0 auto 35px;
             display: flex;
-            align-items: stretch;
-            border-radius: 50px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow:
-                0 10px 30px rgba(0, 30, 60, 0.18),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.6);
-            transition: transform .3s, box-shadow .3s;
-            position: relative;
-        }
-        .knowledge-hero .search-bar:focus-within {
-            transform: translateY(-2px);
-            box-shadow:
-                0 16px 40px rgba(0, 30, 60, 0.25),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+            align-items: center;
+            /* 外层深灰色边框 */
+            background: #f1f1f1;
+            border: 1px solid #999;
+            border-radius: 12px;
+            padding: 4px; /* 给内部留出一圈深灰色的底 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .knowledge-hero .search-bar .search-select {
-            padding: 0 16px;
-            border: none;
-            background: transparent;
-            position: relative;
-        }
-        .knowledge-hero .search-bar .search-select select {
-            height: 100%;
-            padding: 0 14px 0 12px;
-            border: none;
-            background: transparent;
-            color: #334155;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-        .knowledge-hero .search-bar .search-select::after {
-            content: '';
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            width: 8px;
-            height: 8px;
-            border-right: 2px solid #94a3b8;
-            border-bottom: 2px solid #94a3b8;
-            transform: translateY(-70%) rotate(45deg);
-            pointer-events: none;
-        }
+        /* 内部的白色输入框 */
         .knowledge-hero .search-bar input {
             flex: 1;
-            padding: 14px 16px;
-            border: none;
+            padding: 12px 16px;
+            border: 1px solid #ccc; /* 输入框自身的灰色细边 */
+            border-radius: 8px; /* 内部圆角 */
             outline: none;
-            font-size: 14px;
-            color: #1e293b;
-            background: transparent;
+            font-size: 15px;
+            color: #333;
+            background: #ffffff;
+            box-sizing: border-box;
         }
-        .knowledge-hero .search-bar input::placeholder { color: #94a3b8; font-size: 14px; }
+        .knowledge-hero .search-bar input::placeholder {
+            color: #aaa;
+            font-size: 15px;
+        }
+
+        /* 右侧极简图标按钮 */
         .knowledge-hero .search-bar .search-btn {
-            padding: 0 22px;
-            margin: 6px;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #ffb547 0%, #ff9500 100%);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all .3s;
-            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
+            justify-content: center;
+            background: transparent;
+            border: none;
+            padding: 0 15px 0 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
         .knowledge-hero .search-bar .search-btn:hover {
-            background: linear-gradient(135deg, #ff9500 0%, #e07e00 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(255, 149, 0, 0.45);
+            transform: scale(1.1);
+        }
+        .knowledge-hero .search-bar .search-btn svg {
+            width: 22px;
+            height: 22px;
         }
 
-        /* 标签 */
-        .hero-tabs { margin-bottom: 28px; }
-        .hero-tabs .tab {
-            font-size: 15px;
-            padding: 7px 20px;
-            border-radius: 20px;
-            transition: all .25s;
-        }
-        .hero-tabs .tab.active {
-            background: rgba(255, 255, 255, 0.28);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        /* ============================================
+           2. 7个快捷卡片
+           ============================================ */
+        .quick-cards {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
         }
 
-        /* 7 个快捷卡片 */
-        .quick-cards { gap: 16px; top: 24px; }
         .quick-cards .card {
-            width: 118px;
-            height: 108px;
-            border-radius: 14px;
-            padding: 14px 8px;
-            box-shadow: 0 6px 18px rgba(0, 30, 60, 0.12);
-            transition: transform .28s ease, box-shadow .28s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .quick-cards .card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 0;
-            background: var(--card-accent, #1769aa);
-            opacity: 0.07;
-            transition: height .3s ease;
-        }
-        .quick-cards .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 36px rgba(0, 30, 60, 0.2);
-        }
-        .quick-cards .card:hover::after { height: 100%; }
-        .quick-cards .card .icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-            line-height: 1;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
-        }
-        .quick-cards .card .label {
-            font-size: 13px;
-            color: #334155;
-            font-weight: 600;
-            letter-spacing: 0.3px;
+            flex: 1;
+            height: 115px;
+            border-radius: 12px;
+            padding: 12px 10px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            transition: all .3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.03);
+            box-sizing: border-box;
         }
 
-        /* 左侧分类：彩色圆角图标 + 序号 */
-        .sidebar-left .category-list { gap: 12px; }
+        .quick-cards .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            border-color: #D19C97;
+        }
+
+        .quick-cards .card .icon { font-size: 26px; margin-bottom: 8px; }
+        .quick-cards .card .label { font-size: 14px; color: #334155; font-weight: 600; white-space: nowrap; }
+
+        /* ============================================
+           3. 下方主体布局
+           ============================================ */
+        .knowledge-main {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            padding-top: 25px;
+        }
+
+        /* 左侧分类栏 */
+        .sidebar-left { width: 250px; flex-shrink: 0; }
         .sidebar-left .category-list li {
+            background: #ffffff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all .25s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             display: flex;
             align-items: center;
-            gap: 16px;
-            background: #fff;
-            border-radius: 16px;
-            padding: 16px 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(30, 90, 138, 0.06);
-            transition: all .25s ease;
-            border-left: none;
-            position: relative;
-            overflow: hidden;
-        }
-        .sidebar-left .category-list li::after {
-            content: '';
-            position: absolute;
-            top: 12px; bottom: 12px; left: 0;
-            width: 4px;
-            border-radius: 0 4px 4px 0;
-            background: var(--accent, #2c7ab5);
-            opacity: 0;
-            transition: opacity .25s ease;
+            gap: 12px;
+            border: 1px solid transparent;
         }
         .sidebar-left .category-list li:hover {
             transform: translateX(4px);
-            box-shadow: 0 10px 26px rgba(30, 90, 138, 0.12);
-            background: #fafcff;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+            border-color: #e5e7eb;
         }
         .sidebar-left .category-list li.active {
-            background: linear-gradient(90deg, #f0f7ff 0%, #fafcff 100%);
-            box-shadow: 0 10px 26px rgba(44, 122, 181, 0.16);
+            background: #FCF9F2;
+            border-color: #D19C97;
         }
-        .sidebar-left .category-list li.active::after { opacity: 1; }
-
         .sidebar-left .category-list li .folder-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: var(--bg, #e8f1fa);
-            position: relative;
-            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent, #2c7ab5);
+            font-size: 15px;
             font-weight: 700;
-            font-size: 16px;
-            transition: transform .25s;
         }
-        .sidebar-left .category-list li .folder-icon::before,
-        .sidebar-left .category-list li .folder-icon::after { content: none; }
-
-        .sidebar-left .category-list { counter-reset: catnum; }
-        .sidebar-left .category-list li { counter-increment: catnum; }
-        .sidebar-left .category-list li .folder-icon::before {
-            content: counter(catnum);
-            display: block;
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            position: static;
-            width: auto; height: auto;
-            background: none; border-radius: 0;
-        }
-
-        .sidebar-left .category-list li:nth-child(1) .folder-icon { background: #e8f1fa; color: #2c7ab5; }
-        .sidebar-left .category-list li:nth-child(1) { --accent: #2c7ab5; }
-        .sidebar-left .category-list li:nth-child(2) .folder-icon { background: #fef3e2; color: #d97706; }
-        .sidebar-left .category-list li:nth-child(2) { --accent: #d97706; }
-        .sidebar-left .category-list li:nth-child(3) .folder-icon { background: #f0e8fd; color: #7c3aed; }
-        .sidebar-left .category-list li:nth-child(3) { --accent: #7c3aed; }
-        .sidebar-left .category-list li:nth-child(4) .folder-icon { background: #e3f5ed; color: #059669; }
-        .sidebar-left .category-list li:nth-child(4) { --accent: #059669; }
-        .sidebar-left .category-list li:nth-child(5) .folder-icon { background: #fdeaea; color: #dc2626; }
-        .sidebar-left .category-list li:nth-child(5) { --accent: #dc2626; }
-        .sidebar-left .category-list li:nth-child(6) .folder-icon { background: #e0f4f8; color: #0891b2; }
-        .sidebar-left .category-list li:nth-child(6) { --accent: #0891b2; }
-
-        .sidebar-left .category-list li .cat-name {
-            font-size: 15px; color: #1e293b; font-weight: 600; margin-bottom: 3px;
-        }
-        .sidebar-left .category-list li .cat-sub {
-            font-size: 12px; color: #94a3b8; letter-spacing: 0.5px;
-        }
-        .sidebar-left .category-list li .cat-arrow {
-            font-size: 18px; color: #cbd5e1;
-            transition: transform .25s, color .25s;
-        }
-        .sidebar-left .category-list li:hover .cat-arrow {
-            transform: translateX(4px);
-            color: var(--accent, #2c7ab5);
-        }
-        .sidebar-left .category-list li:hover .folder-icon { transform: scale(1.06); }
-
-        .knowledge-main {
-            margin-top: 24px;
-            padding-bottom: 60px;
-        }
+        .sidebar-left .category-list li .cat-name { font-size: 15px; color: #1e293b; font-weight: 600; margin-bottom: 2px; }
+        .sidebar-left .category-list li .cat-sub { font-size: 12px; color: #94a3b8; }
 
         /* 右侧内容区 */
         .content-right {
-            border-radius: 14px;
-            box-shadow: 0 6px 24px rgba(30, 90, 138, 0.08);
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
             position: relative;
             overflow: hidden;
-            padding: 34px 38px;
-        }
-        .content-right::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #2c7ab5, #7c3aed, #db2777);
+            padding: 30px;
+            min-height: 480px;
         }
 
-        /* 文档列表：竖排精美卡片 */
-        .doc-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
+        /* 文档列表 */
+        .doc-list { display: grid; grid-template-columns: 1fr; gap: 14px; }
         .doc-item {
-            border-radius: 14px;
-            padding: 20px 24px;
-            border: 1px solid #eef4f9;
-            background: #fafcff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            border: 1px solid rgba(0,0,0,0.04);
+            background: #fafafa;
             cursor: pointer;
             transition: all .25s ease;
-            position: relative;
-            overflow: hidden;
             display: flex;
             align-items: center;
-            gap: 18px;
-        }
-        .doc-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, #2c7ab5, #7c3aed);
-            opacity: 0;
-            transition: opacity .25s;
+            gap: 16px;
         }
         .doc-item:hover {
-            background: #f0f7ff;
+            background: #ffffff;
             transform: translateX(4px);
-            box-shadow: 0 10px 24px rgba(44, 122, 181, 0.12);
-            border-color: #d6e7f6;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border-color: #D19C97;
         }
-        .doc-item:hover::before { opacity: 1; }
-
         .doc-item .doc-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #e8f1fa 0%, #dbeafc 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #F5EEDC;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             flex-shrink: 0;
-            color: #2c7ab5;
+            color: #C28840;
         }
-
         .doc-item .doc-body { flex: 1; min-width: 0; }
-
-        .doc-item h3 {
-            margin: 0 0 6px;
-            font-size: 16px;
-            color: #1e5a8a;
-            font-weight: 700;
-            line-height: 1.4;
-        }
-        .doc-item .doc-meta {
-            font-size: 13px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .doc-item h3 { margin: 0 0 4px; font-size: 16px; color: #4A2F1D; font-weight: 700; }
+        .doc-item .doc-meta { font-size: 13px; color: #94a3b8; display: flex; align-items: center; gap: 10px; }
         .doc-item .doc-meta .tag {
             display: inline-block;
-            padding: 2px 10px;
-            border-radius: 10px;
-            background: #e8f1fa;
-            color: #2c7ab5;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: #F0E2E2;
+            color: #8C3A3A;
             font-size: 12px;
             font-weight: 600;
         }
-        .doc-item .doc-meta .tag.orange { background: #fef3e2; color: #d97706; }
-        .doc-item .doc-meta .tag.purple { background: #f0e8fd; color: #7c3aed; }
-        .doc-item .doc-meta .tag.green { background: #e3f5ed; color: #059669; }
-        .doc-item .doc-meta .tag.red { background: #fdeaea; color: #dc2626; }
-        .doc-item .doc-meta .tag.cyan { background: #e0f4f8; color: #0891b2; }
+        .doc-item .doc-arrow { font-size: 18px; color: #cbd5e1; transition: all .25s; }
+        .doc-item:hover .doc-arrow { transform: translateX(4px); color: #8C3A3A; }
 
-        .doc-item .doc-arrow {
-            font-size: 20px;
-            color: #cbd5e1;
-            transition: transform .25s, color .25s;
-            flex-shrink: 0;
-        }
-        .doc-item:hover .doc-arrow {
-            transform: translateX(4px);
-            color: #2c7ab5;
-        }
-
+        /* 详情页 */
         .detail-content {
-            border-radius: 14px;
-            padding: 26px 30px;
-            background: #fafcff;
+            border-radius: 10px;
+            padding: 24px;
+            background: #fafafa;
             line-height: 2;
+            border: 1px solid rgba(0,0,0,0.03);
         }
         .book-back {
             border-radius: 8px;
             transition: all .25s;
+            background: #F5EEDC;
+            color: #4A2F1D;
+            border: 1px solid #E3D5B9;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        .book-back:hover {
-            background: #e6f0fa;
-            transform: translateX(-2px);
-        }
+        .book-back:hover { background: #E8DCC4; transform: translateX(-2px); }
 
+        /* 响应式 */
         @media (max-width: 900px) {
-            .hero-title { font-size: 40px; letter-spacing: 6px; }
-            .quick-cards .card { width: 100px; height: 96px; }
-            .knowledge-hero .search-bar { max-width: 92%; }
+            .quick-cards { flex-wrap: wrap; }
+            .quick-cards .card { flex: 0 0 calc(33.33% - 12px); margin-bottom: 10px; }
+            .knowledge-main { flex-direction: column; }
+            .sidebar-left { width: 100%; }
+            .content-right { width: 100%; padding: 20px; }
+        }
+        @media (max-width: 600px) {
+            .quick-cards .card { flex: 0 0 calc(50% - 12px); }
+            .mega-container { padding: 15px; margin: 15px auto 30px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ==================== 顶部 Banner（与全站一致，路径 ../images/） ==================== -->
+<!-- ==================== 顶部 Banner ==================== -->
 <div class="site-banner">
     <img src="../images/banner.png" alt="灵活就业人员权益助手" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
 </div>
 
-<!-- ==================== 导航栏（与 index.html 一致，路径已修正为 ../） ==================== -->
+<!-- ==================== 导航栏 ==================== -->
 <nav class="main-nav">
     <div class="main-nav-inner">
         <div class="main-nav-links">
@@ -445,79 +283,80 @@
             <a href="community.html">互助墙</a>
             <a href="../profile.html">个人主页</a>
         </div>
-        <!-- 登录/注册容器（auth_modal.js 自动渲染） -->
         <div id="userArea"></div>
     </div>
 </nav>
 
-<section class="knowledge-hero">
-    <div class="hero-content">
-        <h1 class="hero-title">权益知识库</h1>
+<!-- ==================== 大矩形包裹所有内容 ==================== -->
+<div class="mega-container">
 
-        <div class="search-bar">
-            <div class="search-select">
-                <select id="search-scope">
-                    <option value="all">全部知识</option>
-                </select>
-            </div>
-            <input id="search-input" type="text" placeholder="搜索关键词，如：加班、工伤、合同…">
-            <button class="search-btn" id="search-btn">🔍 搜索</button>
-        </div>
-
-        <div class="hero-tabs">
-            <span class="tab active" data-tab="main">正文</span>
-            <span class="tab" data-tab="interpret">释义</span>
-            <span class="tab" data-tab="summary">条旨</span>
-        </div>
-
-        <div class="quick-cards" id="quick-cards"></div>
-    </div>
-</section>
-
-<main class="container page knowledge-main">
-    <aside class="sidebar-left">
-        <ul class="category-list" id="category-list"></ul>
-    </aside>
-
-    <section class="content-right">
-        <div id="welcome-view">
-            <p style="color:#94a3b8;text-align:center;padding:60px 20px;font-size:15px;">
-                请从左侧选择分类，查看对应的权益知识文档。
-            </p>
-        </div>
-
-        <div id="doc-view" class="hidden">
-            <div class="breadcrumb">
-                <span>权益知识</span> &gt; <span id="doc-cat-title"></span>
-            </div>
-            <ul class="doc-list" id="doc-list"></ul>
-        </div>
-
-        <div id="detail-view" class="hidden">
-            <div class="breadcrumb">
-                <span>权益知识</span> &gt; <span id="detail-cat-title"></span> &gt; <span id="detail-doc-title"></span>
+    <!-- 1. 顶部搜索与快捷入口 -->
+    <section class="knowledge-hero">
+        <div class="hero-content">
+            <!-- ★ 极简搜索栏 -->
+            <div class="search-bar">
+                <input id="search-input" type="text" placeholder="搜索关键词，如：加班、工伤、合同…">
+                <button class="search-btn" id="search-btn">
+                    <!-- 纯 SVG 图标 -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
             </div>
 
-            <div class="article-header">
-                <h2 id="detail-title"></h2>
-                <span class="article-tag" id="detail-tag">第 1 条</span>
-            </div>
-
-            <div id="detail-content" class="detail-content"></div>
-
-            <button id="back-to-doc" class="btn book-back">← 返回列表</button>
-        </div>
-
-        <div id="search-view" class="hidden">
-            <div class="breadcrumb">
-                <span>搜索结果</span> &gt; <span id="search-keyword-label"></span>
-            </div>
-            <ul class="doc-list" id="search-list"></ul>
+            <!-- 7个快捷卡片 -->
+            <div class="quick-cards" id="quick-cards"></div>
         </div>
     </section>
-</main>
 
-<!-- ==================== 登录注册弹窗（与全站一致，auth_modal.js 依赖此骨架） ==================== -->
+    <!-- 2. 下方主体（左列表 + 右内容） -->
+    <main class="knowledge-main">
+        <aside class="sidebar-left">
+            <ul class="category-list" id="category-list"></ul>
+        </aside>
+
+        <section class="content-right">
+            <div id="welcome-view">
+                <p style="color:#94a3b8;text-align:center;padding:80px 20px;font-size:15px;">
+                    请从左侧选择分类，查看对应的权益知识文档。
+                </p>
+            </div>
+
+            <div id="doc-view" class="hidden">
+                <div class="breadcrumb">
+                    <span>权益知识</span> &gt; <span id="doc-cat-title"></span>
+                </div>
+                <ul class="doc-list" id="doc-list"></ul>
+            </div>
+
+            <div id="detail-view" class="hidden">
+                <div class="breadcrumb">
+                    <span>权益知识</span> &gt; <span id="detail-cat-title"></span> &gt; <span id="detail-doc-title"></span>
+                </div>
+
+                <div class="article-header">
+                    <h2 id="detail-title" style="color: #4A2F1D; font-family: 'ZCOOL XiaoWei', serif; margin-top: 15px;"></h2>
+                    <span class="article-tag" id="detail-tag" style="background:#F0E2E2; color:#8C3A3A; padding:2px 8px; border-radius:4px; font-size:12px;">第 1 条</span>
+                </div>
+
+                <div id="detail-content" class="detail-content"></div>
+
+                <button id="back-to-doc" class="btn book-back">← 返回列表</button>
+            </div>
+
+            <div id="search-view" class="hidden">
+                <div class="breadcrumb">
+                    <span>搜索结果</span> &gt; <span id="search-keyword-label"></span>
+                </div>
+                <ul class="doc-list" id="search-list"></ul>
+            </div>
+        </section>
+    </main>
+
+</div>
+
+<!-- ==================== 登录注册弹窗 ==================== -->
 <div id="authModal" class="auth-modal">
     <div class="auth-box">
         <button class="auth-close" onclick="closeAuthModal()">×</button>
@@ -527,7 +366,6 @@
             <button id="modalTabLogin" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
             <button id="modalTabRegister" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
         </div>
-        <!-- 登录 -->
         <form id="modalLoginForm">
             <label>用户名</label>
             <input id="modalLoginUsername" type="text" placeholder="请输入用户名" required>
@@ -535,7 +373,6 @@
             <input id="modalLoginPassword" type="password" placeholder="请输入密码" required>
             <button type="submit" class="auth-submit">登录</button>
         </form>
-        <!-- 注册 -->
         <form id="modalRegisterForm" class="hidden">
             <label>用户名</label>
             <input id="modalRegUsername" type="text" placeholder="请输入用户名" required>
@@ -548,7 +385,7 @@
     </div>
 </div>
 
-<!-- ==================== 头像放大遮罩层（默认隐藏，点击导航头像打开） ==================== -->
+<!-- ==================== 头像放大遮罩层 ==================== -->
 <div id="avatar-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; justify-content: center; align-items: center; cursor: zoom-out;">
     <img id="lightbox-img" src="" style="max-width: 80%; max-height: 80%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
 </div>

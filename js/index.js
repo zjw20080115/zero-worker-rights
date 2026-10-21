@@ -81,36 +81,41 @@ async function loadHotPosts() {
             return;
         }
 
-        // ⭐ 4. 渲染列表
-        container.innerHTML = hotPosts.map(post => {
-            // 判断是否点过赞，决定颜色
-            const likeColor = post.isLiked ? 'color: #dc3545;' : '';
+                // ⭐ 4. 渲染列表
+                container.innerHTML = hotPosts.map(post => {
+                    // 判断是否点过赞，决定颜色
+                    const likeColor = post.isLiked ? 'color: #dc3545;' : '';
 
-            return `
-            <div class="hot-post-item" onclick="window.location.href='pages/post_detail.html?id=${post.id}'" style="cursor: pointer;">
-                <div class="hot-post-head">
-                    <span class="hot-post-category">${indexEscapeHtml(post.category || '未分类')}</span>
-                    <span class="hot-post-time">${indexFormatTime(post.createTime)}</span>
-                </div>
-                <h4 class="hot-post-title">${indexEscapeHtml(post.title || '无标题')}</h4>
-                <p class="hot-post-excerpt">${indexEscapeHtml((post.content || '').substring(0, 60))}...</p>
-                <div class="hot-post-foot">
-                    <span style="margin-right: auto;">👤 ${indexEscapeHtml(post.author || '匿名用户')}</span>
-                    
-                    <!-- 评论图标 -->
-                    <span class="stat-item" style="display:inline-flex; align-items:center; gap:4px;">
-                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                        <span class="home-comment-count">${post.comments || 0}</span>
-                    </span>
-                    
-                    <!-- 点赞图标 -->
-                    <span class="stat-item like-btn-home" onclick="handleHomeLike(event, ${post.id}, this)" style="${likeColor}; cursor: pointer;">
-                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                        <span class="home-like-count">${post.likeCount || 0}</span>
-                    </span>
-                </div>
-            </div>`;
-        }).join('');
+                    return `
+                    <div class="hot-post-item" onclick="window.location.href='pages/post_detail.html?id=${post.id}'" style="cursor: pointer;">
+
+                        <!-- ★ 核心：加上这一层 post-inner，用来控制内边距 -->
+                        <div class="post-inner">
+                            <div class="hot-post-head">
+                                <span class="hot-post-category">${indexEscapeHtml(post.category || '未分类')}</span>
+                                <span class="hot-post-time">${indexFormatTime(post.createTime)}</span>
+                            </div>
+                            <h4 class="hot-post-title">${indexEscapeHtml(post.title || '无标题')}</h4>
+                            <p class="hot-post-excerpt">${indexEscapeHtml((post.content || '').substring(0, 60))}...</p>
+                            <div class="hot-post-foot">
+                                <span style="margin-right: auto;">👤 ${indexEscapeHtml(post.author || '匿名用户')}</span>
+
+                                <!-- 评论图标 -->
+                                <span class="stat-item" style="display:inline-flex; align-items:center; gap:4px;">
+                                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                    <span class="home-comment-count">${post.comments || 0}</span>
+                                </span>
+
+                                <!-- 点赞图标 -->
+                                <span class="stat-item like-btn-home" onclick="handleHomeLike(event, ${post.id}, this)" style="${likeColor}; cursor: pointer;">
+                                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                    <span class="home-like-count">${post.likeCount || 0}</span>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>`;
+                }).join('');
         
     } catch (err) {
         console.error('[index.js] 加载高赞贴失败：', err);
