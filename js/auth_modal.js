@@ -226,5 +226,68 @@ function updateUserArea() {
     }
 }
 
-// 10. 页面加载时更新一次
-document.addEventListener('DOMContentLoaded', updateUserArea);
+// ============================================================
+// 10. 导航头像统一处理（修复全站 404：不再依赖 default-avatar.png）
+// ============================================================
+
+/* 把存储的头像路径转换为当前页面层级可用的相对路径：
+ *   根目录页面 -> images/avatars/a4.jpg
+ *   pages/ 页面 -> ../images/avatars/a4.jpg
+ * data: 开头（旧版上传的 Base64 头像）原样返回 */
+function normalizeAvatarPath(savedPath) {
+    if (!savedPath) return '';
+    if (savedPath.indexOf('data:') === 0) return savedPath;
+    var isSubPage = window.location.pathname.indexOf('/pages/') !== -1;
+    var p = savedPath;
+    if (p.charAt(0) === '/') p = p.substring(1); // 去掉前导斜杠，统一成相对形式
+    if (isSubPage) {
+        return p.indexOf('../') === 0 ? p : '../' + p;
+    }
+    return p;
+}
+
+/* 默认灰色圆形占位头像（内联 SVG，不发任何网络请求） */
+function getDefaultAvatarDataUri() {
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">' +
+        '<circle cx="48" cy="48" r="48" fill="#cccccc"/>' +
+        '<text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-size="40" fill="#ffffff">空</text>' +
+        '</svg>'
+    );
+}
+
+/* 更新导航栏头像：
+ *   - #nav-avatar 元素不存在时自动创建（插在 userArea 之后）
+ *   - 有存储（userAvatar 优先，兼容 avatarUrl）就显示存储头像（路径按层级修正）
+ *   - 没有存储就显示原生灰色圆圈占位 */
+function updateNavAvatar() {
+    var userArea = document.getElementById('userArea');
+    if (!userArea || !userArea.parentNode) return;
+
+    var navAvatarEl = document.getElementById('nav-avatar');
+    if (!navAvatarEl) {
+        navAvatarEl = document.createElement('img');
+        navAvatarEl.id = 'nav-avatar';
+        navAvatarEl.alt = '头像';
+        navAvatarEl.style.width = '36px';
+        navAvatarEl.style.height = '36px';
+        navAvatarEl.style.borderRadius = '50%';
+        navAvatarEl.style.objectFit = 'cover';
+        navAvatarEl.style.cursor = 'pointer';
+        navAvatarEl.style.border = '2px solid rgba(255,255,255,0.3)';
+        navAvatarEl.style.marginLeft = '20px';
+        userArea.parentNode.insertBefore(navAvatarEl, userArea.nextSibling);
+    }
+
+    var savedAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('avatarUrl');
+    navAvatarEl.src = savedAvatar ? normalizeAvatarPath(savedAvatar) : getDefaultAvatarDataUri();
+}
+
+// 脚本在 body 底部执行，DOM 已就绪，立即更新一次（保证早于 nav_avatar.js 运行）
+updateNavAvatar();
+
+// 11. 页面加载时再更新一次（用户区渲染 + 头像同步）
+document.addEventListener('DOMContentLoaded', function() {
+    updateUserArea();
+    updateNavAvatar();
+});

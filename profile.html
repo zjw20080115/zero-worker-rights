@@ -36,9 +36,8 @@
             <!-- 左侧卡片：个人信息区（约 300px） -->
             <div class="profile-info-card">
                 <div class="avatar-wrap">
-                    <!-- 点击头像弹出选择弹窗；默认图缺失时由 profile.js 替换为灰色圆形占位符 -->
-                    <img id="user-avatar" src="images/default-avatar.png" alt="头像" title="点击修改头像">
-                    <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+                    <!-- 点击头像：未登录弹登录框，已登录弹出预设头像选择窗 -->
+                    <img id="user-avatar" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Ccircle%20cx='60'%20cy='60'%20r='60'%20fill='%23cccccc'/%3E%3Ctext%20x='60'%20y='60'%20text-anchor='middle'%20dominant-baseline='central'%20font-size='48'%20fill='%23ffffff'%3E%E7%A9%BA%3C/text%3E%3C/svg%3E" alt="头像" title="点击修改头像">
                 </div>
                 <p class="greeting">你好，欢迎回来 👋</p>
                 <div id="user-name-display" title="点击修改用户名">当前用户名</div>
@@ -55,18 +54,26 @@
                 <!-- 我的帖子 -->
                 <div id="panel-posts" class="profile-panel">
                     <h3>我的帖子</h3>
-                    <p>暂无帖子，快去互助墙发帖吧！</p>
+                    <div id="my-posts-list" style="max-height: 500px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ==================== 头像修改弹窗 ==================== -->
+    <!-- ==================== 头像修改弹窗（预设头像选择） ==================== -->
     <div id="avatar-modal" class="mini-modal" style="display:none;">
         <div class="mini-modal-box">
-            <h4>修改头像</h4>
-            <button id="avatar-shoot-btn" class="btn" type="button">拍摄</button>
-            <button id="avatar-album-btn" class="btn" type="button">从相册选择</button>
+            <h4>选择预设头像</h4>
+            <div class="avatar-options">
+                <img class="avatar-option" src="images/avatars/a1.jpg" alt="预设头像1">
+                <img class="avatar-option" src="images/avatars/a2.jpg" alt="预设头像2">
+                <img class="avatar-option" src="images/avatars/a3.jpg" alt="预设头像3">
+                <img class="avatar-option" src="images/avatars/a4.jpg" alt="预设头像4">
+                <img class="avatar-option" src="images/avatars/a5.jpg" alt="预设头像5">
+                <img class="avatar-option" src="images/avatars/a6.jpg" alt="预设头像6">
+                <img class="avatar-option" src="images/avatars/a7.jpg" alt="预设头像7">
+                <img class="avatar-option" src="images/avatars/a8.jpg" alt="预设头像8">
+            </div>
             <button id="avatar-cancel-btn" class="mini-cancel" type="button">取消</button>
         </div>
     </div>
@@ -125,8 +132,14 @@
         </div>
     </div>
 
-    <!-- 本模块脚本：auth_modal.js 先引入（全局函数 + 弹窗事件绑定），再加载页面脚本 -->
+    <!-- ==================== 头像放大遮罩层（默认隐藏，点击导航头像打开） ==================== -->
+    <div id="avatar-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; justify-content: center; align-items: center; cursor: zoom-out;">
+        <img id="lightbox-img" src="" style="max-width: 80%; max-height: 80%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    </div>
+
+    <!-- 本模块脚本：auth_modal.js → nav_avatar.js（导航头像 Lightbox）→ profile.js -->
     <script src="js/auth_modal.js"></script>
+    <script src="js/nav_avatar.js"></script>
     <script src="js/profile.js"></script>
 </body>
 </html>

@@ -64,6 +64,8 @@
 .intro-card {
     width: 40%;
     margin-bottom: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .records-card {
     width: 60%;
@@ -78,36 +80,64 @@
     margin-top: 0;
 }
 
-/* 左侧问题列表：纵向排列 + 圆形序号 + 悬浮微变 */
+/* 左侧问题列表：Flex 列表项（左数字圆圈 + 右文字，垂直居中） */
 .problem-list {
     list-style: none;
     padding: 0;
     margin: 0 0 20px;
     counter-reset: problem;
 }
-.problem-list li {
+.problem-item {
     counter-increment: problem;
-    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
-.problem-list li:hover {
-    background: #f0f7fd;
+.problem-item:hover {
+    background-color: #f0f4f8;
+    color: #1769aa;
 }
-.problem-list li::before {
+.problem-item::before {
     content: counter(problem);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
-    margin-right: 10px;
+    width: 26px;
+    height: 26px;
+    margin-right: 12px;
     border-radius: 50%;
-    background: #e8f2fb;
+    background: #e2ebf5;
     color: #1769aa;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* 开始自测按钮：蓝紫渐变 + 柔和阴影 + 悬停放大 */
+.btn-gradient {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #4e72ff, #9c56f5);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(78, 114, 255, 0.4);
+    transition: all 0.3s ease;
+}
+.btn-gradient:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(78, 114, 255, 0.55);
+}
+.btn-gradient .icon {
+    margin-right: 8px;
 }
 
 /* ===== 右侧记录卡片亲和化（样式与 profile.html 个人中心版完全一致） ===== */

@@ -19,10 +19,7 @@
 
 /* ---------- 1. DOM 元素引用 ---------- */
 const avatarImg = document.getElementById('user-avatar');
-const avatarInput = document.getElementById('avatar-input');
 const avatarModal = document.getElementById('avatar-modal');
-const avatarShootBtn = document.getElementById('avatar-shoot-btn');
-const avatarAlbumBtn = document.getElementById('avatar-album-btn');
 const avatarCancelBtn = document.getElementById('avatar-cancel-btn');
 const userNameDisplay = document.getElementById('user-name-display');
 const editUsernameModal = document.getElementById('edit-username-modal');
@@ -55,7 +52,10 @@ function confirmBox(message, onConfirm) {
     }
 }
 
-/* ---------- 3. 头像修改 ---------- */
+/* ---------- 3. 头像修改（预设头像选择 + 真实接口） ---------- */
+/* 修改头像接口 */
+const AVATAR_API_URL = 'http://10.72.39.141:8080/api/auth/user/avatar';
+
 function openAvatarModal() {
     avatarModal.style.display = 'flex';
 }
@@ -63,39 +63,63 @@ function closeAvatarModal() {
     avatarModal.style.display = 'none';
 }
 
-// 点击头像：弹出选择弹窗（拍摄 / 从相册选择 / 取消）
-avatarImg.addEventListener('click', openAvatarModal);
-
-// 拍摄：模拟功能，暂未开放
-avatarShootBtn.addEventListener('click', () => {
-    toast('拍摄功能暂未开放', 'info');
-});
-
-// 从相册选择：触发隐藏的 file input
-avatarAlbumBtn.addEventListener('click', () => {
-    closeAvatarModal();
-    avatarInput.click();
+// 点击头像：未登录弹登录框；已登录弹预设头像选择窗
+avatarImg.addEventListener('click', () => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        if (typeof window.openAuthModal === 'function') {
+            window.openAuthModal();
+        }
+        return;
+    }
+    openAvatarModal();
 });
 avatarCancelBtn.addEventListener('click', closeAvatarModal);
 
-// 选择图片后：FileReader 转 Base64，本地预览 + 写入 localStorage
-avatarInput.addEventListener('change', () => {
-    const file = avatarInput.files && avatarInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        avatarImg.src = reader.result;
-        // 存入 localStorage，供导航栏（index.js）等位置读取最新头像
+// 点击预设头像：POST 提交到后端 + 本地与页面同步更新
+document.querySelectorAll('.avatar-option').forEach((opt) => {
+    opt.addEventListener('click', async () => {
+        const src = opt.getAttribute('src'); // 如 images/avatars/a1.jpg
+        const backendPath = '/' + src; // 后端需要 /images/avatars/a1.jpg 形式
+        const userId = Number(localStorage.getItem('userId')) || 1;
+
         try {
-            localStorage.setItem('avatarUrl', reader.result);
-        } catch (e) {
-            // 图片过大超出 localStorage 配额时仅做本地预览
-            console.warn('[profile.js] 头像过大，无法存入 localStorage（仅本地预览）：', e);
+            const res = await fetch(AVATAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId, avatar: backendPath }),
+            });
+            if (!res.ok) {
+                throw new Error(`接口返回状态码 ${res.status}`);
+            }
+            // 本地存相对路径（file:// 打开也能显示）；
+            // userAvatar 为新 key，avatarUrl 兼容旧逻辑（index.js / nav_avatar.js）
+            localStorage.setItem('userAvatar', src);
+            localStorage.setItem('avatarUrl', src);
+            // 大头像 + 导航栏小头像立即更新
+            avatarImg.src = src;
+            const navAvatarEl = document.getElementById('nav-avatar');
+            if (navAvatarEl) navAvatarEl.src = src;
+            closeAvatarModal();
+            toast('头像修改成功', 'success');
+        } catch (err) {
+            console.error('[profile.js] 修改头像失败：', err);
+            toast('头像修改失败，请检查网络或查看F12报错', 'error');
         }
-        toast('头像修改成功', 'success');
-    };
-    reader.readAsDataURL(file);
+    });
 });
+
+/* 页面加载：同步已保存的头像（大头像 + 导航栏小头像） */
+(function initUserAvatar() {
+    const savedAvatar =
+        localStorage.getItem('userAvatar') || localStorage.getItem('avatarUrl');
+    if (savedAvatar) {
+        avatarImg.src = savedAvatar;
+        const navAvatarEl = document.getElementById('nav-avatar');
+        if (navAvatarEl) navAvatarEl.src = savedAvatar;
+    }
+    // 未保存时保持默认图；默认图缺失由 handleAvatarError 兜底
+})();
 
 /* 默认头像加载失败时：替换为灰色圆形"空"占位图 */
 function handleAvatarError() {
@@ -332,3 +356,162 @@ suggestionSubmit.addEventListener('click', async () => {
         });
     }
 })();
+
+/* ============================================================
+ * 8. 我的帖子（真实接口）
+ * ============================================================ */
+
+const POSTS_API_BASE = 'http://10.72.39.141:8080/api/posts';
+const myPostsList = document.getElementById('my-posts-list');
+let myPosts = [];
+
+/* 转义 HTML，防止后端返回的文本被当成标签渲染 */
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+/* 时间格式化：2026-10-05T15:28:13 -> 2026-10-05 15:28 */
+function formatPostTime(timeStr) {
+    if (!timeStr) return '';
+    try {
+        return timeStr.replace('T', ' ').substring(0, 16);
+    } catch (e) {
+        return timeStr;
+    }
+}
+
+/* 渲染我的帖子卡片（复用权益记录的 record-card 风格） */
+function renderMyPosts(posts) {
+    if (!myPostsList) return;
+    if (myPosts.length === 0) {
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+        return;
+    }
+    myPostsList.innerHTML = myPosts
+        .map((p) => {
+            // 标签：优先 problemType，其次 category，都没有则不显示
+            const categoryText = escapeHtml(p.problemType || p.category || '');
+            const categoryBadge = categoryText
+                ? `<span class="post-category-badge">${categoryText}</span>`
+                : '';
+            return `
+        <div class="record-card post-clickable" data-id="${p.id}">
+            <div class="card-header">
+                <div class="post-title-wrap">
+                    <span class="post-title">${escapeHtml(p.title || '无标题')}</span>
+                    ${categoryBadge}
+                </div>
+                <span class="record-date">${formatPostTime(p.createTime)}</span>
+            </div>
+            <p class="record-desc">${escapeHtml(p.content || '')}</p>
+            <div class="post-footer-row">
+                <span>👤 ${escapeHtml(p.author || '匿名用户')}</span>
+                <span>👍 ${p.likeCount || 0}</span>
+                <span>💬 ${p.commentCount || 0}</span>
+                <button class="delete-post-btn" data-id="${p.id}">删除</button>
+            </div>
+        </div>`;
+        })
+        .join('');
+}
+
+/* 拉取我的帖子（未登录时直接显示空状态，不发请求） */
+async function loadMyPosts() {
+    if (!myPostsList) return;
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+        return;
+    }
+    myPostsList.innerHTML = '<p>加载中...</p>';
+    try {
+        const res = await fetch(`${POSTS_API_BASE}/user/${userId}`, {
+            cache: 'no-store', // 每次加载都强制走网络，保证数据最新
+        });
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        const data = await res.json();
+        myPosts = Array.isArray(data) ? data : [];
+        renderMyPosts(myPosts);
+    } catch (err) {
+        console.error('[profile.js] 加载我的帖子失败：', err);
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+    }
+}
+
+/* 删除帖子：确认 + DELETE + 刷新列表 */
+async function deleteMyPost(postId, btn) {
+    btn.disabled = true;
+    try {
+        const res = await fetch(`${POSTS_API_BASE}/${postId}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        toast('删除成功', 'success');
+        loadMyPosts();
+    } catch (err) {
+        console.error('[profile.js] 删除帖子失败：', err);
+        toast('删除失败，请检查网络或查看F12报错', 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+/* 事件委托：删除按钮 + 整卡点击跳详情（动态卡片生效） */
+if (myPostsList) {
+    myPostsList.addEventListener('click', (e) => {
+        // 分支一：删除按钮（第一行 stopPropagation，防止误触跳详情页）
+        const delBtn = e.target.closest('.delete-post-btn');
+        if (delBtn) {
+            e.stopPropagation();
+            const postId = delBtn.dataset.id;
+            // 确认弹窗（走 auth_modal.js 的居中确认框，避免原生 confirm）
+            confirmBox('确定要删除这篇帖子吗？', () => {
+                deleteMyPost(postId, delBtn);
+            });
+            return;
+        }
+
+        // 分支二：点击卡片其他位置 -> 跳转帖子详情页查看评论
+        const card = e.target.closest('.post-clickable');
+        if (card) {
+            window.location.href = 'pages/post_detail.html?id=' + card.dataset.id;
+        }
+    });
+}
+
+/* 页面加载：自动拉取我的帖子（权益记录已迁至自测页，这里独立运行） */
+loadMyPosts();
+
+/* ---------- 数据保鲜：页面重新可见时重新拉取 ---------- */
+let lastPostsRefresh = 0;
+
+/* 带节流的刷新：visibilitychange 与 pageshow 可能同时触发，2 秒内去重 */
+function refreshMyPosts() {
+    const now = Date.now();
+    if (now - lastPostsRefresh < 2000) return;
+    lastPostsRefresh = now;
+    loadMyPosts();
+}
+
+/* 场景一：切换标签页 / 最小化后回到本页 */
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        refreshMyPosts();
+    }
+});
+
+/* 场景二：从帖子详情页点击浏览器"返回"（bfcache 恢复，event.persisted 为 true） */
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        refreshMyPosts();
+    }
+});

@@ -26,8 +26,8 @@
         .login-btn:hover { background-color: rgba(255,255,255,0.25); }
         .user-info { color: #cbd5e1; font-size: 14px; }
         .user-info b { color: #fff; }
-        .logout-btn { color: #fca5a5; cursor: pointer; font-size: 14px; }
-        .logout-btn:hover { color: #fecaca; }
+        .logout-btn { color: #ffffff; cursor: pointer; font-size: 14px; }
+        .logout-btn:hover { color: rgba(255,255,255,0.8); }
 
         .hero-banner { background: linear-gradient(135deg, #1e5a8a 0%, #2c7ab5 100%); padding: 80px 20px; text-align: center; color: white; position: relative; overflow: hidden; }
         .hero-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%); pointer-events: none; }
@@ -111,8 +111,6 @@
             </div>
             <!-- 登录/注册容器（auth_modal.js 自动渲染） -->
             <div id="userArea"></div>
-            <!-- 导航头像：点击放大（Lightbox）；默认图缺失时由 nav_avatar.js 替换为占位图 -->
-            <img id="nav-avatar" src="../images/default-avatar.png" alt="头像" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); margin-left: 20px;">
         </div>
     </nav>
 
