@@ -19,10 +19,7 @@
 
 /* ---------- 1. DOM 元素引用 ---------- */
 const avatarImg = document.getElementById('user-avatar');
-const avatarInput = document.getElementById('avatar-input');
 const avatarModal = document.getElementById('avatar-modal');
-const avatarShootBtn = document.getElementById('avatar-shoot-btn');
-const avatarAlbumBtn = document.getElementById('avatar-album-btn');
 const avatarCancelBtn = document.getElementById('avatar-cancel-btn');
 const userNameDisplay = document.getElementById('user-name-display');
 const editUsernameModal = document.getElementById('edit-username-modal');
@@ -55,7 +52,10 @@ function confirmBox(message, onConfirm) {
     }
 }
 
-/* ---------- 3. 头像修改 ---------- */
+/* ---------- 3. 头像修改（预设头像选择 + 真实接口） ---------- */
+/* 修改头像接口 */
+const AVATAR_API_URL = 'http://10.72.39.141:8080/api/auth/user/avatar';
+
 function openAvatarModal() {
     avatarModal.style.display = 'flex';
 }
@@ -63,39 +63,63 @@ function closeAvatarModal() {
     avatarModal.style.display = 'none';
 }
 
-// 点击头像：弹出选择弹窗（拍摄 / 从相册选择 / 取消）
-avatarImg.addEventListener('click', openAvatarModal);
-
-// 拍摄：模拟功能，暂未开放
-avatarShootBtn.addEventListener('click', () => {
-    toast('拍摄功能暂未开放', 'info');
-});
-
-// 从相册选择：触发隐藏的 file input
-avatarAlbumBtn.addEventListener('click', () => {
-    closeAvatarModal();
-    avatarInput.click();
+// 点击头像：未登录弹登录框；已登录弹预设头像选择窗
+avatarImg.addEventListener('click', () => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        if (typeof window.openAuthModal === 'function') {
+            window.openAuthModal();
+        }
+        return;
+    }
+    openAvatarModal();
 });
 avatarCancelBtn.addEventListener('click', closeAvatarModal);
 
-// 选择图片后：FileReader 转 Base64，本地预览 + 写入 localStorage
-avatarInput.addEventListener('change', () => {
-    const file = avatarInput.files && avatarInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        avatarImg.src = reader.result;
-        // 存入 localStorage，供导航栏（index.js）等位置读取最新头像
+// 点击预设头像：POST 提交到后端 + 本地与页面同步更新
+document.querySelectorAll('.avatar-option').forEach((opt) => {
+    opt.addEventListener('click', async () => {
+        const src = opt.getAttribute('src'); // 如 images/avatars/a1.jpg
+        const backendPath = '/' + src; // 后端需要 /images/avatars/a1.jpg 形式
+        const userId = Number(localStorage.getItem('userId')) || 1;
+
         try {
-            localStorage.setItem('avatarUrl', reader.result);
-        } catch (e) {
-            // 图片过大超出 localStorage 配额时仅做本地预览
-            console.warn('[profile.js] 头像过大，无法存入 localStorage（仅本地预览）：', e);
+            const res = await fetch(AVATAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId, avatar: backendPath }),
+            });
+            if (!res.ok) {
+                throw new Error(`接口返回状态码 ${res.status}`);
+            }
+            // 本地存相对路径（file:// 打开也能显示）；
+            // userAvatar 为新 key，avatarUrl 兼容旧逻辑（index.js / nav_avatar.js）
+            localStorage.setItem('userAvatar', src);
+            localStorage.setItem('avatarUrl', src);
+            // 大头像 + 导航栏小头像立即更新
+            avatarImg.src = src;
+            const navAvatarEl = document.getElementById('nav-avatar');
+            if (navAvatarEl) navAvatarEl.src = src;
+            closeAvatarModal();
+            toast('头像修改成功', 'success');
+        } catch (err) {
+            console.error('[profile.js] 修改头像失败：', err);
+            toast('头像修改失败，请检查网络或查看F12报错', 'error');
         }
-        toast('头像修改成功', 'success');
-    };
-    reader.readAsDataURL(file);
+    });
 });
+
+/* 页面加载：同步已保存的头像（大头像 + 导航栏小头像） */
+(function initUserAvatar() {
+    const savedAvatar =
+        localStorage.getItem('userAvatar') || localStorage.getItem('avatarUrl');
+    if (savedAvatar) {
+        avatarImg.src = savedAvatar;
+        const navAvatarEl = document.getElementById('nav-avatar');
+        if (navAvatarEl) navAvatarEl.src = savedAvatar;
+    }
+    // 未保存时保持默认图；默认图缺失由 handleAvatarError 兜底
+})();
 
 /* 默认头像加载失败时：替换为灰色圆形"空"占位图 */
 function handleAvatarError() {

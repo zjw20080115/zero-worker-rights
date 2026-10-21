@@ -227,4 +227,13 @@ function updateUserArea() {
 }
 
 // 10. 页面加载时更新一次
-document.addEventListener('DOMContentLoaded', updateUserArea);
+document.addEventListener('DOMContentLoaded', function() {
+    updateUserArea();
+
+    // 同步导航栏小头像：优先 userAvatar（新），兼容 avatarUrl（旧）
+    var savedAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('avatarUrl');
+    var navAvatarEl = document.getElementById('nav-avatar');
+    if (savedAvatar && navAvatarEl) {
+        navAvatarEl.src = savedAvatar;
+    }
+});
