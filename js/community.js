@@ -118,3 +118,28 @@ async function likePost(postId, btnElement) {
         btnElement.classList.remove('liking');
     }
 }
+// ===== 追加到 community.js 最末尾 =====
+// ===== 新增：调用后端进行全库搜索 =====
+async function searchPostsFromServer(keyword) {
+    const postList = document.getElementById('postList');
+    if (!postList) return;
+
+    postList.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">🔍 正在搜索中...</div>';
+    try {
+        const res = await fetch(`${API_BASE_URL}/posts/search?keyword=${encodeURIComponent(keyword)}`);
+        if (!res.ok) throw new Error('搜索请求失败');
+        
+        const results = await res.json();
+        
+        // 直接借用你原本文件里的渲染函数
+        renderPosts(results); 
+        
+        // 更新右上角的帖子数量统计
+        const countEl = document.getElementById('postCount');
+        if (countEl) countEl.innerText = results.length;
+        
+    } catch (e) {
+        console.error('[search] 搜索失败:', e);
+        postList.innerHTML = '<div class="empty-state">⚠️ 搜索失败，请检查网络或稍后再试。</div>';
+    }
+}

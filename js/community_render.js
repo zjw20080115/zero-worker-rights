@@ -66,7 +66,28 @@ function filterAndRender() {
     renderPosts(filtered);
 }
 
-if (searchInput) searchInput.addEventListener('input', (e) => { currentSearch = e.target.value; filterAndRender(); });
+// 替换 community_render.js 最下面的 input 监听
+// 替换原来的 input 监听
+let searchTimer = null;
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        
+        // 清除上一次的定时器
+        clearTimeout(searchTimer);
+        
+        // 300毫秒后执行
+        searchTimer = setTimeout(() => {
+            if (currentSearch.trim() === '') {
+                // 如果搜索框清空了，回到默认的本地渲染（保留你原本的分类过滤功能）
+                filterAndRender(); 
+            } else {
+                // 如果有关键词，调用 community.js 里的后端全库搜索
+                searchPostsFromServer(currentSearch); 
+            }
+        }, 300); 
+    });
+}
 if (categoryTabs) {
     categoryTabs.addEventListener('click', (e) => {
         const targetLi = e.target.closest('li');
