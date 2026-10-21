@@ -285,3 +285,77 @@ body {
         box-sizing: border-box;
     }
 }
+
+/* ---------- 我的帖子卡片（复用权益记录卡片风格） ---------- */
+#my-posts-list .record-card {
+    background: #ffffff;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+}
+#my-posts-list .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+.post-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #1e293b;
+}
+#my-posts-list .record-desc {
+    margin: 0 0 10px;
+    color: #667788;
+    font-size: 14px;
+}
+.post-footer-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+.delete-post-btn {
+    margin-left: auto;
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.delete-post-btn:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+/* 帖子卡片：可点击提示（跳详情页） */
+.post-clickable {
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+#my-posts-list .post-clickable:hover {
+    box-shadow: 0 10px 26px rgba(149, 157, 165, 0.18);
+    transform: translateY(-2px);
+}
+
+/* 帖子标题行与分类标签 */
+.post-title-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.post-category-badge {
+    display: inline-block;
+    margin-left: 8px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 12px;
+    padding: 1px 10px;
+    border-radius: 999px;
+}

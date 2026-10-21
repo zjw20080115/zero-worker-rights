@@ -332,3 +332,162 @@ suggestionSubmit.addEventListener('click', async () => {
         });
     }
 })();
+
+/* ============================================================
+ * 8. 我的帖子（真实接口）
+ * ============================================================ */
+
+const POSTS_API_BASE = 'http://10.72.39.141:8080/api/posts';
+const myPostsList = document.getElementById('my-posts-list');
+let myPosts = [];
+
+/* 转义 HTML，防止后端返回的文本被当成标签渲染 */
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+/* 时间格式化：2026-10-05T15:28:13 -> 2026-10-05 15:28 */
+function formatPostTime(timeStr) {
+    if (!timeStr) return '';
+    try {
+        return timeStr.replace('T', ' ').substring(0, 16);
+    } catch (e) {
+        return timeStr;
+    }
+}
+
+/* 渲染我的帖子卡片（复用权益记录的 record-card 风格） */
+function renderMyPosts(posts) {
+    if (!myPostsList) return;
+    if (myPosts.length === 0) {
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+        return;
+    }
+    myPostsList.innerHTML = myPosts
+        .map((p) => {
+            // 标签：优先 problemType，其次 category，都没有则不显示
+            const categoryText = escapeHtml(p.problemType || p.category || '');
+            const categoryBadge = categoryText
+                ? `<span class="post-category-badge">${categoryText}</span>`
+                : '';
+            return `
+        <div class="record-card post-clickable" data-id="${p.id}">
+            <div class="card-header">
+                <div class="post-title-wrap">
+                    <span class="post-title">${escapeHtml(p.title || '无标题')}</span>
+                    ${categoryBadge}
+                </div>
+                <span class="record-date">${formatPostTime(p.createTime)}</span>
+            </div>
+            <p class="record-desc">${escapeHtml(p.content || '')}</p>
+            <div class="post-footer-row">
+                <span>👤 ${escapeHtml(p.author || '匿名用户')}</span>
+                <span>👍 ${p.likeCount || 0}</span>
+                <span>💬 ${p.commentCount || 0}</span>
+                <button class="delete-post-btn" data-id="${p.id}">删除</button>
+            </div>
+        </div>`;
+        })
+        .join('');
+}
+
+/* 拉取我的帖子（未登录时直接显示空状态，不发请求） */
+async function loadMyPosts() {
+    if (!myPostsList) return;
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+        return;
+    }
+    myPostsList.innerHTML = '<p>加载中...</p>';
+    try {
+        const res = await fetch(`${POSTS_API_BASE}/user/${userId}`, {
+            cache: 'no-store', // 每次加载都强制走网络，保证数据最新
+        });
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        const data = await res.json();
+        myPosts = Array.isArray(data) ? data : [];
+        renderMyPosts(myPosts);
+    } catch (err) {
+        console.error('[profile.js] 加载我的帖子失败：', err);
+        myPostsList.innerHTML = '<p>暂无帖子，快去互助墙发帖吧！</p>';
+    }
+}
+
+/* 删除帖子：确认 + DELETE + 刷新列表 */
+async function deleteMyPost(postId, btn) {
+    btn.disabled = true;
+    try {
+        const res = await fetch(`${POSTS_API_BASE}/${postId}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) {
+            throw new Error(`接口返回状态码 ${res.status}`);
+        }
+        toast('删除成功', 'success');
+        loadMyPosts();
+    } catch (err) {
+        console.error('[profile.js] 删除帖子失败：', err);
+        toast('删除失败，请检查网络或查看F12报错', 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+/* 事件委托：删除按钮 + 整卡点击跳详情（动态卡片生效） */
+if (myPostsList) {
+    myPostsList.addEventListener('click', (e) => {
+        // 分支一：删除按钮（第一行 stopPropagation，防止误触跳详情页）
+        const delBtn = e.target.closest('.delete-post-btn');
+        if (delBtn) {
+            e.stopPropagation();
+            const postId = delBtn.dataset.id;
+            // 确认弹窗（走 auth_modal.js 的居中确认框，避免原生 confirm）
+            confirmBox('确定要删除这篇帖子吗？', () => {
+                deleteMyPost(postId, delBtn);
+            });
+            return;
+        }
+
+        // 分支二：点击卡片其他位置 -> 跳转帖子详情页查看评论
+        const card = e.target.closest('.post-clickable');
+        if (card) {
+            window.location.href = 'pages/post_detail.html?id=' + card.dataset.id;
+        }
+    });
+}
+
+/* 页面加载：自动拉取我的帖子（权益记录已迁至自测页，这里独立运行） */
+loadMyPosts();
+
+/* ---------- 数据保鲜：页面重新可见时重新拉取 ---------- */
+let lastPostsRefresh = 0;
+
+/* 带节流的刷新：visibilitychange 与 pageshow 可能同时触发，2 秒内去重 */
+function refreshMyPosts() {
+    const now = Date.now();
+    if (now - lastPostsRefresh < 2000) return;
+    lastPostsRefresh = now;
+    loadMyPosts();
+}
+
+/* 场景一：切换标签页 / 最小化后回到本页 */
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        refreshMyPosts();
+    }
+});
+
+/* 场景二：从帖子详情页点击浏览器"返回"（bfcache 恢复，event.persisted 为 true） */
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        refreshMyPosts();
+    }
+});
