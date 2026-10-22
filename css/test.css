@@ -80,6 +80,7 @@ body {
 .records-card {
     width: 60%;
     box-sizing: border-box;
+    background: #D1D5DB; /* 明显深灰底；圆角、阴影、外框不变 */
 }
 .records-card h2 {
     color: #252525;
@@ -180,11 +181,11 @@ body {
 /* ===== 右侧记录卡片（Soft UI，左侧浅粉装饰线） ===== */
 #records-list .record-card {
     width: 100%;
-    background: #FFFFFF;
+    background: #FFFFFF; /* 保持纯白，在深灰底上"浮"起来 */
     border: 1px solid #EBEBEB;
     border-left: 3px solid #F8BBD0; /* 浅粉装饰线 */
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* 阴影稍加强，突出层次 */
     padding: 24px;
     margin-bottom: 16px;
     transition: all 0.25s ease;
