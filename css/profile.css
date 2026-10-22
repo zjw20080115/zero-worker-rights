@@ -5,9 +5,14 @@ body {
     background-color: #f5f8fc;
 }
 
-/* 主体容器：display:flex 等由 HTML 行内样式提供，这里补充对齐与响应式 */
+/* ---------- 1. 主体容器：居中、左右间距、顶部对齐 ---------- */
 .profile-container {
     align-items: flex-start;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+    box-sizing: border-box;
 }
 
 /* 大卡片通用：去边框、大圆角、软弹阴影（悬浮感） */
@@ -17,30 +22,43 @@ body {
     box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
 }
 
-/* 左侧个人信息卡片：约 300px */
+/* ---------- 2. 左侧个人信息卡片 ---------- */
 .profile-info-card {
     width: 300px;
     flex-shrink: 0;
     background: #ffffff;
-    padding: 24px;
+    padding: 28px 24px;
     text-align: center;
+    position: sticky;
+    top: 24px;
 }
 
-/* 右侧内容区：flex: 1 */
+/* 右侧内容区 */
 .profile-main {
     flex: 1;
-    min-width: 0; /* 防止长内容撑破 flex 布局 */
+    min-width: 0;
 }
 
-/* 右侧面板：白卡片 */
+/* 右侧面板 */
 .profile-panel {
     background: #ffffff;
     padding: 24px;
     margin-bottom: 20px;
 }
 .profile-panel h3 {
-    margin: 0 0 16px;
+    margin: 0 0 18px;
     color: #1769aa;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.profile-panel h3::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
 }
 
 /* 问候语 */
@@ -50,23 +68,23 @@ body {
     margin: 0 0 8px;
 }
 
-/* 头像：大号圆形 + 温柔光环 */
+/* ---------- 3. 头像：大号圆形 + 温柔光环 ---------- */
 .avatar-wrap {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 #user-avatar {
-    width: 100px;
-    height: 100px;
+    width: 104px;
+    height: 104px;
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
     border: 4px solid #eff6ff;
-    box-shadow: 0 0 0 2px #bfdbfe;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 0 0 2px #bfdbfe, 0 8px 20px rgba(59, 130, 246, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 #user-avatar:hover {
-    opacity: 0.9;
-    transform: scale(1.03);
+    transform: scale(1.04);
+    box-shadow: 0 0 0 2px #93c5fd, 0 10px 24px rgba(59, 130, 246, 0.25);
 }
 
 /* 用户名：可点击修改 */
@@ -74,39 +92,56 @@ body {
     font-weight: bold;
     font-size: 18px;
     color: #1769aa;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     cursor: pointer;
 }
 #user-name-display:hover {
     text-decoration: underline;
 }
 
-/* 建议输入框：大圆角、浅灰边框、聚焦浅蓝 */
+/* ---------- 4. 建议输入框 ---------- */
 #suggestion-input {
+    margin-top: 8px;
     margin-bottom: 12px;
+    padding: 10px 12px;
+    font-size: 14px;
     border-radius: 12px;
-    border-color: #dbe4ee;
+    border: 1px solid #dbe4ee;
+    background: #f8fafc;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 #suggestion-input:focus {
     outline: none;
     border-color: #93c5fd;
+    background: #ffffff;
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
 }
 
-/* 提交建议：蓝色渐变、去边框、大圆角、悬停微放大 */
+/* ---------- 5. 提交建议：蓝色渐变主按钮 ---------- */
 #suggestion-submit {
     width: 100%;
     box-sizing: border-box;
     margin-top: 0;
+    padding: 11px 0;
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     color: #ffffff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 #suggestion-submit:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    filter: brightness(1.05);
+}
+#suggestion-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(59, 130, 246, 0.3);
 }
 #suggestion-submit:disabled {
     transform: none;
@@ -115,43 +150,46 @@ body {
     cursor: not-allowed;
 }
 
-/* 退出登录按钮：红色警示，悬浮填充红底白字 */
+/* ---------- 6. 退出登录 / 登录注册按钮 ---------- */
 .profile-logout-btn {
     width: 100%;
     box-sizing: border-box;
-    margin-top: 12px;
-    padding: 10px 22px;
-    background: none;
-    border: 1px solid #dc3545;
+    margin-top: 20px;
+    padding: 11px 22px;
+    background: #ffffff;
+    border: 1.5px solid #f0a5ab;
     color: #dc3545;
-    border-radius: 7px;
+    border-radius: 12px;
     font-size: 15px;
     font-family: inherit;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease,
+                border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .profile-logout-btn:hover {
     background: #dc3545;
+    border-color: #dc3545;
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
-
-/* 未登录态：按钮变为蓝色主色（立即登录/注册） */
 .profile-logout-btn.login-mode {
-    border-color: #1769aa;
+    border-color: #93c5fd;
     color: #1769aa;
 }
 .profile-logout-btn.login-mode:hover {
     background: #1769aa;
+    border-color: #1769aa;
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(23, 105, 170, 0.3);
 }
 
-/* 记录列表：一行一张卡片，宽度占满（卡片基础样式来自 records.css） */
+/* ---------- 7. 权益记录列表（保留） ---------- */
 #records-list .record-card {
     width: 100%;
 }
 
-/* ---------- 右侧记录卡片亲和化（覆盖 records.css） ---------- */
+/* 记录卡片亲和化（覆盖 records.css） */
 .record-card {
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
@@ -161,7 +199,7 @@ body {
     box-shadow: 0 10px 28px rgba(149, 157, 165, 0.16);
 }
 
-/* 问题标签：大圆角药丸、极浅蓝底、深蓝文字、小字号 */
+/* 问题标签 */
 .problem-badge {
     background: #e0f2fe;
     color: #0369a1;
@@ -170,13 +208,13 @@ body {
     font-size: 13px;
 }
 
-/* 日期：更小更浅，更低调 */
+/* 日期 */
 .record-date {
     font-size: 12px;
     color: #aab7c4;
 }
 
-/* 删除按钮：默认弱化，悬停整张卡片时才亮红（防误触） */
+/* 记录删除按钮：默认弱化，悬停卡片才亮红 */
 .delete-btn {
     background: transparent;
     color: #b6c2cd;
@@ -216,7 +254,7 @@ body {
     width: 100%;
 }
 
-/* ---------- 小弹窗（头像修改 / 用户名修改 / 密码修改） ---------- */
+/* ---------- 8. 小弹窗（头像 / 用户名 / 密码修改） ---------- */
 .mini-modal {
     position: fixed;
     top: 0;
@@ -248,6 +286,33 @@ body {
     width: 100%;
     box-sizing: border-box;
     margin: 8px 0;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.mini-modal-box .btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+.mini-modal-box .btn:active {
+    transform: translateY(0);
+}
+.mini-modal-box .btn.primary,
+#edit-username-confirm,
+#edit-password-confirm {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+.mini-modal-box .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 .mini-modal-box input {
     margin-bottom: 12px;
@@ -255,13 +320,15 @@ body {
 .mini-cancel {
     background: none;
     border: none;
-    color: #999999;
+    color: #94a3b8;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 14px;
+    padding: 6px 0;
+    transition: color 0.2s ease;
 }
 .mini-cancel:hover {
-    color: #555555;
+    color: #475569;
 }
 
 @keyframes miniModalFadeIn {
@@ -275,13 +342,127 @@ body {
     }
 }
 
-/* 手机端（≤768px）：左右变成上下堆叠 */
+/* ---------- 9. 手机端（≤768px） ---------- */
 @media (max-width: 768px) {
     .profile-container {
         flex-direction: column;
+        gap: 16px;
+        padding: 16px 14px 32px;
     }
     .profile-info-card {
         width: 100%;
+        position: static;
         box-sizing: border-box;
     }
+    .profile-panel {
+        padding: 18px 16px;
+    }
 }
+<<<<<<< Updated upstream
+=======
+
+/* ---------- 10. 我的帖子卡片 ---------- */
+#my-posts-list .record-card {
+    background: #ffffff;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+}
+#my-posts-list .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+.post-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #1e293b;
+}
+#my-posts-list .record-desc {
+    margin: 0 0 10px;
+    color: #667788;
+    font-size: 14px;
+}
+.post-footer-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* 帖子删除按钮：弱化胶囊，悬停卡片才亮红 */
+.delete-post-btn {
+    margin-left: auto;
+    background: #f8fafc;
+    color: #b6c2cd;
+    border: 1px solid #e8edf2;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+#my-posts-list .post-clickable:hover .delete-post-btn {
+    color: #e5484d;
+    border-color: #f3b7bc;
+    background: #fff5f5;
+}
+.delete-post-btn:hover {
+    background: #e5484d !important;
+    color: #ffffff !important;
+    border-color: #e5484d !important;
+}
+
+/* ---------- 11. 预设头像选择 ---------- */
+.avatar-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+.avatar-option {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.avatar-option:hover {
+    border-color: #3b82f6;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}
+
+/* ---------- 12. 帖子卡片：可点击提示 ---------- */
+.post-clickable {
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+#my-posts-list .post-clickable:hover {
+    box-shadow: 0 10px 26px rgba(149, 157, 165, 0.18);
+    transform: translateY(-2px);
+}
+
+/* 帖子标题行与分类标签 */
+.post-title-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.post-category-badge {
+    display: inline-block;
+    margin-left: 8px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 12px;
+    padding: 1px 10px;
+    border-radius: 999px;
+}
+>>>>>>> Stashed changes
