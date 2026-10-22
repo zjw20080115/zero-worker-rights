@@ -15,7 +15,7 @@
         .mega-container {
             max-width: 1200px;
             margin: 30px auto 60px;
-            background: rgba(255, 255, 255, 0.7); /* 磨砂玻璃白 */
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 24px;
@@ -85,22 +85,65 @@
             background: #702d2d;
         }
 
-        /* 右侧卡片 */
+        /* ============================================
+           ★ 核心：右侧权益记录卡片（完美颜色适配）
+           ============================================ */
         .records-card {
             flex: 1;
-            background: #ffffff;
+            background: #b78484 !important; /* 背景色 */
             border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-            border: 1px solid #f1f5f9;
+            box-shadow: 0 8px 20px rgba(183, 132, 132, 0.3) !important;
+            border: 1px solid #a36f6f !important;
         }
+
+        /* 外层大标题保持白色 */
         .records-card h2 {
             font-size: 20px;
-            color: #1769aa;
+            color: #ffffff !important;
             margin-bottom: 20px;
-            border-bottom: 2px solid #f1f5f9;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
             padding-bottom: 15px;
         }
+
+        /* ★ 关键修复：强行重置内部白底小卡片的文字颜色，防止“隐身” */
+        .records-card * {
+            /* 先将所有子元素颜色重置为继承 */
+            color: inherit;
+        }
+
+        /* 针对内部白底卡片（假设 JS 生成的外层结构有白底或深色文字需求） */
+        /* 如果你的记录是用 div 包裹的，给它加上白底和深色字 */
+        .records-card > div > div,
+        .records-card .record-item {
+            background-color: #ffffff !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            margin-bottom: 15px !important;
+            color: #333333 !important; /* ★ 文字变深灰，清晰可见 */
+            border: 1px solid #f1f5f9 !important;
+        }
+
+        /* 小卡片内部的标题、日期、文字 */
+        .records-card > div > div *,
+        .records-card .record-item * {
+            color: #333333 !important; /* 内部文字全部深色 */
+        }
+
+        /* 内部标签文字（如“用户: xxx”）如果之前是白色字，也纠正 */
+        .records-card .record-item span,
+        .records-card .record-item p {
+            color: #64748b !important;
+        }
+
+        /* 调整内部删除按钮的颜色 */
+        .records-card button {
+            border-color: #A6534B !important;
+            color: #A6534B !important;
+            background: transparent !important;
+            border-radius: 6px !important;
+        }
+
 
         /* ============================================
            2. 答题区（Quiz）
@@ -125,7 +168,7 @@
             padding-bottom: 10px;
             border-bottom: 2px solid rgba(140, 58, 58, 0.1);
         }
-        /* 题目和选项样式（如果 test.css 没写，这里兜底） */
+
         .question-block { margin-bottom: 30px; }
         .question-block h3 { font-size: 18px; color: #333; margin-bottom: 15px; }
         .option-item, .option {
@@ -150,11 +193,12 @@
             color: white;
             border-color: #8C3A3A;
         }
-                #submit-btn {
+
+        /* 问卷提交按钮变深 */
+        #submit-btn {
             width: 100%;
             padding: 16px;
-            /* ★ 核心：换成豆沙红/砖红色 */
-            background: #C48B80;
+            background: #A6534B;
             color: white;
             border: none;
             border-radius: 10px;
@@ -164,10 +208,8 @@
             margin-top: 20px;
             transition: background 0.3s;
         }
-
         #submit-btn:hover {
-            /* 鼠标悬停时颜色加深，更有质感 */
-            background: #a86b60;
+            background: #873D36;
         }
 
         /* ============================================
@@ -185,9 +227,11 @@
             color: #4A2F1D;
             margin-bottom: 20px;
         }
+
+        /* 结果页按钮统一改色 */
         .btn {
             padding: 12px 24px;
-            background: #1769aa;
+            background: #A6534B;
             color: white;
             border: none;
             border-radius: 8px;
@@ -196,7 +240,9 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .btn:hover { background: #125789; }
+        .btn:hover {
+            background: #873D36;
+        }
     </style>
 </head>
 <body>
@@ -279,7 +325,8 @@
             <div id="ai-result" style="margin-top: 15px; background: #fdfdfd; border: 1px solid #edf0f4; padding: 15px; border-radius: 8px; display: none;"></div>
         </div>
 
-        <button id="save-record-btn" class="btn" style="margin-top: 20px; background: #28a745; display: none;">保存到我的权益记录</button>
+        <!-- ★ 修改了这里的颜色 -->
+        <button id="save-record-btn" class="btn" style="margin-top: 20px; background: #A6534B; display: none;">保存到我的权益记录</button>
         <div id="save-message" style="margin-top: 10px; font-weight: bold; display: none;"></div>
 
         <div id="result-disclaimer" style="margin-top: 20px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px;">
