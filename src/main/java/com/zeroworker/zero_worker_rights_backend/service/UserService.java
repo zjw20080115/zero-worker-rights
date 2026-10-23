@@ -1,9 +1,6 @@
 package com.zeroworker.zero_worker_rights_backend.service;
 
-import com.zeroworker.zero_worker_rights_backend.dto.LoginResultDTO;
-import com.zeroworker.zero_worker_rights_backend.dto.Result;
-import com.zeroworker.zero_worker_rights_backend.dto.UserLoginDTO;
-import com.zeroworker.zero_worker_rights_backend.dto.UserRegisterDTO;
+import com.zeroworker.zero_worker_rights_backend.dto.*;
 import com.zeroworker.zero_worker_rights_backend.entity.User;
 import com.zeroworker.zero_worker_rights_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +33,19 @@ public class UserService {
     }
 
     public Result<LoginResultDTO> login(UserLoginDTO dto) {
-        // 1. 先看用户是否存在
         User user = userRepository.findByUsername(dto.getUsername());
+
+        // 1. 用户不存在
         if (user == null) {
-            // 明确返回 400 错误，前端收到 code=400 就说明登录失败
             return new Result<>(400, "用户不存在！", null);
         }
-        // 2. 再校验密码（使用 matches 比对加密后的密码）
+
+        // 2. 密码错误
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             return new Result<>(400, "密码错误！", null);
         }
 
-        // 3. 只有上面两步都通过，才生成 Token 并返回数据
+        // 3. 登录成功，组装数据
         String token = java.util.UUID.randomUUID().toString();
 
         LoginResultDTO data = new LoginResultDTO();
@@ -56,6 +54,44 @@ public class UserService {
         data.setNickname(user.getNickname());
         data.setToken(token);
 
+        // ★ 核心：把用户的头像路径也塞进去
+        data.setAvatar(user.getAvatar());
+
         return new Result<>(200, "登录成功！", data);
+    }
+
+    // 1. 修改昵称
+    public String updateNickname(UserUpdateDTO dto) {
+        User user = userRepository.findById(dto.getUserId()).orElse(null);
+        if (user == null) {
+            return "用户不存在！";
+        }
+        user.setNickname(dto.getNickname());
+        userRepository.save(user);
+        return "修改成功！";
+    }
+
+    // 2. 修改密码
+    public String updatePassword(PasswordUpdateDTO dto) {
+        User user = userRepository.findById(dto.getUserId()).orElse(null);
+        if (user == null) {
+            return "用户不存在！";
+        }
+        // 校验旧密码是否正确
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            return "旧密码错误！";
+        }
+        // 存入新密码（记得加密）
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+        return "密码修改成功！";
+    }
+
+    public String updateAvatar(Integer userId, String avatarPath) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return "用户不存在！";
+        user.setAvatar(avatarPath);
+        userRepository.save(user);
+        return "头像修改成功！";
     }
 }

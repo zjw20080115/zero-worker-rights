@@ -21,4 +21,7 @@ public class User {
     private String nickname;
 
     private LocalDateTime createTime;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String avatar;
 }

@@ -1,9 +1,6 @@
 package com.zeroworker.zero_worker_rights_backend.controller;
 
-import com.zeroworker.zero_worker_rights_backend.dto.LoginResultDTO;
-import com.zeroworker.zero_worker_rights_backend.dto.Result;
-import com.zeroworker.zero_worker_rights_backend.dto.UserLoginDTO;
-import com.zeroworker.zero_worker_rights_backend.dto.UserRegisterDTO;
+import com.zeroworker.zero_worker_rights_backend.dto.*;
 import com.zeroworker.zero_worker_rights_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,4 +21,22 @@ public class AuthController {
     public Result<LoginResultDTO> login(@RequestBody UserLoginDTO dto) {
         return userService.login(dto);
     }
+
+    @PutMapping("/user/update")
+    public String updateNickname(@RequestBody UserUpdateDTO dto) {
+        return userService.updateNickname(dto);
+    }
+
+    @PutMapping("/user/password")
+    public String updatePassword(@RequestBody PasswordUpdateDTO dto) {
+        return userService.updatePassword(dto);
+    }
+
+    @PostMapping("/user/avatar")
+    public String updateAvatar(@RequestBody java.util.Map<String, String> body) {
+        Integer userId = Integer.parseInt(body.get("userId"));
+        String avatarPath = body.get("avatar");
+        return userService.updateAvatar(userId, avatarPath);
+    }
+
 }
