@@ -9,13 +9,21 @@ body {
     line-height: 1.7;
     letter-spacing: 0.5px;
 
-    /* 全局背景图 */
+    /* 你的背景图 */
     background-image: url('../images/bg.jpg');
-    background-size: cover;
-    background-position: center top;
-    background-attachment: fixed;
+
+    /* ★ 核心修改 1：让图片放大一点点，留出左右滑动的空间 */
+    background-size: 105% 105%;
+
+    /* ★ 核心修改 2：居中，绝对不要用 fixed，我们要让它能随鼠标动 */
+    background-position: center center;
     background-repeat: no-repeat;
-    background-color: #F5EBEB; /* 兜底粉色 */
+
+    /* 备用底色 */
+    background-color: #F5EBEB;
+
+    /* 顺滑过渡：鼠标移动时，背景会有轻微的延迟跟随，极度丝滑 */
+    transition: background-position 0.1s ease-out;
 }
 
 /* 基础文字排版 */
