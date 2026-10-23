@@ -11,4 +11,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     // 删除某条评论
     @Transactional
     void deleteById(Integer id);
+
+    long countByPostId(Integer postId);
+
+
 }

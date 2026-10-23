@@ -33,4 +33,7 @@ public class Post {
 
     @Transient  // 加上这个注解，告诉 JPA 这个字段不是数据库里的列
     private String author;
+
+    @Transient // 告诉 JPA 这不是数据库里的字段
+    private Long commentCount;
 }

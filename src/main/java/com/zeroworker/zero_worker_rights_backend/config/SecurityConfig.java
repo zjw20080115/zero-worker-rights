@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/rights-records/**").permitAll()
                         .requestMatchers("/api/ai/**").permitAll()
                         .requestMatchers("/api/questionnaires/**").permitAll()
+                        .requestMatchers("/api/suggestions/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

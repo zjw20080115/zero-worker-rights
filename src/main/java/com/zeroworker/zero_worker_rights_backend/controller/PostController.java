@@ -39,4 +39,14 @@ public class PostController {
         boolean success = postService.deletePost(id);
         return success ? "删除成功！" : "帖子不存在！";
     }
+
+    @GetMapping("/user/{userId}")
+    public List<Post> getPostsByUser(@PathVariable Integer userId) {
+        return postService.getPostsByUserId(userId);
+    }
+
+    @GetMapping("/search")
+    public List<Post> searchPosts(@RequestParam(required = false) String keyword) {
+        return postService.searchPosts(keyword);
+    }
 }

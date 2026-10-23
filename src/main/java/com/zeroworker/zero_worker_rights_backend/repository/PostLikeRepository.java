@@ -11,4 +11,7 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Integer> {
     // 根据 postId 和 userId 删除点赞记录
     @Transactional
     void deleteByPostIdAndUserId(Integer postId, Integer userId);
+
+    // 统计某个帖子的真实点赞数
+    long countByPostId(Integer postId);
 }
