@@ -165,7 +165,33 @@ const DATA = {
     ]
 };
 
-
+// 附件子列表
+const ATTACHMENT_LISTS = {
+    'injury-certificates': [
+        { id: 'form-cert-1', title: '工伤认定申请表', tag: '申请表' },
+        { id: 'form-cert-2', title: '工伤认定申请受理决定书', tag: '决定书' },
+        { id: 'form-cert-3', title: '工伤认定申请不予受理决定书', tag: '决定书' },
+        { id: 'form-cert-4', title: '认定工伤决定书', tag: '决定书' },
+        { id: 'form-cert-5', title: '不予认定工伤决定书', tag: '决定书' },
+        { id: 'form-cert-6', title: '工伤认定办法（人社部令第8号）', tag: '部门规章' }
+    ],
+    'injury-attachments': [
+        { id: 'form-att-1', title: '附件1 缴费申报表', tag: '缴费申报' },
+        { id: 'form-att-2', title: '附件2 待遇申请超期说明', tag: '待遇申请' },
+        { id: 'form-att-3', title: '附件3 伤残待遇申请表', tag: '待遇申请' },
+        { id: 'form-att-4', title: '附件4 死亡待遇申请表', tag: '待遇申请' },
+        { id: 'form-att-5', title: '附件5 待遇申请表申报说明', tag: '待遇申请' },
+        { id: 'form-att-6', title: '附件6 待遇垫付情况说明', tag: '待遇申请' },
+        { id: 'form-att-7', title: '附件7 知情同意确认书', tag: '知情送达' },
+        { id: 'form-att-8', title: '附件8 职业伤害确认结论书', tag: '结论文书' },
+        { id: 'form-att-9', title: '附件9 不予确认职业伤害结论书', tag: '结论文书' },
+        { id: 'form-att-10', title: '附件10 劳动能力鉴定申请表', tag: '劳动能力鉴定' },
+        { id: 'form-att-11', title: '附件11 劳动能力初次（复查）鉴定结论书', tag: '劳动能力鉴定' },
+        { id: 'form-att-12', title: '附件12 劳动能力再次鉴定结论书', tag: '劳动能力鉴定' },
+        { id: 'form-att-13', title: '附件13 跨省异地就医（康复）备案表', tag: '异地备案' },
+        { id: 'form-att-14', title: '附件14 跨省异地配置辅助器具备案表', tag: '异地备案' }
+    ]
+};
 // 附件子列表... 以下代码保持不变
 
 let DB = {};
@@ -479,3 +505,25 @@ function showView(view) {
 function escapeHtml(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+// ============================================================
+// 核心：处理从首页通知栏带参数跳转过来的逻辑
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // 稍微延迟一下，等待左侧菜单渲染完毕
+    setTimeout(() => {
+        const params = new URLSearchParams(window.location.search);
+        const catId = params.get('cat'); // 获取分类 id
+        const docId = params.get('doc'); // 获取文件 id
+
+        // 如果 URL 里有 cat 和 doc 参数，直接执行点击动作
+        if (catId && docId) {
+            // 1. 先激活左侧对应的分类
+            selectCategory(catId);
+            
+            // 2. 然后再触发对应文档的阅读动作
+            setTimeout(() => {
+                selectDoc(catId, docId);
+            }, 100);
+        }
+    }, 200);
+});
